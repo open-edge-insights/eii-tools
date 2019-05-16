@@ -4,10 +4,10 @@ This module calculates the FPS of any EIS modules based on the stream published 
 
 ## Pre-requisites
 
-1. Run this command to set required PYTHONPATH and other environment variables.
+1. Run this command to install xlwt requirement.
 
     ```sh
-        source ./setenv.sh
+        pip3 install xlwt
     ```
 
 2. Run these commands from IEdgeInsights/DataBusAbstraction/py/test directory
@@ -50,8 +50,7 @@ This module calculates the FPS of any EIS modules based on the stream published 
     Currently supported streams for OPCUA:
     1. stream1_results
 
-2. Set the required output stream in config.json file. For multicam, option is over-ridden with required streams by default
-   and need not be set manually.
+2. Set the required output stream/streams in config.json file.
 
 3. Run the Makefile to start the FPS Calculator using this command
 

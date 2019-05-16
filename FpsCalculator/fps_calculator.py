@@ -27,6 +27,8 @@ import json
 import logging
 import time
 import threading
+import xlwt
+from xlwt import Workbook
 
 from distutils.util import strtobool
 # IMPORT the library to read from IES
@@ -58,7 +60,7 @@ class FpsCalculator:
 
     def __init__(self, devMode, subscribe_stream, subscribe_bus,
                  db_cert, db_priv, db_trust, number_of_streams,
-                 total_number_of_frames):
+                 total_number_of_frames, export_to_csv):
         self.devMode = devMode
         self.subscribe_stream = subscribe_stream
         self.subscribe_bus = subscribe_bus
@@ -67,10 +69,14 @@ class FpsCalculator:
         self.db_trust = db_trust
         self.number_of_streams = number_of_streams
         self.total_number_of_frames = total_number_of_frames
+        self.export_to_csv = export_to_csv
+        if self.export_to_csv:
+            self.wb = Workbook()
+            self.sheet1 = self.wb.add_sheet('FPS Results')
 
         try:
             if self.subscribe_bus == 'opcua':
-                if args.dev_mode:
+                if self.devMode:
                     contextConfig = {
                         'endpoint': 'opcua://localhost:4840',
                         'direction': 'SUB',
@@ -138,10 +144,16 @@ class FpsCalculator:
             logger.info('Current FPS value for {0}: {1}'.format(current_stream,
                         current_FPS))
             if total_frames_received >= int(self.total_number_of_frames):
-                logger.info('Total average FPS for {0}\
-                            number of frames: {1}'
-                            .format(total_frames_received, average_FPS))
-                os._exit(1)
+                if self.export_to_csv:
+                    logger.info('Check FPS_results.xls file for total FPS...')
+                    self.sheet1.write(1, 0, 'Average FPS for {0} frames: {1}'
+                                      .format(total_frames_received,
+                                              average_FPS))
+                    self.wb.save('FPS_results.xls')
+                else:
+                    logger.info('Total average FPS for {0} frames: {1}'
+                                .format(total_frames_received, average_FPS))
+                sys.exit(1)
             startTime = time.time()
             current_FPS = 0
             return
@@ -172,6 +184,8 @@ def parse_args():
                         help='number of streams')
     parser.add_argument('--total-frames', dest='total_number_of_frames',
                         help='total number of streams')
+    parser.add_argument('--export-csv', dest='export_to_csv',
+                        help='export result to csv file')
     return parser.parse_args()
 
 
@@ -180,6 +194,7 @@ if __name__ == "__main__":
     args = parse_args()
 
     dev_mode = bool(strtobool(args.dev_mode))
+    export_to_csv = bool(strtobool(args.export_to_csv))
     stream_dict = get_config()
     subscribe_stream = stream_dict['output_stream']
     subscribe_bus = args.subscribe_bus
@@ -195,5 +210,6 @@ if __name__ == "__main__":
                             db_priv,
                             db_trust,
                             number_of_streams,
-                            total_number_of_frames)
+                            total_number_of_frames,
+                            export_to_csv)
     fps_app.run()

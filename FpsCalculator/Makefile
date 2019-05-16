@@ -9,6 +9,7 @@ HOST = localhost
 PORT = 4840
 NUMBER_OF_STREAMS = 1
 TOTAL_NUMBER_OF_FRAMES = 1000
+EXPORT_RESULT_TO_CSV = True
 
 run:
 	@echo "Starting FPS calculator.."
@@ -17,4 +18,5 @@ run:
 							--privateFile $(SERVER_CERTS)/opcua_server_key.der \
 							--trustFile $(CA_CERTS)/ca_certificate.der \
 							--number-of-streams $(NUMBER_OF_STREAMS) \
-							--total-frames $(TOTAL_NUMBER_OF_FRAMES)
+							--total-frames $(TOTAL_NUMBER_OF_FRAMES) \
+							--export-csv $(EXPORT_RESULT_TO_CSV)
