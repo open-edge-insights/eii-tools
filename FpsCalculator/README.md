@@ -4,10 +4,15 @@ This module calculates the FPS of any EIS modules based on the stream published 
 
 ## Pre-requisites
 
-1. Run this command to install xlwt requirement.
+1. Run these commands to install required requirements.
 
     ```sh
-        pip3 install xlwt
+        sudo -H pip3 install -r requirements.txt
+    ```
+
+    Needed only for Ubuntu 18.04
+    ```sh
+        sudo apt-get install -y python3-distutils
     ```
 
 2. Run these commands from IEdgeInsights/DataBusAbstraction/py/test directory

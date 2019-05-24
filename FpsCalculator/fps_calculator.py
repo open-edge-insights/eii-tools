@@ -108,9 +108,13 @@ class FpsCalculator:
     def run(self):
         global startTime
         if self.subscribe_bus == 'opcua':
-            topicConfig = {"name": self.subscribe_stream[0], "dtype": "string"}
+            topicConfigs = []
+            for topic in self.subscribe_stream:
+                topicConfigs.append({"namespace": "streammanager",
+                                     "name": topic, "dType": "string"})
             startTime = time.time()
-            self.ieidbus.Subscribe(topicConfig, "START", self.cbFunc)
+            self.ieidbus.Subscribe(topicConfigs, len(topicConfigs),
+                                   "START", self.cbFunc)
         elif self.subscribe_bus == 'streamsublib':
             if self.number_of_streams is not None \
                and int(self.number_of_streams) > 1:
