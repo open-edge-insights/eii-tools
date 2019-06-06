@@ -12,6 +12,7 @@ import numpy as np
 from distutils.util import strtobool
 from tkinter import *
 from PIL import Image, ImageTk
+import threading
 
 # NOTE: You must update the PYTHONPATH environmental variable to have these
 # in your Python environment
@@ -29,7 +30,7 @@ class DatabusCallback:
     """Object for the databus callback to wrap needed state variables for the
     callback in to IEI.
     """
-    def __init__(self, dbc_queueDict, im_client, logger, profiling,
+    def __init__(self, topicQueueDict, im_client, logger, profiling,
                  labels=None, good_color=(0, 255, 0),
                  bad_color=(0, 0, 255), dir_name=None, display=None):
         """Constructor
@@ -47,7 +48,7 @@ class DatabusCallback:
             bad image
         :type: tuple
         """
-        self.dbc_queueDict = dbc_queueDict
+        self.topicQueueDict = topicQueueDict
         self.im_client = im_client
         self.logger = logger
         self.labels = labels
@@ -71,6 +72,22 @@ class DatabusCallback:
         self.ts_iev_total_proc = 0.0
         self.ts_da_to_visualizer = 0.0
         self.ts_va_to_da = 0.0
+
+    def queue_publish(self, topic, frame):
+        """queue_publish called after defects bounding box is drawn
+        on the image. These images are published over the queue.
+
+        :param topic: Topic the message was published on
+        :type: str
+        :param frame: Images with the bounding box
+        :type: numpy.ndarray
+        :param topicQueueDict: Dictionary to maintain multiple queues.
+        :type: dict
+        """
+
+        for key in self.topicQueueDict:
+            if(key == topic):
+                self.topicQueueDict[key].put_nowait(frame)
 
     def draw_defect(self, topic, msg):
         """Identify the defects and draw boxes on the frames
@@ -160,7 +177,13 @@ class DatabusCallback:
                 cv2.putText(frame, info, (dx, dy), cv2.FONT_HERSHEY_DUPLEX,
                             0.5, (0, 0, 255), 1, cv2.LINE_AA)
 
-        return frame
+        if self.dir_name:
+            self.save_image(topic, msg, frame)
+
+        if self.display.lower() == 'true':
+            self.queue_publish(topic, frame)
+        else:
+            self.logger.info(f'Classifier_results: {msg}')
 
     def save_image(self, topic, msg, frame):
         results = json.loads(msg)
@@ -188,17 +211,9 @@ class DatabusCallback:
             msg = self.add_profile_data(msg)
 
         if self.dir_name or self.display.lower() == 'true':
-            frame = self.draw_defect(topic, msg)
-
-        if self.dir_name:
-            self.save_image(topic, msg, frame)
-
-        if self.display.lower() == 'true':
-            for key in self.dbc_queueDict:
-                if(key == topic):
-                    self.dbc_queueDict[key].put_nowait(frame)
-        else:
-            self.logger.info(f'Classifier_results: {msg}')
+            self.drawdefect_thread = threading.Thread(target=self.draw_defect,
+                                                      args=(topic, msg, ))
+            self.drawdefect_thread.start()
 
     @staticmethod
     def prepare_per_frame_stats(results):
