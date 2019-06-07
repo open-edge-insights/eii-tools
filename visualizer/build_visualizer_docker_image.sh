@@ -1,7 +1,7 @@
 #!/bin/bash
 
 UBUNTU_IMAGE_VERSION=18.04
-VISUALIZER_VERSION=1.0
+VISUALIZER_VERSION=1.5
 hostTimezone=`timedatectl status | grep "zone" | sed -e 's/^[ ]*Time zone: \(.*\) (.*)$/\1/g'`
 hostTimezone=`echo $hostTimezone`
 buildLogFile="build_logs.log"
