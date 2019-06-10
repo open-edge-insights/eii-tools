@@ -45,5 +45,8 @@ else
     log_info "Soft-link for libmbedcrypto already exists"
 fi
 
+log_info "Installing python3-tk package"
+sudo apt install -y python3-tk
+
 log_info "Done."
 log_info "Source the source.sh script: . ./source.sh"

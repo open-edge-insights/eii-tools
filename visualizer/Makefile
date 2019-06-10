@@ -8,6 +8,7 @@ CERT_PATH = /tmp
 IMAGE_DIR = $(IEI_INSTALL_DIR)/saved_images
 DISPLAY_IMG=true
 HOST=localhost
+VISUALIZER_VERSION = 1.5
 
 # Pls add/remove any switch as per the needs
 # secure args
@@ -16,7 +17,7 @@ SECURE_VISUALIZE_ARGS = -c $(TARGET_CERT_PATH) --host $(HOST) -d $(DISPLAY_IMG) 
 NON_SECURE_VISUALIZE_ARGS = --host $(HOST) -d $(DISPLAY_IMG) -D true -i $(IMAGE_DIR) -P false
 
 build:
-	./build_visualizer_docker_image.sh
+	./build_visualizer_docker_image.sh "$(VISUALIZER_VERSION)"
 
 run:
 	docker run --rm --name ia_visualizer -it \
@@ -35,5 +36,5 @@ run:
 			   --log-opt max-size=10m \
 			   --log-opt max-file=5 \
 			   --env="DISPLAY" \
-			   -it ia/visualizer:1.0 \
+			   -it ia/visualizer:$(VISUALIZER_VERSION)\
 			   $(SECURE_VISUALIZE_ARGS)
