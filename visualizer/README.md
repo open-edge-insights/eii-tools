@@ -51,13 +51,13 @@ sudo make distlibs
   1. In production mode (default mode):
 
     ```sh
-    python3.6 visualize.py -c IEdgeInsights/cert-tool/Certificates -host <IP_ADDRESS> -d -i <image_dir>
+    python3.6 visualize.py -c IEdgeInsights/cert-tool/Certificates -host <IP_ADDRESS> -d <true/false> -i <image_dir>
     ```
 
   2. In developer mode:
 
     ```sh
-    python3.6 visualize.py -host <IP_ADDRESS> -d -i <image_dir> -D true
+    python3.6 visualize.py -host <IP_ADDRESS> -d <true/false> -i <image_dir>
     ```
 
 #### Using Labels
@@ -86,7 +86,7 @@ Assuming you saved the above JSON file as `labels.json`, run the visualizer
 as follows:
 
 ```sh
-python3.6 visualize.py -c IEdgeInsights/cert-tool/Certificates  -host <IP_ADDRESS> --labels labels.json -d -i ./test -D false
+python3.6 visualize.py -c IEdgeInsights/cert-tool/Certificates  -host <IP_ADDRESS> --labels labels.json -d <true/false> -i ./test
 ```
 
 #### Command Line Arguments
@@ -112,6 +112,7 @@ Use the below command to know the usage of the script `visualize.py`.
   > 1. The `IMAGE_DIR` argument here will override the value set in the [Makefile]
   >    (./Makefile). If no `IMAGE_DIR` value is provided, the value set in the [Makefile]
   >    (./Makefile) will be used
+  >    `IMAGE_DIR` in container mode should be present before passing it to the container as an argument.
   >  2. Change `SECURE_VISUALIZE_ARGS` or `NON_SECURE_VISUALIZE_ARGS` as needed in [Makefile](./Makefile).
   >  3. Change `PROFILING` to True in [Makefile](./Makefile) in case if you want to enable profiling.
   >    Refer `Command Line Arguments` section under in this file to know the supported args for
