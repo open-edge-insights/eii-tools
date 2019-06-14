@@ -110,7 +110,7 @@ class FpsCalculator:
         if self.subscribe_bus == 'opcua':
             topicConfigs = []
             for topic in self.subscribe_stream:
-                topicConfigs.append({"namespace": "streammanager",
+                topicConfigs.append({"ns": "streammanager",
                                      "name": topic, "dType": "string"})
             startTime = time.time()
             self.ieidbus.Subscribe(topicConfigs, len(topicConfigs),
