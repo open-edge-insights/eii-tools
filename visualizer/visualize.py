@@ -214,6 +214,8 @@ class DatabusCallback:
             self.drawdefect_thread = threading.Thread(target=self.draw_defect,
                                                       args=(topic, msg, ))
             self.drawdefect_thread.start()
+        else:
+            self.logger.info(f'Classifier_results: {msg}')
 
     @staticmethod
     def prepare_per_frame_stats(results):
