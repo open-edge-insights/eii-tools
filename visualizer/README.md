@@ -57,7 +57,7 @@ sudo make distlibs
   2. In developer mode:
 
     ```sh
-    python3.6 visualize.py -host <IP_ADDRESS> -d <true/false> -i <image_dir>
+    python3.6 visualize.py -host <IP_ADDRESS> -d <true/false> -i <image_dir> -D true
     ```
 
 #### Using Labels
