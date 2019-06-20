@@ -149,6 +149,9 @@ Use the below command to know the usage of the script `visualize.py`.
     $ sudo make run  HOST=<system_ip_address> IMAGE_DIR=<absolute_directory_path_to_save_images>
     ```
 
+> Note: The Visualizer will not work with time-series / point data if used with docker container approach.
+> For point data, use the bare-metal run to see the results printed in the terminal.
+
 * If one needs to remove the classified images on a periodic basis:
 
   1. Have this command running in a separate terminal as a cleanup task to remove images older than 60 mins in IMAGE_DIR. Replace <path-to-IMAGE_DIR> with IMAGE_DIR path given while running visualizer. The -mmin option can be changed accordingly by the user.
