@@ -440,7 +440,7 @@ def main(args):
     queueDict = {}
 
     for topic in topicsList:
-        queueDict[topic] = queue.Queue()
+        queueDict[topic] = queue.Queue(maxsize=10)
 
     logger = get_logger(__name__)
 
@@ -562,8 +562,7 @@ def main(args):
 
             for buttonCount in range(len(topicsList)):
                 buttonStr = "button{}".format(buttonCount)
-                imageDict[buttonStr] = []
-                imageDict[buttonStr].append(ImageTk.PhotoImage(image=blankimg))
+                imageDict[buttonStr] = ImageTk.PhotoImage(image=blankimg)
 
             buttonCount, rowCount, columnCount = 0, 0, 0
             if(len(topicsList) == 1):
@@ -624,23 +623,19 @@ def main(args):
                         resized_img = img.resize((resized_width,
                                                   resized_height))
 
-                        imageDict["button"+str(buttonCount)].append(
-                                        ImageTk.PhotoImage(image=resized_img))
-
-                        imagedictList = len(
-                                        imageDict["button"+str(buttonCount)])
+                        imageDict[
+                            "button"+str(
+                                buttonCount)] = ImageTk.PhotoImage(
+                                                            image=resized_img)
 
                         buttonDict[str(buttonCount)].config(
                             image=imageDict["button" +
-                                            str(buttonCount)][imagedictList-1],
+                                            str(buttonCount)],
                             compound=BOTTOM)
                     except Exception:
-                        imagedictList = len(
-                                        imageDict["button"+str(buttonCount)])
-
                         buttonDict[str(buttonCount)].config(
                             image=imageDict["button" +
-                                            str(buttonCount)][imagedictList-1],
+                                            str(buttonCount)],
                             compound=BOTTOM)
                         pass
                     buttonCount = buttonCount + 1
