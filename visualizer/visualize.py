@@ -87,7 +87,10 @@ class DatabusCallback:
 
         for key in self.topicQueueDict:
             if(key == topic):
-                self.topicQueueDict[key].put_nowait(frame)
+                try:
+                    self.topicQueueDict[key].put_nowait(frame)
+                except queue.Full:
+                    self.logger.error("Dropping frames as the queue is full")
 
     def draw_defect(self, topic, msg):
         """Identify the defects and draw boxes on the frames
@@ -633,11 +636,13 @@ def main(args):
                                             str(buttonCount)],
                             compound=BOTTOM)
                     except Exception:
-                        buttonDict[str(buttonCount)].config(
-                            image=imageDict["button" +
-                                            str(buttonCount)],
-                            compound=BOTTOM)
-                        pass
+                        try:
+                            buttonDict[str(buttonCount)].config(
+                                image=imageDict["button" +
+                                                str(buttonCount)],
+                                compound=BOTTOM)
+                        except Exception:
+                            logger.exception("Tkinter exception")
                     buttonCount = buttonCount + 1
                 rootWin.update()
         except KeyboardInterrupt:
