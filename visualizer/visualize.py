@@ -122,7 +122,10 @@ class DatabusCallback:
         frame = np.frombuffer(blob, dtype=np.uint8)
         if encoding is not None:
             frame = np.reshape(frame, (frame.shape))
-            frame = cv2.imdecode(frame, 1)
+            try:
+                frame = cv2.imdecode(frame, 1)
+            except cv2.error as ex:
+                self.logger.error("frame: {}, exception: {}".format(frame, ex))
         else:
             frame = np.reshape(frame, (height, width, channels))
 
