@@ -13,24 +13,15 @@ from distutils.util import strtobool
 from tkinter import *
 from PIL import Image, ImageTk
 import threading
-
-# NOTE: You must update the PYTHONPATH environmental variable to have these
-# in your Python environment
-from DataBusAbstraction.py.DataBus import databus
-from ImageStore.client.py.client import GrpcImageStoreClient
+import zmq
+from libs.ConfigManager.etcd.py.etcd_client import EtcdCli
 
 
-def get_config():
-    with open('config.json') as f:
-        config_dict = json.load(f)
-        return config_dict
-
-
-class DatabusCallback:
+class SubscriberCallback:
     """Object for the databus callback to wrap needed state variables for the
     callback in to IEI.
     """
-    def __init__(self, topicQueueDict, im_client, logger, profiling,
+    def __init__(self, topicQueueDict, logger, profiling,
                  labels=None, good_color=(0, 255, 0),
                  bad_color=(0, 0, 255), dir_name=None, display=None):
         """Constructor
@@ -49,7 +40,6 @@ class DatabusCallback:
         :type: tuple
         """
         self.topicQueueDict = topicQueueDict
-        self.im_client = im_client
         self.logger = logger
         self.labels = labels
         self.good_color = good_color
@@ -84,15 +74,14 @@ class DatabusCallback:
         :param topicQueueDict: Dictionary to maintain multiple queues.
         :type: dict
         """
-
         for key in self.topicQueueDict:
-            if(key == topic):
+            if (key == topic.decode("utf-8")):
                 try:
                     self.topicQueueDict[key].put_nowait(frame)
                 except queue.Full:
                     self.logger.error("Dropping frames as the queue is full")
 
-    def draw_defect(self, topic, msg):
+    def draw_defect(self, topic, msg, blob):
         """Identify the defects and draw boxes on the frames
 
         :param topic: Topic the message was published on
@@ -103,19 +92,14 @@ class DatabusCallback:
         self.logger.info(f'Received message: {msg}')
         results = json.loads(msg)
 
-        img_handle = results['ImgHandle']
-        height = int(results['Height'])
-        width = int(results['Width'])
-        channels = int(results['Channels'])
+        height = int(results['height'])
+        width = int(results['width'])
+        channels = int(results['channel'])
 
         if 'encoding' in results:
             encoding = results['encoding']
         else:
             encoding = None
-
-        # Read frame from Image Store
-        self.logger.info(f'Reteiving frame from Image Store: {img_handle}')
-        blob = self.im_client.Read(img_handle)
 
         # Convert to Numpy array and reshape to frame
         self.logger.info('Preparing frame for visualization')
@@ -130,9 +114,7 @@ class DatabusCallback:
             frame = np.reshape(frame, (height, width, channels))
 
         # Draw defects
-        defects = json.loads(results['defects'])
-
-        for d in defects:
+        for d in results['defects']:
             # Get tuples for top-left and bottom-right coordinates
             tl = tuple(d['tl'])
             br = tuple(d['br'])
@@ -153,7 +135,7 @@ class DatabusCallback:
                             0.5, self.bad_color, 2, cv2.LINE_AA)
 
         # Draw border around frame if has defects or no defects
-        if defects:
+        if results['defects']:
             outline_color = self.bad_color
         else:
             outline_color = self.good_color
@@ -162,9 +144,8 @@ class DatabusCallback:
                                    value=outline_color)
 
         # Display information about frame
-        display_info = json.loads(results['display_info'])
         (dx, dy) = (20, 10)
-        for d_i in display_info:
+        for d_i in results['display_info']:
             # Get priority
             priority = d_i['priority']
             info = d_i['info']
@@ -193,9 +174,8 @@ class DatabusCallback:
 
     def save_image(self, topic, msg, frame):
         results = json.loads(msg)
-        img_handle = results['ImgHandle']
-        defects = json.loads(results['defects'])
-        if defects:
+        img_handle = results['img_handle']
+        if results['defects']:
             tag = 'bad'
         else:
             tag = 'good'
@@ -204,7 +184,7 @@ class DatabusCallback:
                     frame,
                     [cv2.IMWRITE_PNG_COMPRESSION, 3])
 
-    def callback(self, topic, msg):
+    def callback(self, topic, msg, blob):
         """Callback called when the databus has a new message.
 
         :param topic: Topic the message was published on
@@ -218,7 +198,7 @@ class DatabusCallback:
 
         if self.dir_name or self.display.lower() == 'true':
             self.drawdefect_thread = threading.Thread(target=self.draw_defect,
-                                                      args=(topic, msg, ))
+                                                      args=(topic, msg, blob,))
             self.drawdefect_thread.start()
         else:
             self.logger.info(f'Classifier_results: {msg}')
@@ -334,7 +314,7 @@ class DatabusCallback:
             int(results["ts_vi_fr_store_entry"])
         results["ts_iev_e2e"] = float(diff)
 
-        per_frame_stats = DatabusCallback.prepare_per_frame_stats(results)
+        per_frame_stats = SubscriberCallback.prepare_per_frame_stats(results)
         avg_value = self.prepare_avg_stats(per_frame_stats, results)
 
         self.logger.info(f'==========STATS START==========')
@@ -350,20 +330,14 @@ def parse_args():
     """
     ap = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    ap.add_argument('-c', '--cert_dir', default=None,
-                    help='IEI certificates directory')
-    ap.add_argument('-host', '--host', default='localhost',
-                    help='Hosts IP address')
-    ap.add_argument('-p', '--port', type=int, default=4840,
-                    help='ETA databus port')
     ap.add_argument('-f', '--fullscreen', default=False, action='store_true',
                     help='Start visualizer in fullscreen mode')
     ap.add_argument('-l', '--labels', default=None,
                     help='JSON file mapping the defect type to labels')
-    ap.add_argument('-d', '--display', default='true',
-                    help='live preview of classified images(true/false)')
     ap.add_argument('-i', '--image_dir', default=None,
                     help='directory name to save the images')
+    ap.add_argument('-d', '--display', default='true',
+                    help='live preview of classified images(true/false)')
     ap.add_argument('-D', '--dev_mode', default='false',
                     help='dev_mode can be true or false')
     ap.add_argument('-P', '--profiling_mode', default='false',
@@ -422,6 +396,25 @@ def get_logger(name):
 #         topRoot.update()
 
 
+def zmqSubscriber(queueDict, logger, jsonConfig, args, labels,
+                  topic, host, port):
+    """
+    zmqSubscriber is the ZeroMQ callback to
+    subscribe to classified results
+    """
+    context = zmq.Context()
+    subscriber = context.socket(zmq.SUB)
+    subscriber.connect("tcp://{0}:{1}".format(host, port))
+    subscriber.setsockopt_string(zmq.SUBSCRIBE, topic)
+    flags = 0
+    sc = SubscriberCallback(queueDict, logger, args.profiling_mode,
+                            labels=labels, dir_name=args.image_dir,
+                            display=args.display)
+    while True:
+        parts = subscriber.recv_multipart(flags=flags)
+        sc.callback(parts[0], parts[1], parts[2])
+
+
 def main(args):
     """Main method.
     """
@@ -436,13 +429,24 @@ def main(args):
     else:
         labels = None
 
-    # If user provides image_dir, create the directory if don't exists
-    if args.image_dir:
-        if not os.path.exists(args.image_dir):
-            os.mkdir(args.image_dir)
+    conf = {"endpoint": "localhost:2379",
+            "certFile": "",
+            "keyFile": "",
+            "trustFile": ""}
+    etcdCli = EtcdCli(conf)
+    visualizerConfig = etcdCli.GetConfig("/Visualizer/config")
+    jsonConfig = json.loads(visualizerConfig)
+    image_dir = args.image_dir
+    args.dev_mode = bool(strtobool(args.dev_mode))
+    args.profiling_mode = bool(strtobool(args.profiling_mode))
 
-    app_config = get_config()
-    topicsList = app_config['output_streams']
+    # If user provides image_dir, create the directory if don't exists
+    if image_dir:
+        if not os.path.exists(image_dir):
+            os.mkdir(image_dir)
+
+    topicsList = os.environ["SubTopics"].split(",")
+
     queueDict = {}
 
     for topic in topicsList:
@@ -450,88 +454,19 @@ def main(args):
 
     logger = get_logger(__name__)
 
-    args.dev_mode = bool(strtobool(args.dev_mode))
-    args.profiling_mode = bool(strtobool(args.profiling_mode))
-
-    if not args.dev_mode and args.cert_dir is None:
-        logger.error("Kindly Provide certificate directory(--cert_dir)"
+    if not args.dev_mode and jsonConfig["cert_path"] is None:
+        logger.error("Kindly Provide certificate directory in etcd config"
                      " when security mode is True")
         sys.exit(1)
 
-    # Check for the requirement of im_client
-    need_im_handle = False
-    im_client = None
-
-    if args.image_dir or args.display.lower() == 'true':
-        logger.debug("Requires IM client ")
-        need_im_handle = True
-    else:
-        logger.debug("IM client not required")
-
-    # Initilize image store client
-    if args.dev_mode:
-        if need_im_handle:
-            im_client = GrpcImageStoreClient(hostname=args.host)
-    else:
-        # Certificates
-        root_ca_cert = os.path.join(args.cert_dir, 'ca', 'ca_certificate.pem')
-        im_client_cert = os.path.join(args.cert_dir, 'imagestore',
-                                      'imagestore_client_certificate.pem')
-        im_client_key = os.path.join(args.cert_dir, 'imagestore',
-                                     'imagestore_client_key.pem')
-        db_cert = os.path.join(args.cert_dir, 'opcua',
-                               'opcua_client_certificate.der')
-        db_priv = os.path.join(args.cert_dir, 'opcua',
-                               'opcua_client_key.der')
-        db_trust = os.path.join(args.cert_dir, 'ca', 'ca_certificate.der')
-
-        logger.info("cert path is: {0}".format(args.cert_dir))
-
-        # Verify all certificates exist
-        assert_exists(args.cert_dir)
-        assert_exists(root_ca_cert)
-        assert_exists(im_client_cert)
-        assert_exists(im_client_key)
-        assert_exists(db_cert)
-        assert_exists(db_priv)
-        assert_exists(db_trust)
-        if need_im_handle:
-            im_client = GrpcImageStoreClient(im_client_cert, im_client_key,
-                                             root_ca_cert, hostname=args.host)
-
-    # Initialize IEI databus callback
-    dc = DatabusCallback(queueDict, im_client, logger, args.profiling_mode,
-                         labels=labels, dir_name=args.image_dir,
-                         display=args.display)
-
-    # Initalize IEI databus
-    if args.dev_mode:
-        ctx_config = {
-            'endpoint': 'opcua://{0}:{1}'.format(args.host, args.port),
-            'direction': 'SUB',
-            'certFile': "",
-            'privateFile': "",
-            'trustFile': ""
-        }
-    else:
-        ctx_config = {
-            'endpoint': 'opcua://{0}:{1}'.format(args.host, args.port),
-            'direction': 'SUB',
-            'certFile': db_cert,
-            'privateFile': db_priv,
-            'trustFile': db_trust
-        }
-
-    logger.info("ctx_config: {0}".format(ctx_config))
-    dbus = databus(logging.getLogger(__name__))
-    dbus.ContextCreate(ctx_config)
-    topicConfigs = []
-    for topic in topicsList:
-        topicConfigs.append({"ns": "streammanager",
-                             "name": topic,
-                             "dType": "string"})
-
-    dbus.Subscribe(topicConfigs, len(topicConfigs), 'START', dc.callback)
+    for topic in queueDict.keys():
+        _, endpoint = tuple(os.environ[topic + "_cfg"].split(","))
+        host, port = tuple(endpoint.split(":"))
+        subscribe_thread = threading.Thread(target=zmqSubscriber,
+                                            args=(queueDict, logger,
+                                                  jsonConfig, args,
+                                                  labels, topic, host, port))
+        subscribe_thread.start()
 
     if args.display.lower() == 'true':
 
@@ -654,7 +589,6 @@ def main(args):
             logger.exception('Error during execution:')
         finally:
             logger.exception('Destroying IEI databus context')
-            dbus.ContextDestroy()
             os._exit(1)
 
 

@@ -1,17 +1,6 @@
 # Intel Edge Insights Simple Visualizer
 Simple visualizer for the IEI platform.
 
-Pre-requisite for this visualizer is to have IEI installed on the target
-machine and the `dist_libs` installed in `/opt/intel/iei` directory. The
-`setup_iei.py` will automatically create the `dist_libs`. If IEI is run using
-sudo make build run, then the dist_libs can be created using the below
-command:
-
-```sh
-cd IEdgeInsights/docker_setup
-sudo make distlibs
-```
-
 ## Installation
 
 ### 1. Running natively (Works only on Ubuntu 18.04. Run as container on other OS)
@@ -26,6 +15,20 @@ sudo make distlibs
 
   ```sh
   $ ./install.sh
+  ```
+
+* Have etcd installed and running as a service:
+
+  To install etcd:
+
+  ```sh
+  $ sudo apt-get install etcd
+  ```
+
+  To run etcd:
+
+  ```sh
+  $ sudo service etcd start
   ```
 
 * Running `visualize.py`
@@ -46,18 +49,13 @@ sudo make distlibs
   export no_proxy=$no_proxy,<IP ADDRESS>
   ```
 
+  Have the Visualizer config put to etcd before running visualizer. Refer this
+  file [Etcd/README.md](../../Etcd/README.md)
+    
   Run the visualizer as follows:
 
-  1. In production mode (default mode):
-
     ```sh
-    python3.6 visualize.py -c IEdgeInsights/cert-tool/Certificates -host <IP_ADDRESS> -d <true/false> -i <image_dir>
-    ```
-
-  2. In developer mode:
-
-    ```sh
-    python3.6 visualize.py -host <IP_ADDRESS> -d <true/false> -i <image_dir> -D true
+    python3.6 visualize.py --img_dir <path-to-IMAGE_DIR>
     ```
 
 #### Using Labels
@@ -86,71 +84,36 @@ Assuming you saved the above JSON file as `labels.json`, run the visualizer
 as follows:
 
 ```sh
-python3.6 visualize.py -c IEdgeInsights/cert-tool/Certificates  -host <IP_ADDRESS> --labels labels.json -d <true/false> -i ./test
+python3.6 visualize.py --labels labels.json -i ./test -d <true/false> -i <image_dir> -D <true/false>
 ```
 
 #### Command Line Arguments
 Use the below command to know the usage of the script `visualize.py`.
 
-```
-   python3.6 visualize.py --help
+```sh
+  $ python3.6 visualize.py --help
 ```
 
 ### 2. Running as a docker container
 
 #### Steps to build and run
 
-* Building the image (it has to be done everytime the source code changes)
+* Visualizer can be run as a container along with other EIS containers from docker_setup folder using the following command:
 
   ```sh
-  $ sudo make build
+  $ sudo make build run
   ```
-
-* Running the container
 
   > **NOTE**:
-  > 1. The `IMAGE_DIR` argument here will override the value set in the [Makefile]
-  >    (./Makefile). If no `IMAGE_DIR` value is provided, the value set in the [Makefile]
-  >    (./Makefile) will be used
-  >    `IMAGE_DIR` in container mode should be present before passing it to the container as an argument.
-  >  2. Change `SECURE_VISUALIZE_ARGS` or `NON_SECURE_VISUALIZE_ARGS` as needed in [Makefile](./Makefile).
-  >  3. Change `PROFILING` to True in [Makefile](./Makefile) in case if you want to enable profiling.
-  >    Refer `Command Line Arguments` section under in this file to know the supported args for
-  >    visualizer app
-  >  4. The `DISPLAY_IMG` argument here will override the value set in the [Makefile]
-  >    (./Makefile). If no `DISPLAY_IMG` value is provided, the value is set to "true"
-
-  By default production mode will be enabled, hence IEI must run in secured mode for visualize app to work.
-  Below command will make the APP run in secured mode.
-
-  ```sh
-  $ sudo make run CERT_PATH=<absolute_path_to_the_certificates_dir> HOST=<system_ip_address> IMAGE_DIR=<absolute_directory_path_to_save_images> DISPLAY_IMG=true/false
-  ```
-
-* For running the APP in non secured mode, Kindly follow the below mentioned steps:
-
-  1. Open the Makefile present in current directory and replace $(SECURE_VISUALIZE_ARGS) to $(NON_SECURE_VISUALIZE_ARGS) for "docker run" commandline. Below code snippet explains how it should look after enabling Developement mode.
-
+  > 1. The admin has to make sure all the necessary config is set in etcd before starting the visualizer.
+  > 2. Run this command in terminal if you run into tkinter couldn't connect to display exception
+    
     ```sh
-    -it ia/visualizer:1.0 \
-      $(SECURE_VISUALIZE_ARGS)
+    $ xhost +
     ```
 
-    TO
-
-    ```sh
-    -it ia/visualizer:1.0 \
-    $(NON_SECURE_VISUALIZE_ARGS)
-    ```
-
-  2. Following this file modifcation execute the below command to make the container up in development mode.
-
-    ```sh
-    $ sudo make run  HOST=<system_ip_address> IMAGE_DIR=<absolute_directory_path_to_save_images>
-    ```
-
-> Note: The Visualizer will not work with time-series / point data if used with docker container approach.
-> For point data, use the bare-metal run to see the results printed in the terminal.
+    > Note: The Visualizer will not work with time-series / point data if used with docker container approach.
+    > For point data, use the bare-metal run to see the results printed in the terminal.
 
 * If one needs to remove the classified images on a periodic basis:
 

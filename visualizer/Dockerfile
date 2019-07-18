@@ -1,5 +1,5 @@
 ARG UBUNTU_IMAGE_VERSION
-FROM ubuntu:${UBUNTU_IMAGE_VERSION}
+FROM ubuntu:18.04
 
 ARG HOST_TIME_ZONE=""
 
@@ -30,7 +30,7 @@ RUN apt-get install -y python3-distutils
 
 RUN wget https://bootstrap.pypa.io/get-pip.py && \
     python3.6 get-pip.py
-ADD requirements.txt .
+ADD tools/visualizer/requirements.txt .
 RUN pip3 install -r requirements.txt
 
 RUN apt-get install -y python3-tk
@@ -41,8 +41,19 @@ RUN touch visualize.log && \
     chown ieiuser:ieiuser visualize.log &&  \
     chmod 777 visualize.log
 
-ADD source.sh .
+RUN apt-get -y install git
+ENV PY_ETCD3_VERSION cdc4c48bde88a795230a02aa574df84ed9ccfa52
+RUN git clone https://github.com/kragniz/python-etcd3 && \
+    cd python-etcd3 && \
+    git checkout ${PY_ETCD3_VERSION} && \
+    python3.6 setup.py install && \
+    cd .. && \
+    rm -rf python-etcd3
+
+ADD libs ./libs
+ENV PYTHONPATH /iei
+ADD tools/visualizer/source.sh .
 RUN ./source.sh
-ADD visualize.py .
+ADD tools/visualizer/visualize.py .
 
 ENTRYPOINT ["python3.6", "visualize.py"]
