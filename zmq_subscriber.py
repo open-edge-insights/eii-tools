@@ -55,7 +55,7 @@ def subscribe(subscriber, start, frame_count, topic):
     while True:
         data = subscriber.recv_multipart()
         topic = data[0].decode()
-        logging.info(topic)
+        #logging.info(topic)
         meta_data = json.loads(data[1])
         frame = data[2]
         frame = np.frombuffer(frame, dtype=np.uint8)
@@ -65,12 +65,12 @@ def subscribe(subscriber, start, frame_count, topic):
         else:
             frame = np.reshape(frame, (frame.shape))
             frame = cv2.imdecode(frame, 1)
-        logging.info(meta_data)
-    frame_count += 1
-    if time.time() - start >= 1:
-        logging.info("fps:{}".format(frame_count))
-        frame_count = 0
-        start = time.time()
+        #logging.info(meta_data)
+        frame_count += 1
+        if time.time() - start >= 1:
+            logging.info("fps:{}".format(frame_count))
+            frame_count = 0
+            start = time.time()
 
 
 def parse_args():
