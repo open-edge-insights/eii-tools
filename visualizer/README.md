@@ -84,7 +84,7 @@ Assuming you saved the above JSON file as `labels.json`, run the visualizer
 as follows:
 
 ```sh
-python3.6 visualize.py --labels labels.json -i ./test -d <true/false> -i <image_dir> -D <true/false>
+python3.6 visualize.py --labels labels.json -i ./test
 ```
 
 #### Command Line Arguments

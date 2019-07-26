@@ -336,12 +336,6 @@ def parse_args():
                     help='JSON file mapping the defect type to labels')
     ap.add_argument('-i', '--image_dir', default=None,
                     help='directory name to save the images')
-    ap.add_argument('-d', '--display', default='true',
-                    help='live preview of classified images(true/false)')
-    ap.add_argument('-D', '--dev_mode', default='false',
-                    help='dev_mode can be true or false')
-    ap.add_argument('-P', '--profiling_mode', default='false',
-                    help='profiling_mode can be true or false')
 
     return ap.parse_args()
 
@@ -407,9 +401,9 @@ def zmqSubscriber(queueDict, logger, jsonConfig, args, labels,
     subscriber.connect("tcp://{0}:{1}".format(host, port))
     subscriber.setsockopt_string(zmq.SUBSCRIBE, topic)
     flags = 0
-    sc = SubscriberCallback(queueDict, logger, args.profiling_mode,
+    sc = SubscriberCallback(queueDict, logger, jsonConfig["profiling"],
                             labels=labels, dir_name=args.image_dir,
-                            display=args.display)
+                            display=jsonConfig["display"])
     while True:
         parts = subscriber.recv_multipart(flags=flags)
         sc.callback(parts[0], parts[1], parts[2])
@@ -429,16 +423,15 @@ def main(args):
     else:
         labels = None
 
-    conf = {"endpoint": "localhost:2379",
-            "certFile": "",
+    conf = {"certFile": "",
             "keyFile": "",
             "trustFile": ""}
     etcdCli = EtcdCli(conf)
     visualizerConfig = etcdCli.GetConfig("/Visualizer/config")
     jsonConfig = json.loads(visualizerConfig)
     image_dir = args.image_dir
-    args.dev_mode = bool(strtobool(args.dev_mode))
-    args.profiling_mode = bool(strtobool(args.profiling_mode))
+    dev_mode = bool(strtobool(jsonConfig["dev_mode"]))
+    profiling_mode = bool(strtobool(jsonConfig["profiling"]))
 
     # If user provides image_dir, create the directory if don't exists
     if image_dir:
@@ -454,7 +447,7 @@ def main(args):
 
     logger = get_logger(__name__)
 
-    if not args.dev_mode and jsonConfig["cert_path"] is None:
+    if not dev_mode and jsonConfig["cert_path"] is None:
         logger.error("Kindly Provide certificate directory in etcd config"
                      " when security mode is True")
         sys.exit(1)
@@ -468,7 +461,7 @@ def main(args):
                                                   labels, topic, host, port))
         subscribe_thread.start()
 
-    if args.display.lower() == 'true':
+    if jsonConfig["display"].lower() == 'true':
 
         try:
             rootWin = Tk()
