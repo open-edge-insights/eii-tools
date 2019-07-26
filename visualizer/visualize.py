@@ -75,23 +75,22 @@ class SubscriberCallback:
         :type: dict
         """
         for key in self.topicQueueDict:
-            if (key == topic.decode("utf-8")):
+            if (key == topic):
                 try:
                     self.topicQueueDict[key].put_nowait(frame)
                 except queue.Full:
                     self.logger.error("Dropping frames as the queue is full")
 
-    def draw_defect(self, topic, msg, blob):
+    def draw_defect(self, topic, results, blob):
         """Identify the defects and draw boxes on the frames
 
         :param topic: Topic the message was published on
         :type: str
-        :param msg: Message received on the given topic (JSON blob)
+        :param results: Message received on the given topic (JSON blob)
         :type: str
         """
-        self.logger.info(f'Received message: {msg}')
-        results = json.loads(msg)
-
+        self.logger.info(f'Received message: {results}')
+        
         height = int(results['height'])
         width = int(results['width'])
         channels = int(results['channel'])
@@ -405,8 +404,11 @@ def zmqSubscriber(queueDict, logger, jsonConfig, args, labels,
                             labels=labels, dir_name=args.image_dir,
                             display=jsonConfig["display"])
     while True:
-        parts = subscriber.recv_multipart(flags=flags)
-        sc.callback(parts[0], parts[1], parts[2])
+        msg = subscriber.recv_multipart()
+        topic = msg[0].decode()
+        metadata = json.loads(msg[1].decode())
+        frame = msg[2]
+        sc.callback(topic, metadata, frame)
 
 
 def main(args):
