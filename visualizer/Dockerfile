@@ -1,9 +1,11 @@
-ARG UBUNTU_IMAGE_VERSION
-FROM ubuntu:18.04
+# Dockerfile for Visualizer
+ARG IEI_VERSION
+FROM ia_pybase:$IEI_VERSION
+LABEL description="Visualizer image"
 
 ARG HOST_TIME_ZONE=""
 
-WORKDIR /iei
+WORKDIR /IEI
 
 # Setting timezone inside the container
 RUN echo "$HOST_TIME_ZONE" >/etc/timezone
@@ -16,24 +18,14 @@ RUN apt-get install -y tzdata && \
 # Installing dependencies
 RUN apt-get install -y libmbedtls-dev \
                        build-essential \
-                       pkg-config \
-                       wget \
                        libsm6 libxext6 libxrender-dev
-
-RUN apt-get install -y software-properties-common
-RUN add-apt-repository ppa:deadsnakes/ppa
-RUN apt-get update
-RUN apt-get install -y python3.6 python3.6-dev wget
-
-# Needed for only ubuntu 18.04
-RUN apt-get install -y python3-distutils
 
 RUN wget https://bootstrap.pypa.io/get-pip.py && \
     python3.6 get-pip.py
 ADD tools/visualizer/requirements.txt .
 RUN pip3 install -r requirements.txt
 
-RUN apt-get install -y python3-tk
+RUN apt-get install -y python3.6-tk
 
 RUN adduser --quiet --disabled-password ieiuser
 
@@ -50,8 +42,9 @@ RUN git clone https://github.com/kragniz/python-etcd3 && \
     cd .. && \
     rm -rf python-etcd3
 
-ADD libs ./libs
-ENV PYTHONPATH /iei
+ENV PYTHONPATH /IEI/
+ENV LD_LIBRARY_PATH /usr/local/lib
+ADD libs/ ./libs
 ADD tools/visualizer/source.sh .
 RUN ./source.sh
 ADD tools/visualizer/visualize.py .

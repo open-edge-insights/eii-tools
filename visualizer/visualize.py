@@ -15,6 +15,7 @@ from PIL import Image, ImageTk
 import threading
 import zmq
 from libs.ConfigManager.etcd.py.etcd_client import EtcdCli
+import eis.msgbus as mb
 
 
 class SubscriberCallback:
@@ -90,7 +91,7 @@ class SubscriberCallback:
         :type: str
         """
         self.logger.info(f'Received message: {results}')
-        
+
         height = int(results['height'])
         width = int(results['width'])
         channels = int(results['channel'])
@@ -113,6 +114,7 @@ class SubscriberCallback:
             frame = np.reshape(frame, (height, width, channels))
 
         # Draw defects
+        results['defects'] = json.loads(results['defects'])
         for d in results['defects']:
             # Get tuples for top-left and bottom-right coordinates
             tl = tuple(d['tl'])
@@ -144,6 +146,7 @@ class SubscriberCallback:
 
         # Display information about frame
         (dx, dy) = (20, 10)
+        results['display_info'] = json.loads(results['display_info'])
         for d_i in results['display_info']:
             # Get priority
             priority = d_i['priority']
@@ -164,17 +167,16 @@ class SubscriberCallback:
                             0.5, (0, 0, 255), 1, cv2.LINE_AA)
 
         if self.dir_name:
-            self.save_image(topic, msg, frame)
+            self.save_image(topic, results, frame)
 
         if self.display.lower() == 'true':
             self.queue_publish(topic, frame)
         else:
-            self.logger.info(f'Classifier_results: {msg}')
+            self.logger.info(f'Classifier_results: {results}')
 
     def save_image(self, topic, msg, frame):
-        results = json.loads(msg)
-        img_handle = results['img_handle']
-        if results['defects']:
+        img_handle = msg['img_handle']
+        if msg['defects']:
             tag = 'bad'
         else:
             tag = 'good'
@@ -359,13 +361,19 @@ def get_logger(name):
     base_log = os.path.join(
                os.path.join(os.path.dirname(os.path.realpath(__file__)),
                             'visualize.log'))
-    # Do basic configuration of logging (just for stdout config)
-    logging.basicConfig(format=fmt_str, level=logging.DEBUG)
 
-    logger = logging.getLogger("visualize")
+    logger = logging.getLogger('visualizer')
+    logger.setLevel(logging.INFO)
+
+    # Do basic configuration of logging (just for stdout config)
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setLevel(logging.INFO)
+    formatter = logging.Formatter(fmt_str)
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
 
     fh = logging.FileHandler(base_log)
-    fh.setLevel(logging.DEBUG)
+    fh.setLevel(logging.INFO)
     formatter = logging.Formatter(fmt_str)
     fh.setFormatter(formatter)
     logger.addHandler(fh)
@@ -389,26 +397,23 @@ def get_logger(name):
 #         topRoot.update()
 
 
-def zmqSubscriber(queueDict, logger, jsonConfig, args, labels,
-                  topic, host, port):
+def zmqSubscriber(config, queueDict, logger, jsonConfig, args, labels,
+                  topic):
     """
     zmqSubscriber is the ZeroMQ callback to
     subscribe to classified results
     """
-    context = zmq.Context()
-    subscriber = context.socket(zmq.SUB)
-    subscriber.connect("tcp://{0}:{1}".format(host, port))
-    subscriber.setsockopt_string(zmq.SUBSCRIBE, topic)
-    flags = 0
+    logger.debug('Initializing message bus context')
+    msgbus = mb.MsgbusContext(config)
+
+    logger.debug(f'[INFO] Initializing subscriber for topic \'{topic}\'')
+    subscriber = msgbus.new_subscriber(topic)
     sc = SubscriberCallback(queueDict, logger, jsonConfig["profiling"],
                             labels=labels, dir_name=args.image_dir,
                             display=jsonConfig["display"])
     while True:
-        msg = subscriber.recv_multipart()
-        topic = msg[0].decode()
-        metadata = json.loads(msg[1].decode())
-        frame = msg[2]
-        sc.callback(topic, metadata, frame)
+        meta_data, frame = subscriber.recv()
+        sc.callback(topic, meta_data, frame)
 
 
 def main(args):
@@ -455,12 +460,27 @@ def main(args):
         sys.exit(1)
 
     for topic in queueDict.keys():
-        _, endpoint = tuple(os.environ[topic + "_cfg"].split(","))
-        host, port = tuple(endpoint.split(":"))
+        mode, endpoint = os.environ[topic + "_cfg"].split(",")
+
+        if mode == "zmq_tcp":
+            host, port = endpoint.split(":")
+            config = {
+                        "type": mode,
+                        topic: {
+                            "host": host,
+                            "port": int(port)
+                        }
+                     }
+        elif mode == "zmq_ipc":
+            config = {
+                        "type": mode,
+                        "socket_dir": endpoint
+                     }
+
         subscribe_thread = threading.Thread(target=zmqSubscriber,
-                                            args=(queueDict, logger,
+                                            args=(config, queueDict, logger,
                                                   jsonConfig, args,
-                                                  labels, topic, host, port))
+                                                  labels, topic))
         subscribe_thread.start()
 
     if jsonConfig["display"].lower() == 'true':
