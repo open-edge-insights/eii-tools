@@ -95,12 +95,11 @@ class SubscriberCallback:
         height = int(results['height'])
         width = int(results['width'])
         channels = int(results['channel'])
+        encoding = None
 
-        if 'encoding' in results:
-            encoding = results['encoding']
-        else:
-            encoding = None
-
+        if 'encoding_type' and 'encoding_level' in results:
+            encoding = { "type" : results['encoding_type'],
+                         "level" : results['encoding_level']}
         # Convert to Numpy array and reshape to frame
         self.logger.info('Preparing frame for visualization')
         frame = np.frombuffer(blob, dtype=np.uint8)
@@ -111,60 +110,63 @@ class SubscriberCallback:
             except cv2.error as ex:
                 self.logger.error("frame: {}, exception: {}".format(frame, ex))
         else:
+            self.logger.info("Encoding not enabled...")
             frame = np.reshape(frame, (height, width, channels))
 
         # Draw defects
-        results['defects'] = json.loads(results['defects'])
-        for d in results['defects']:
-            # Get tuples for top-left and bottom-right coordinates
-            tl = tuple(d['tl'])
-            br = tuple(d['br'])
+        if 'defects' in results:
+            results['defects'] = json.loads(results['defects'])
+            for d in results['defects']:
+                # Get tuples for top-left and bottom-right coordinates
+                tl = tuple(d['tl'])
+                br = tuple(d['br'])
 
-            # Draw bounding box
-            cv2.rectangle(frame, tl, br, self.bad_color, 2)
+                # Draw bounding box
+                cv2.rectangle(frame, tl, br, self.bad_color, 2)
 
-            # Draw labels for defects if given the mapping
-            if self.labels is not None:
-                # Position of the text below the bounding box
-                pos = (tl[0], br[1] + 20)
+                # Draw labels for defects if given the mapping
+                if self.labels is not None:
+                    # Position of the text below the bounding box
+                    pos = (tl[0], br[1] + 20)
 
-                # The label is the "type" key of the defect, which is converted
-                # to a string for getting from the labels
-                label = self.labels[str(d['type'])]
+                    # The label is the "type" key of the defect, which is converted
+                    # to a string for getting from the labels
+                    label = self.labels[str(d['type'])]
 
-                cv2.putText(frame, label, pos, cv2.FONT_HERSHEY_DUPLEX,
-                            0.5, self.bad_color, 2, cv2.LINE_AA)
+                    cv2.putText(frame, label, pos, cv2.FONT_HERSHEY_DUPLEX,
+                                0.5, self.bad_color, 2, cv2.LINE_AA)
 
-        # Draw border around frame if has defects or no defects
-        if results['defects']:
-            outline_color = self.bad_color
-        else:
-            outline_color = self.good_color
+            # Draw border around frame if has defects or no defects
+            if results['defects']:
+                outline_color = self.bad_color
+            else:
+                outline_color = self.good_color
 
-        frame = cv2.copyMakeBorder(frame, 5, 5, 5, 5, cv2.BORDER_CONSTANT,
-                                   value=outline_color)
+            frame = cv2.copyMakeBorder(frame, 5, 5, 5, 5, cv2.BORDER_CONSTANT,
+                                    value=outline_color)
 
         # Display information about frame
         (dx, dy) = (20, 10)
-        results['display_info'] = json.loads(results['display_info'])
-        for d_i in results['display_info']:
-            # Get priority
-            priority = d_i['priority']
-            info = d_i['info']
-            dy = dy + 10
+        if 'display_info' in results:
+            results['display_info'] = json.loads(results['display_info'])
+            for d_i in results['display_info']:
+                # Get priority
+                priority = d_i['priority']
+                info = d_i['info']
+                dy = dy + 10
 
-            #  LOW
-            if priority == 0:
-                cv2.putText(frame, info, (dx, dy), cv2.FONT_HERSHEY_DUPLEX,
-                            0.5, (0, 255, 0), 1, cv2.LINE_AA)
-            #  MEDIUM
-            if priority == 1:
-                cv2.putText(frame, info, (dx, dy), cv2.FONT_HERSHEY_DUPLEX,
-                            0.5, (0, 150, 170), 1, cv2.LINE_AA)
-            #  HIGH
-            if priority == 2:
-                cv2.putText(frame, info, (dx, dy), cv2.FONT_HERSHEY_DUPLEX,
-                            0.5, (0, 0, 255), 1, cv2.LINE_AA)
+                #  LOW
+                if priority == 0:
+                    cv2.putText(frame, info, (dx, dy), cv2.FONT_HERSHEY_DUPLEX,
+                                0.5, (0, 255, 0), 1, cv2.LINE_AA)
+                #  MEDIUM
+                if priority == 1:
+                    cv2.putText(frame, info, (dx, dy), cv2.FONT_HERSHEY_DUPLEX,
+                                0.5, (0, 150, 170), 1, cv2.LINE_AA)
+                #  HIGH
+                if priority == 2:
+                    cv2.putText(frame, info, (dx, dy), cv2.FONT_HERSHEY_DUPLEX,
+                                0.5, (0, 0, 255), 1, cv2.LINE_AA)
 
         if self.dir_name:
             self.save_image(topic, results, frame)
@@ -176,10 +178,11 @@ class SubscriberCallback:
 
     def save_image(self, topic, msg, frame):
         img_handle = msg['img_handle']
-        if msg['defects']:
-            tag = 'bad'
-        else:
-            tag = 'good'
+        if 'defects' in msg:
+            if msg['defects']:
+                tag = 'bad'
+            else:
+                tag = 'good'
         imgname = tag + '_' + img_handle + ".png"
         cv2.imwrite(os.path.join(self.dir_name, imgname),
                     frame,
