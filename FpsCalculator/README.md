@@ -34,17 +34,18 @@ This module calculates the FPS of any EIS modules based on the stream published 
 4. Run this command from current directory to set PYTHONPATH environment variable
 
     ```sh
-        export PYTHONPATH="../../:../../ImageStore/protobuff:../../ImageStore/protobuff/py/:../../DataAgent/da_grpc/protobuff/py:../../DataAgent/da_grpc/protobuff/py/pb_internal:../../DataBusAbstraction/py/:../../DataBusAbstraction/"
+        export PYTHONPATH="../../:../../DataBusAbstraction/py/:../../DataBusAbstraction/:../../libs/EISMessageBus"
+        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
     ```
 
 ## Running FPS calculator
 
-1. Set environment variables accordingly in Makefile 
+1. Set environment variables accordingly in [config.json](config.json)
 
     Change values of SUBSCRIBE_STREAM and SUBSCRIBE_BUS to required stream and message bus.
-    Currently supported streams for StreamSubLib:
-    1. stream1
-    2. stream1_results
+    Currently supported streams for EISMessagebus:
+    1. camera1_stream
+    2. camera1_stream_results
     3. cam_serial1_results (for multi-cam only)
     4. cam_serial2_results (for multi-cam only)
     5. cam_serial3_results (for multi-cam only)
@@ -54,11 +55,17 @@ This module calculates the FPS of any EIS modules based on the stream published 
 
     Currently supported streams for OPCUA:
     1. stream1_results
+    2. cam_serial1_results (for multi-cam only)
+    3. cam_serial2_results (for multi-cam only)
+    4. cam_serial3_results (for multi-cam only)
+    5. cam_serial4_results (for multi-cam only)
+    6. cam_serial5_results (for multi-cam only)
+    7. cam_serial6_results (for multi-cam only)
 
-2. Set the required output stream/streams in config.json file.
+2. Set the required output stream/streams in [config.json](config.json) file.
 
 3. Run the Makefile to start the FPS Calculator using this command
 
     ```sh
-        make run
+        python3.6 fps_calculator.py
     ```

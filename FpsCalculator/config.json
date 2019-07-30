@@ -1,3 +1,12 @@
 {
-    "output_stream": ["stream1_results"]
+    "output_stream": ["camera1_stream_results"],
+    "dev_mode" : "False",
+    "subscribe_bus" : "eismessagebus",
+    "host" : "localhost",
+    "port" : 65013,
+    "total_number_of_frames" : 1000,
+    "export_to_csv" : "True",
+    "server_cert" : "/etc/ssl/opcua/opcua_server_certificate.der",
+    "client_cert" : "/etc/ssl/opcua/opcua_server_key.der",
+    "ca_cert" : "/etc/ssl/ca/ca_certificate.der"
 }

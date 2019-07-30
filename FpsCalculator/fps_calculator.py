@@ -33,7 +33,7 @@ from xlwt import Workbook
 from distutils.util import strtobool
 # IMPORT the library to read from IES
 from DataBus import databus
-from StreamSubLib.StreamSubLib import StreamSubLib
+import eis.msgbus as mb
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s : %(levelname)s : \
@@ -58,8 +58,8 @@ class FpsCalculator:
     """ A sample app to check FPS of
     individual modules. """
 
-    def __init__(self, devMode, subscribe_stream, subscribe_bus,
-                 db_cert, db_priv, db_trust, number_of_streams,
+    def __init__(self, devMode, subscribe_stream, subscribe_bus, host, port,
+                 db_cert, db_priv, db_trust,
                  total_number_of_frames, export_to_csv):
         self.devMode = devMode
         self.subscribe_stream = subscribe_stream
@@ -67,9 +67,10 @@ class FpsCalculator:
         self.db_cert = db_cert
         self.db_priv = db_priv
         self.db_trust = db_trust
-        self.number_of_streams = number_of_streams
         self.total_number_of_frames = total_number_of_frames
         self.export_to_csv = export_to_csv
+        self.host = host
+        self.port = port
         if self.export_to_csv:
             self.wb = Workbook()
             self.sheet1 = self.wb.add_sheet('FPS Results')
@@ -96,14 +97,21 @@ class FpsCalculator:
                     }
                 self.ieidbus = databus(logger)
                 self.ieidbus.ContextCreate(contextConfig)
-
-            elif self.subscribe_bus == 'streamsublib':
-                self.strmSubscrbr = StreamSubLib()
-                # Pass the mode
-                self.strmSubscrbr.init(dev_mode=devMode)
         except Exception as e:
             logger.error(e)
             sys.exit(1)
+
+    def eisSubscriber(self, topic, callback):
+        global startTime
+        config = {"type": "zmq_tcp", topic:
+                  {"host": self.host, "port": self.port}}
+        self.msgbus = mb.MsgbusContext(config)
+        self.subscriber = self.msgbus.new_subscriber(topic)
+        startTime = time.time()
+        while True:
+            # Discarding both the meta-data & frame
+            _, _ = self.subscriber.recv()
+            callback(topic)
 
     def run(self):
         global startTime
@@ -115,22 +123,20 @@ class FpsCalculator:
             startTime = time.time()
             self.ieidbus.Subscribe(topicConfigs, len(topicConfigs),
                                    "START", self.cbFunc)
-        elif self.subscribe_bus == 'streamsublib':
-            if self.number_of_streams is not None \
-               and int(self.number_of_streams) > 1:
-                for i in range(int(self.number_of_streams)):
+        elif self.subscribe_bus == 'eismessagebus':
+            if len(self.subscribe_stream) > 1:
+                for i in range(len(self.subscribe_stream)):
                     stream_thread = \
-                        threading.Thread(target=self.strmSubscrbr.Subscribe,
+                        threading.Thread(target=self.eisSubscriber,
                                          args=[self.subscribe_stream[i],
                                                self.calculate_fps])
-                    startTime = time.time()
                     stream_thread.start()
             else:
                 startTime = time.time()
-                self.strmSubscrbr.Subscribe(self.subscribe_stream[0],
-                                            self.calculate_fps)
+                self.eisSubscriber(self.subscribe_stream[0],
+                                   callback=self.calculate_fps)
 
-    def calculate_fps(self, pointData):
+    def calculate_fps(self, topic):
         """ Calculates the FPS of required module"""
         global current_FPS
         current_FPS += 1
@@ -143,9 +149,7 @@ class FpsCalculator:
             total_iterations += 1
             total_FPS += current_FPS
             average_FPS = total_FPS/total_iterations
-            influxPoint = json.loads(pointData)
-            current_stream = influxPoint.get('Measurement')
-            logger.info('Current FPS value for {0}: {1}'.format(current_stream,
+            logger.info('Current FPS value for {0}: {1}'.format(topic,
                         current_FPS))
             if total_frames_received >= int(self.total_number_of_frames):
                 if self.export_to_csv:
@@ -165,55 +169,30 @@ class FpsCalculator:
     def cbFunc(self, topic, msg):
         # Uncomment below line to display classifier results
         # logger.info("Msg: {} received on topic: {}".format(msg, topic))
-        self.calculate_fps(msg)
-
-
-def parse_args():
-    """Parse command line arguments"""
-
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument('--dev-mode', dest='dev_mode',
-                        default='false',
-                        help='run in secured or non-secured mode')
-    parser.add_argument('--subscribe-bus', dest='subscribe_bus',
-                        help='message bus to subscribe')
-    parser.add_argument('--certFile', dest='db_cert',
-                        help='cert file')
-    parser.add_argument('--privateFile', dest='db_priv',
-                        help='private file')
-    parser.add_argument('--trustFile', dest='db_trust',
-                        help='trust file')
-    parser.add_argument('--number-of-streams', dest='number_of_streams',
-                        help='number of streams')
-    parser.add_argument('--total-frames', dest='total_number_of_frames',
-                        help='total number of streams')
-    parser.add_argument('--export-csv', dest='export_to_csv',
-                        help='export result to csv file')
-    return parser.parse_args()
+        self.calculate_fps(topic)
 
 
 if __name__ == "__main__":
 
-    args = parse_args()
-
-    dev_mode = bool(strtobool(args.dev_mode))
-    export_to_csv = bool(strtobool(args.export_to_csv))
-    stream_dict = get_config()
-    subscribe_stream = stream_dict['output_stream']
-    subscribe_bus = args.subscribe_bus
-    db_cert = args.db_cert
-    db_priv = args.db_priv
-    db_trust = args.db_trust
-    number_of_streams = args.number_of_streams
-    total_number_of_frames = int(args.total_number_of_frames)
+    config_dict = get_config()
+    subscribe_stream = config_dict['output_stream']
+    dev_mode = bool(strtobool(config_dict['dev_mode']))
+    export_to_csv = bool(strtobool(config_dict['export_to_csv']))
+    subscribe_bus = config_dict['subscribe_bus']
+    db_cert = config_dict['server_cert']
+    db_priv = config_dict['client_cert']
+    db_trust = config_dict['ca_cert']
+    total_number_of_frames = int(config_dict['total_number_of_frames'])
+    host = config_dict['host']
+    port = config_dict['port']
     fps_app = FpsCalculator(dev_mode,
                             subscribe_stream,
                             subscribe_bus,
+                            host,
+                            port,
                             db_cert,
                             db_priv,
                             db_trust,
-                            number_of_streams,
                             total_number_of_frames,
                             export_to_csv)
     fps_app.run()
