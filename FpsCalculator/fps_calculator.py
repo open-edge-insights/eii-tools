@@ -33,6 +33,8 @@ from xlwt import Workbook
 from distutils.util import strtobool
 # IMPORT the library to read from IES
 from DataBus import databus
+from libs.common.py.util import get_topics_from_env,\
+                                get_messagebus_config_from_env
 import eis.msgbus as mb
 
 logging.basicConfig(level=logging.DEBUG,
@@ -58,28 +60,28 @@ class FpsCalculator:
     """ A sample app to check FPS of
     individual modules. """
 
-    def __init__(self, devMode, subscribe_stream, subscribe_bus, host, port,
-                 db_cert, db_priv, db_trust,
-                 total_number_of_frames, export_to_csv):
+    def __init__(self, devMode, topics,
+                 db_cert, db_priv,
+                 db_trust, total_number_of_frames, export_to_csv):
         self.devMode = devMode
-        self.subscribe_stream = subscribe_stream
-        self.subscribe_bus = subscribe_bus
+        self.topics = topics
         self.db_cert = db_cert
         self.db_priv = db_priv
         self.db_trust = db_trust
         self.total_number_of_frames = total_number_of_frames
         self.export_to_csv = export_to_csv
-        self.host = host
-        self.port = port
         if self.export_to_csv:
             self.wb = Workbook()
             self.sheet1 = self.wb.add_sheet('FPS Results')
 
         try:
-            if self.subscribe_bus == 'opcua':
+            topic_config = get_messagebus_config_from_env(topic, "sub")
+            if topic_config['type'] == 'opcua':
                 if self.devMode:
                     contextConfig = {
-                        'endpoint': 'opcua://localhost:4840',
+                        'endpoint': '{}://{}:{}'.format(topic_config['type'],
+                                                        topic_config['host'],
+                                                        topic_config['port']),
                         'direction': 'SUB',
                         'name': 'StreamManager',
                         'certFile': "",
@@ -88,7 +90,9 @@ class FpsCalculator:
                         }
                 else:
                     contextConfig = {
-                        'endpoint': 'opcua://localhost:4840',
+                        'endpoint': '{}://{}:{}'.format(topic_config['type'],
+                                                        topic_config['host'],
+                                                        topic_config['port']),
                         'direction': 'SUB',
                         'name': 'StreamManager',
                         'certFile': db_cert,
@@ -103,8 +107,7 @@ class FpsCalculator:
 
     def eisSubscriber(self, topic, callback):
         global startTime
-        config = {"type": "zmq_tcp", topic:
-                  {"host": self.host, "port": self.port}}
+        config = get_messagebus_config_from_env(topic, "sub")
         self.msgbus = mb.MsgbusContext(config)
         self.subscriber = self.msgbus.new_subscriber(topic)
         startTime = time.time()
@@ -113,27 +116,28 @@ class FpsCalculator:
             _, _ = self.subscriber.recv()
             callback(topic)
 
-    def run(self):
+    def run(self, topic):
         global startTime
-        if self.subscribe_bus == 'opcua':
+        config = get_messagebus_config_from_env(topic, "sub")
+        if config['type'] == 'opcua':
             topicConfigs = []
-            for topic in self.subscribe_stream:
+            for topic in self.topics:
                 topicConfigs.append({"ns": "streammanager",
                                      "name": topic, "dType": "string"})
             startTime = time.time()
             self.ieidbus.Subscribe(topicConfigs, len(topicConfigs),
                                    "START", self.cbFunc)
-        elif self.subscribe_bus == 'eismessagebus':
-            if len(self.subscribe_stream) > 1:
-                for i in range(len(self.subscribe_stream)):
+        elif 'zmq' in config['type']:
+            if len(self.topics) > 1:
+                for i in range(len(self.topics)):
                     stream_thread = \
                         threading.Thread(target=self.eisSubscriber,
-                                         args=[self.subscribe_stream[i],
+                                         args=[self.topics[i],
                                                self.calculate_fps])
                     stream_thread.start()
             else:
                 startTime = time.time()
-                self.eisSubscriber(self.subscribe_stream[0],
+                self.eisSubscriber(self.topics[0],
                                    callback=self.calculate_fps)
 
     def calculate_fps(self, topic):
@@ -175,24 +179,21 @@ class FpsCalculator:
 if __name__ == "__main__":
 
     config_dict = get_config()
-    subscribe_stream = config_dict['output_stream']
+    topics = config_dict['SubTopics']
+    # Setting configs of topics in environment
+    for topic in topics:
+        os.environ[topic+'_cfg'] = config_dict[topic+'_cfg']
     dev_mode = bool(strtobool(config_dict['dev_mode']))
     export_to_csv = bool(strtobool(config_dict['export_to_csv']))
-    subscribe_bus = config_dict['subscribe_bus']
     db_cert = config_dict['server_cert']
     db_priv = config_dict['client_cert']
     db_trust = config_dict['ca_cert']
     total_number_of_frames = int(config_dict['total_number_of_frames'])
-    host = config_dict['host']
-    port = config_dict['port']
     fps_app = FpsCalculator(dev_mode,
-                            subscribe_stream,
-                            subscribe_bus,
-                            host,
-                            port,
+                            topics,
                             db_cert,
                             db_priv,
                             db_trust,
                             total_number_of_frames,
                             export_to_csv)
-    fps_app.run()
+    fps_app.run(topic)

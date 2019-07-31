@@ -62,7 +62,7 @@ This module calculates the FPS of any EIS modules based on the stream published 
     6. cam_serial5_results (for multi-cam only)
     7. cam_serial6_results (for multi-cam only)
 
-2. Set the required output stream/streams in [config.json](config.json) file.
+2. Set the required output stream/streams and appropriate stream config in [config.json](config.json) file.
 
 3. Run the Makefile to start the FPS Calculator using this command
 

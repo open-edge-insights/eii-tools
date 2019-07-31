@@ -15,6 +15,8 @@ from PIL import Image, ImageTk
 import threading
 import zmq
 from libs.ConfigManager.etcd.py.etcd_client import EtcdCli
+from libs.common.py.util import get_topics_from_env,\
+                                get_messagebus_config_from_env
 import eis.msgbus as mb
 
 
@@ -98,8 +100,8 @@ class SubscriberCallback:
         encoding = None
 
         if 'encoding_type' and 'encoding_level' in results:
-            encoding = { "type" : results['encoding_type'],
-                         "level" : results['encoding_level']}
+            encoding = {"type": results['encoding_type'],
+                        "level": results['encoding_level']}
         # Convert to Numpy array and reshape to frame
         self.logger.info('Preparing frame for visualization')
         frame = np.frombuffer(blob, dtype=np.uint8)
@@ -129,8 +131,8 @@ class SubscriberCallback:
                     # Position of the text below the bounding box
                     pos = (tl[0], br[1] + 20)
 
-                    # The label is the "type" key of the defect, which is converted
-                    # to a string for getting from the labels
+                    # The label is the "type" key of the defect, which
+                    #  is converted to a string for getting from the labels
                     label = self.labels[str(d['type'])]
 
                     cv2.putText(frame, label, pos, cv2.FONT_HERSHEY_DUPLEX,
@@ -143,7 +145,7 @@ class SubscriberCallback:
                 outline_color = self.good_color
 
             frame = cv2.copyMakeBorder(frame, 5, 5, 5, 5, cv2.BORDER_CONSTANT,
-                                    value=outline_color)
+                                       value=outline_color)
 
         # Display information about frame
         (dx, dy) = (20, 10)
@@ -448,7 +450,7 @@ def main(args):
         if not os.path.exists(image_dir):
             os.mkdir(image_dir)
 
-    topicsList = os.environ["SubTopics"].split(",")
+    topicsList = get_topics_from_env("sub")
 
     queueDict = {}
 
@@ -463,23 +465,7 @@ def main(args):
         sys.exit(1)
 
     for topic in queueDict.keys():
-        mode, endpoint = os.environ[topic + "_cfg"].split(",")
-
-        if mode == "zmq_tcp":
-            host, port = endpoint.split(":")
-            config = {
-                        "type": mode,
-                        topic: {
-                            "host": host,
-                            "port": int(port)
-                        }
-                     }
-        elif mode == "zmq_ipc":
-            config = {
-                        "type": mode,
-                        "socket_dir": endpoint
-                     }
-
+        config = get_messagebus_config_from_env(topic, "sub")
         subscribe_thread = threading.Thread(target=zmqSubscriber,
                                             args=(config, queueDict, logger,
                                                   jsonConfig, args,
