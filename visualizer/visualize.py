@@ -13,7 +13,6 @@ from distutils.util import strtobool
 from tkinter import *
 from PIL import Image, ImageTk
 import threading
-import zmq
 from libs.ConfigManager.etcd.py.etcd_client import EtcdCli
 from libs.common.py.util import get_topics_from_env,\
                                 get_messagebus_config_from_env
@@ -182,12 +181,10 @@ class SubscriberCallback:
         img_handle = msg['img_handle']
         if 'defects' in msg:
             if msg['defects']:
-                tag = 'bad'
+                tag = 'bad_'
             else:
-                tag = 'good'
-            imgname = tag + '_' + img_handle + ".png"
-        else:
-            imgname = img_handle + ".png" # dummy classification usecase
+                tag = 'good_'
+        imgname = tag + img_handle + ".png"
         cv2.imwrite(os.path.join(self.dir_name, imgname),
                     frame,
                     [cv2.IMWRITE_PNG_COMPRESSION, 3])
