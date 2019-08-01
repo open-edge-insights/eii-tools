@@ -14,8 +14,7 @@ from tkinter import *
 from PIL import Image, ImageTk
 import threading
 from libs.ConfigManager import ConfigManager
-from libs.common.py.util import get_topics_from_env,\
-                                get_messagebus_config_from_env
+from libs.common.py.util import Util
 import eis.msgbus as mb
 
 
@@ -401,18 +400,19 @@ def get_logger(name):
 #         topRoot.update()
 
 
-def zmqSubscriber(config, queueDict, logger, jsonConfig, args, labels,
-                  topic):
+def zmqSubscriber(msgbus_cfg, queueDict, logger, jsonConfig, args, labels,
+                  topic, profiling_mode):
     """
     zmqSubscriber is the ZeroMQ callback to
     subscribe to classified results
     """
+
     logger.debug('Initializing message bus context')
-    msgbus = mb.MsgbusContext(config)
+    msgbus = mb.MsgbusContext(msgbus_cfg)
 
     logger.debug(f'[INFO] Initializing subscriber for topic \'{topic}\'')
     subscriber = msgbus.new_subscriber(topic)
-    sc = SubscriberCallback(queueDict, logger, jsonConfig["profiling"],
+    sc = SubscriberCallback(queueDict, logger, profiling_mode,
                             labels=labels, dir_name=args.image_dir,
                             display=jsonConfig["display"])
     while True:
@@ -424,6 +424,8 @@ def main(args):
     """Main method.
     """
     # WIndow name to be used later
+    logger = get_logger(__name__)
+    app_name = os.environ["AppName"]
     window_name = 'EIS Visualizer App'
 
     # If user provides labels, read them in
@@ -438,26 +440,25 @@ def main(args):
             "keyFile": "",
             "trustFile": ""}
     cfg_mgr = ConfigManager()
-    etcdCli = cfg_mgr.get_config_client("etcd", conf)
-    visualizerConfig = etcdCli.GetConfig("/Visualizer/config")
+    config_client = cfg_mgr.get_config_client("etcd", conf)
+    visualizerConfig = config_client.GetConfig("/" + app_name + "/config")
     jsonConfig = json.loads(visualizerConfig)
     image_dir = args.image_dir
-    dev_mode = bool(strtobool(jsonConfig["dev_mode"]))
-    profiling_mode = bool(strtobool(jsonConfig["profiling"]))
+    dev_mode = bool(strtobool(os.environ["DEV_MODE"]))
+    profiling_mode = bool(strtobool(os.environ["PROFILING"]))
 
     # If user provides image_dir, create the directory if don't exists
     if image_dir:
         if not os.path.exists(image_dir):
             os.mkdir(image_dir)
 
-    topicsList = get_topics_from_env("sub")
+    topicsList = Util.get_topics_from_env("sub")
 
     queueDict = {}
 
     for topic in topicsList:
+        publisher, topic = topic.split("/")
         queueDict[topic] = queue.Queue(maxsize=10)
-
-    logger = get_logger(__name__)
 
     if not dev_mode and jsonConfig["cert_path"] is None:
         logger.error("Kindly Provide certificate directory in etcd config"
@@ -465,11 +466,15 @@ def main(args):
         sys.exit(1)
 
     for topic in queueDict.keys():
-        config = get_messagebus_config_from_env(topic, "sub")
+        msgbus_cfg = Util.get_messagebus_config(topic, "sub", publisher, 
+                                                config_client, dev_mode)
+
         subscribe_thread = threading.Thread(target=zmqSubscriber,
-                                            args=(config, queueDict, logger,
+                                            args=(msgbus_cfg, queueDict, logger,
                                                   jsonConfig, args,
-                                                  labels, topic))
+                                                  labels, topic,
+                                                  profiling_mode))
+
         subscribe_thread.start()
 
     if jsonConfig["display"].lower() == 'true':
@@ -513,8 +518,9 @@ def main(args):
             if(len(topicsList) == 1):
                 heightValue = WINDOW_HEIGHT
                 widthValue = WINDOW_WIDTH
+                topic_text = (topicsList[0].split("/"))[1]
                 buttonDict[str(buttonCount)] = Button(rootWin,
-                                                      text=topicsList[0])
+                                                      text=topic_text)
                 buttonDict[str(buttonCount)].grid(sticky='NSEW')
                 Grid.rowconfigure(rootWin, 0, weight=1)
                 Grid.columnconfigure(rootWin, 0, weight=1)
