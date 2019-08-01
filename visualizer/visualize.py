@@ -185,7 +185,9 @@ class SubscriberCallback:
                 tag = 'bad'
             else:
                 tag = 'good'
-        imgname = tag + '_' + img_handle + ".png"
+            imgname = tag + '_' + img_handle + ".png"
+        else:
+            imgname = img_handle + ".png" # dummy classification usecase
         cv2.imwrite(os.path.join(self.dir_name, imgname),
                     frame,
                     [cv2.IMWRITE_PNG_COMPRESSION, 3])
