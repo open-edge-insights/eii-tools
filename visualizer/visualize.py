@@ -13,7 +13,7 @@ from distutils.util import strtobool
 from tkinter import *
 from PIL import Image, ImageTk
 import threading
-from libs.ConfigManager.etcd.py.etcd_client import EtcdCli
+from libs.ConfigManager import ConfigManager
 from libs.common.py.util import get_topics_from_env,\
                                 get_messagebus_config_from_env
 import eis.msgbus as mb
@@ -437,7 +437,8 @@ def main(args):
     conf = {"certFile": "",
             "keyFile": "",
             "trustFile": ""}
-    etcdCli = EtcdCli(conf)
+    cfg_mgr = ConfigManager()
+    etcdCli = cfg_mgr.get_config_client("etcd", conf)
     visualizerConfig = etcdCli.GetConfig("/Visualizer/config")
     jsonConfig = json.loads(visualizerConfig)
     image_dir = args.image_dir
