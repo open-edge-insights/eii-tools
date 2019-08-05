@@ -34,7 +34,7 @@ This module calculates the FPS of any EIS modules based on the stream published 
 4. Run this command from current directory to set PYTHONPATH environment variable
 
     ```sh
-        export PYTHONPATH="../../:../../DataBusAbstraction/py/:../../DataBusAbstraction/:../../libs/EISMessageBus"
+        export PYTHONPATH="../../:../../libs/DataBusAbstraction/py/:../../libs/DataBusAbstraction/:../../libs/EISMessageBus"
         export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
     ```
 
