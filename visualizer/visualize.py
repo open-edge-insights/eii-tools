@@ -24,7 +24,8 @@ class SubscriberCallback:
     """
     def __init__(self, topicQueueDict, logger, profiling,
                  labels=None, good_color=(0, 255, 0),
-                 bad_color=(0, 0, 255), dir_name=None, display=None):
+                 bad_color=(0, 0, 255), dir_name=None,
+                 save_image=False, display=None):
         """Constructor
 
         :param frame_queue: Queue to put frames in as they become available
@@ -46,6 +47,7 @@ class SubscriberCallback:
         self.good_color = good_color
         self.bad_color = bad_color
         self.dir_name = dir_name
+        self.save_image = bool(strtobool(save_image))
         self.display = display
 
         self.profiling = profiling
@@ -168,15 +170,15 @@ class SubscriberCallback:
                     cv2.putText(frame, info, (dx, dy), cv2.FONT_HERSHEY_DUPLEX,
                                 0.5, (0, 0, 255), 1, cv2.LINE_AA)
 
-        if self.dir_name:
-            self.save_image(topic, results, frame)
+        if self.save_image:
+            self.save_images(topic, results, frame)
 
         if self.display.lower() == 'true':
             self.queue_publish(topic, frame)
         else:
             self.logger.info(f'Classifier_results: {results}')
 
-    def save_image(self, topic, msg, frame):
+    def save_images(self, topic, msg, frame):
         img_handle = msg['img_handle']
         if 'defects' in msg:
             if msg['defects']:
@@ -338,8 +340,6 @@ def parse_args():
                     help='Start visualizer in fullscreen mode')
     ap.add_argument('-l', '--labels', default=None,
                     help='JSON file mapping the defect type to labels')
-    ap.add_argument('-i', '--image_dir', default=None,
-                    help='directory name to save the images')
 
     return ap.parse_args()
 
@@ -413,7 +413,8 @@ def zmqSubscriber(msgbus_cfg, queueDict, logger, jsonConfig, args, labels,
     logger.debug(f'[INFO] Initializing subscriber for topic \'{topic}\'')
     subscriber = msgbus.new_subscriber(topic)
     sc = SubscriberCallback(queueDict, logger, profiling_mode,
-                            labels=labels, dir_name=args.image_dir,
+                            labels=labels, dir_name=os.environ["IMAGE_DIR"],
+                            save_image=jsonConfig["save_image"],
                             display=jsonConfig["display"])
     while True:
         meta_data, frame = subscriber.recv()
@@ -443,7 +444,7 @@ def main(args):
     config_client = cfg_mgr.get_config_client("etcd", conf)
     visualizerConfig = config_client.GetConfig("/" + app_name + "/config")
     jsonConfig = json.loads(visualizerConfig)
-    image_dir = args.image_dir
+    image_dir = os.environ["IMAGE_DIR"]
     dev_mode = bool(strtobool(os.environ["DEV_MODE"]))
     profiling_mode = bool(strtobool(os.environ["PROFILING"]))
 

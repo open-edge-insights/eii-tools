@@ -51,11 +51,18 @@ Simple visualizer for the IEI platform.
 
   Have the Visualizer config put to etcd before running visualizer. Refer this
   file [Etcd/README.md](../../Etcd/README.md)
-    
+
+  Have the IMAGE_DIR env variable set if using save_image option as true in etcd
+  the following way
+
+  ```sh
+  export IMAGE_DIR=<path_to_image_dir>
+  ```
+
   Run the visualizer as follows:
 
     ```sh
-    python3.6 visualize.py --img_dir <path-to-IMAGE_DIR>
+    python3.6 visualize.py
     ```
 
 #### Using Labels
@@ -84,7 +91,7 @@ Assuming you saved the above JSON file as `labels.json`, run the visualizer
 as follows:
 
 ```sh
-python3.6 visualize.py --labels labels.json -i ./test
+  $ python3.6 visualize.py --labels labels.json -i ./test
 ```
 
 #### Command Line Arguments
@@ -98,15 +105,16 @@ Use the below command to know the usage of the script `visualize.py`.
 
 #### Steps to build and run
 
-* Visualizer can be run as a container along with other EIS containers from docker_setup folder using the following command:
+* Running visualizer as a container from [docker_setup](../../docker_setup):
 
-  ```sh
-  $ sudo make build run
+  ```
+    $ docker-compose up --build ia_visualizer
   ```
 
   > **NOTE**:
   > 1. The admin has to make sure all the necessary config is set in etcd before starting the visualizer.
-  > 2. Run this command in terminal if you run into tkinter couldn't connect to display exception
+  > 2. The user has to make sure the path provided in docker-compose volumes of visualizer correlates to the one in etcd before running visualizer if he wishes to save images.
+  > 3. Run this command in terminal if you run into tkinter couldn't connect to display exception
     
     ```sh
     $ xhost +
