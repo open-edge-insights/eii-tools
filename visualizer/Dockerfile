@@ -27,10 +27,11 @@ RUN pip3 install -r requirements.txt
 
 RUN apt-get install -y python3.6-tk
 
-RUN adduser --quiet --disabled-password ieiuser
+ARG IEI_USER_NAME
+RUN adduser --quiet --disabled-password ${IEI_USER_NAME}
 
 RUN touch visualize.log && \
-    chown ieiuser:ieiuser visualize.log &&  \
+    chown ${IEI_USER_NAME}:${IEI_USER_NAME} visualize.log &&  \
     chmod 777 visualize.log
 
 RUN apt-get -y install git
