@@ -407,8 +407,7 @@ def get_logger(name):
 
 def zmqSubscriber(msgbus_cfg, queueDict, logger, jsonConfig, args, labels,
                   topic, profiling_mode):
-    """
-    zmqSubscriber is the ZeroMQ callback to
+    """zmqSubscriber is the ZeroMQ callback to
     subscribe to classified results
     """
 
