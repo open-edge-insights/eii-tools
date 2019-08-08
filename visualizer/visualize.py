@@ -22,6 +22,7 @@ class SubscriberCallback:
     """Object for the databus callback to wrap needed state variables for the
     callback in to IEI.
     """
+
     def __init__(self, topicQueueDict, logger, profiling,
                  labels=None, good_color=(0, 255, 0),
                  bad_color=(0, 0, 255), dir_name=None,
@@ -65,6 +66,7 @@ class SubscriberCallback:
         self.ts_iev_total_proc = 0.0
         self.ts_da_to_visualizer = 0.0
         self.ts_va_to_da = 0.0
+        self.msg_frame_queue = queue.Queue(maxsize=15)
 
     def queue_publish(self, topic, frame):
         """queue_publish called after defects bounding box is drawn
@@ -79,12 +81,12 @@ class SubscriberCallback:
         """
         for key in self.topicQueueDict:
             if (key == topic):
-                try:
+                if not self.topicQueueDict[key].full():
                     self.topicQueueDict[key].put_nowait(frame)
-                except queue.Full:
+                else:
                     self.logger.error("Dropping frames as the queue is full")
 
-    def draw_defect(self, topic, results, blob):
+    def draw_defect(self, topic):
         """Identify the defects and draw boxes on the frames
 
         :param topic: Topic the message was published on
@@ -92,6 +94,10 @@ class SubscriberCallback:
         :param results: Message received on the given topic (JSON blob)
         :type: str
         """
+        if not self.msg_frame_queue.empty():
+            results, blob = self.msg_frame_queue.get_nowait()
+        else:
+            self.logger.error('Queue is currently empty')
         self.logger.info(f'Received message: {results}')
 
         height = int(results['height'])
@@ -190,7 +196,7 @@ class SubscriberCallback:
                     frame,
                     [cv2.IMWRITE_PNG_COMPRESSION, 3])
 
-    def callback(self, topic, msg, blob):
+    def callback(self, topic):
         """Callback called when the databus has a new message.
 
         :param topic: Topic the message was published on
@@ -198,13 +204,12 @@ class SubscriberCallback:
         :param msg: Message received on the given topic (JSON blob)
         :type: str
         """
-
         if self.profiling is True:
             msg = self.add_profile_data(msg)
 
         if self.dir_name or self.display.lower() == 'true':
             self.drawdefect_thread = threading.Thread(target=self.draw_defect,
-                                                      args=(topic, msg, blob,))
+                                                      args=(topic,))
             self.drawdefect_thread.start()
         else:
             self.logger.info(f'Classifier_results: {msg}')
@@ -418,7 +423,11 @@ def zmqSubscriber(msgbus_cfg, queueDict, logger, jsonConfig, args, labels,
                             display=jsonConfig["display"])
     while True:
         meta_data, frame = subscriber.recv()
-        sc.callback(topic, meta_data, frame)
+        try:
+            sc.msg_frame_queue.put_nowait((meta_data, frame,))
+        except queue.Full:
+            logger.error("Dropping frames as the queue is full")
+        sc.callback(topic)
 
 
 def main(args):
@@ -467,12 +476,12 @@ def main(args):
         sys.exit(1)
 
     for topic in queueDict.keys():
-        msgbus_cfg = Util.get_messagebus_config(topic, "sub", publisher, 
+        msgbus_cfg = Util.get_messagebus_config(topic, "sub", publisher,
                                                 config_client, dev_mode)
 
         subscribe_thread = threading.Thread(target=zmqSubscriber,
-                                            args=(msgbus_cfg, queueDict, logger,
-                                                  jsonConfig, args,
+                                            args=(msgbus_cfg, queueDict,
+                                                  logger, jsonConfig, args,
                                                   labels, topic,
                                                   profiling_mode))
 
@@ -558,7 +567,10 @@ def main(args):
                 buttonCount = 0
                 for key1 in queueDict:
                     try:
-                        frame = queueDict[key1].get_nowait()
+                        if not queueDict[key1].empty():
+                            frame = queueDict[key1].get_nowait()
+                        else:
+                            logger.error('Queue is currently empty')
                         img = Image.fromarray(frame)
                         blue, green, red = img.split()
                         img = Image.merge("RGB", (red, green, blue))
