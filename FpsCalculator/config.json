@@ -1,9 +1,9 @@
 {
-    "SubTopics": ["camera1_stream_results"],
+    "SubTopics": ["VideoAnalytics/camera1_stream_results"],
     "camera1_stream_results_cfg": "zmq_tcp,127.0.0.1:65013",
-    "dev_mode" : "False",
+    "dev_mode" : "True",
     "total_number_of_frames" : 1000,
-    "export_to_csv" : "True",
+    "export_to_csv" : "False",
     "server_cert" : "/etc/ssl/opcua/opcua_server_certificate.der",
     "client_cert" : "/etc/ssl/opcua/opcua_server_key.der",
     "ca_cert" : "/etc/ssl/ca/ca_certificate.der"

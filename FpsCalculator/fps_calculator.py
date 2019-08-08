@@ -33,8 +33,8 @@ from xlwt import Workbook
 from distutils.util import strtobool
 # IMPORT the library to read from IES
 from DataBus import databus
-from libs.common.py.util import get_topics_from_env,\
-                                get_messagebus_config_from_env
+from libs.common.py.util import Util
+from libs.ConfigManager import ConfigManager
 import eis.msgbus as mb
 
 logging.basicConfig(level=logging.DEBUG,
@@ -60,7 +60,8 @@ class FpsCalculator:
                  db_cert, db_priv,
                  db_trust, total_number_of_frames):
         self.devMode = devMode
-        self.topic = topic
+        self.publisher, self.topic = topic.split("/")
+        os.environ[self.topic+'_cfg'] = config_dict[self.topic+'_cfg']
         self.db_cert = db_cert
         self.db_priv = db_priv
         self.db_trust = db_trust
@@ -69,8 +70,21 @@ class FpsCalculator:
         self.start_time = 0.0
         self.done_receiving = False
         self.start_subscribing = True
+        conf = {
+            "certFile": "",
+            "keyFile": "",
+            "trustFile": ""
+        }
+        cfg_mgr = ConfigManager()
+        self.config_client = cfg_mgr.get_config_client("etcd", conf)
+        # Setting default AppName as Visualizer to act as subscriber
+        # for both VideoIngestion and VideoAnalytics
+        os.environ["AppName"] = "Visualizer"
         try:
-            topic_config = get_messagebus_config_from_env(topic, "sub")
+            topic_config = Util.get_messagebus_config(self.topic, "sub",
+                                                      self.publisher,
+                                                      self.config_client,
+                                                      self.devMode)
             if topic_config['type'] == 'opcua':
                 if self.devMode:
                     contextConfig = {
@@ -103,7 +117,10 @@ class FpsCalculator:
     def eisSubscriber(self, topic, callback):
         """ To subscribe over
         EISMessagebus. """
-        config = get_messagebus_config_from_env(topic, "sub")
+        config = Util.get_messagebus_config(self.topic, "sub",
+                                            self.publisher,
+                                            self.config_client,
+                                            self.devMode)
         msgbus = mb.MsgbusContext(config)
         subscriber = msgbus.new_subscriber(topic)
         while not self.done_receiving:
@@ -115,7 +132,10 @@ class FpsCalculator:
 
     def run(self, topic):
         """ To run the respective data bus subscribers"""
-        config = get_messagebus_config_from_env(topic, "sub")
+        config = Util.get_messagebus_config(self.topic, "sub",
+                                            self.publisher,
+                                            self.config_client,
+                                            self.devMode)
         if config['type'] == 'opcua':
             topicConfigs = []
             topicConfigs.append({"ns": "streammanager",
@@ -182,7 +202,6 @@ if __name__ == "__main__":
     # Calculating FPS for each topic
     threads = []
     for topic in topics:
-        os.environ[topic+'_cfg'] = config_dict[topic+'_cfg']
         thread = threading.Thread(target=threadRunner, args=(topic,))
         threads.append(thread)
         thread.start()
