@@ -49,8 +49,8 @@ Simple visualizer for the IEI platform.
   export no_proxy=$no_proxy,<IP ADDRESS>
   ```
 
-  Have the Visualizer config put to etcd before running visualizer. Refer this
-  file [Etcd/README.md](../../Etcd/README.md)
+  Have the Visualizer config put to etcd before running visualizer. Follow 
+  [provision/README.md](../../docker_setup/provision/README.md) for EIS provisioning.
 
   Have the IMAGE_DIR env variable set if using save_image option as true in etcd
   the following way
