@@ -38,6 +38,14 @@ This module calculates the FPS of any EIS modules based on the stream published 
         export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
     ```
 
+5. If using FpsCalculator in IPC mode, make sure to set required permissions to socket file created in [IEI_INSTALL_PATH](/opt/intel/eis/sockets).
+
+    ```sh
+        sudo chmod -R 777 /opt/intel/eis/sockets
+    ```
+
+    Caution: This step will make the streams insecure. Please do not do it on a production machine.
+
 ## Running FPS calculator
 
 1. Set environment variables accordingly in [config.json](config.json)
