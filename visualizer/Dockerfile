@@ -46,8 +46,6 @@ RUN git clone https://github.com/kragniz/python-etcd3 && \
 ENV PYTHONPATH /IEI/
 ENV LD_LIBRARY_PATH /usr/local/lib
 ADD libs/ ./libs
-ADD tools/visualizer/source.sh .
-RUN ./source.sh
 ADD tools/visualizer/visualize.py .
 
 ENTRYPOINT ["python3.6", "visualize.py"]

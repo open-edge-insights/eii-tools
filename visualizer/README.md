@@ -17,26 +17,13 @@ Simple visualizer for the IEI platform.
   $ ./install.sh
   ```
 
-* Have etcd installed and running as a service:
-
-  To install etcd:
-
-  ```sh
-  $ sudo apt-get install etcd
-  ```
-
-  To run etcd:
-
-  ```sh
-  $ sudo service etcd start
-  ```
-
 * Running `visualize.py`
 
   Before running the visualizer, you need to source the `source.sh` script to
-  configure the environmental veriables correctly. To do this, simply execute
+  configure the environmental variables correctly. To do this, simply execute
   the following command in the terminal window you plan to run the visualizer
-  from.
+  from. Make sure to set the SubTopics and stream config if you are subscribing
+  from a different stream, the default being VideoAnalytics.
 
   ```sh
   $ source ./source.sh
@@ -51,13 +38,6 @@ Simple visualizer for the IEI platform.
 
   Have the Visualizer config put to etcd before running visualizer. Follow 
   [provision/README.md](../../docker_setup/provision/README.md) for EIS provisioning.
-
-  Have the IMAGE_DIR env variable set if using save_image option as true in etcd
-  the following way
-
-  ```sh
-  export IMAGE_DIR=<path_to_image_dir>
-  ```
 
   Run the visualizer as follows:
 
