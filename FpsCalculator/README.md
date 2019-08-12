@@ -15,7 +15,7 @@ This module calculates the FPS of any EIS modules based on the stream published 
         sudo apt-get install -y python3-distutils
     ```
 
-2. Run these commands from IEdgeInsights/DataBusAbstraction/py/test directory
+2. Run these commands from IEdgeInsights/OpcuaBusAbstraction/py/test directory
 
     ```sh
         make build_safestring_lib
@@ -34,7 +34,7 @@ This module calculates the FPS of any EIS modules based on the stream published 
 4. Run this command from current directory to set PYTHONPATH environment variable
 
     ```sh
-        export PYTHONPATH="../../:../../libs/DataBusAbstraction/py/:../../libs/DataBusAbstraction/:../../libs/EISMessageBus"
+        export PYTHONPATH="../../:../../libs/OpcuaBusAbstraction/py/:../../libs/OpcuaBusAbstraction/:../../libs/EISMessageBus"
         export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
     ```
 
