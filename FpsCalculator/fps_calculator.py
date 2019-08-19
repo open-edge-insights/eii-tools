@@ -26,15 +26,15 @@ import sys
 import json
 import logging
 import time
+import datetime
 import threading
 import xlwt
 from xlwt import Workbook
 
 from distutils.util import strtobool
 # IMPORT the library to read from IES
-from DataBus import databus
-from libs.common.py.util import Util
-from libs.ConfigManager import ConfigManager
+from BaseLibs.libs.common.py.util import Util
+from BaseLibs.libs.ConfigManager import ConfigManager
 import eis.msgbus as mb
 
 logging.basicConfig(level=logging.DEBUG,
@@ -57,14 +57,10 @@ class FpsCalculator:
     individual modules. """
 
     def __init__(self, devMode, topics,
-                 db_cert, db_priv,
-                 db_trust, total_number_of_frames):
+                 total_number_of_frames):
         self.devMode = devMode
         self.publisher, self.topic = topic.split("/")
         os.environ[self.topic+'_cfg'] = config_dict[self.topic+'_cfg']
-        self.db_cert = db_cert
-        self.db_priv = db_priv
-        self.db_trust = db_trust
         self.total_number_of_frames = total_number_of_frames
         self.frame_count = 0
         self.start_time = 0.0
@@ -75,46 +71,19 @@ class FpsCalculator:
             "keyFile": "",
             "trustFile": ""
         }
+        if not self.devMode:
+            conf = {
+            "certFile": "../../docker_setup/provision/Certificates/root/root.pem",
+            "keyFile": "../../docker_setup/provision/Certificates/root/root-key.pem",
+            "trustFile": "../../docker_setup/provision/Certificates/ca_etcd/ca.pem"
+            }
         cfg_mgr = ConfigManager()
         self.config_client = cfg_mgr.get_config_client("etcd", conf)
         # Setting default AppName as Visualizer to act as subscriber
         # for both VideoIngestion and VideoAnalytics
         os.environ["AppName"] = "Visualizer"
-        try:
-            topic_config = Util.get_messagebus_config(self.topic, "sub",
-                                                      self.publisher,
-                                                      self.config_client,
-                                                      self.devMode)
-            if topic_config['type'] == 'opcua':
-                if self.devMode:
-                    contextConfig = {
-                        'endpoint': '{}://{}:{}'.format(topic_config['type'],
-                                                        topic_config['host'],
-                                                        topic_config['port']),
-                        'direction': 'SUB',
-                        'name': 'StreamManager',
-                        'certFile': "",
-                        'privateFile': "",
-                        'trustFile': ""
-                        }
-                else:
-                    contextConfig = {
-                        'endpoint': '{}://{}:{}'.format(topic_config['type'],
-                                                        topic_config['host'],
-                                                        topic_config['port']),
-                        'direction': 'SUB',
-                        'name': 'StreamManager',
-                        'certFile': db_cert,
-                        'privateFile': db_priv,
-                        'trustFile': db_trust
-                    }
-                self.ieidbus = databus(logger)
-                self.ieidbus.ContextCreate(contextConfig)
-        except Exception as e:
-            logger.error(e)
-            sys.exit(1)
 
-    def eisSubscriber(self, topic, callback):
+    def eisSubscriber(self):
         """ To subscribe over
         EISMessagebus. """
         config = Util.get_messagebus_config(self.topic, "sub",
@@ -122,74 +91,50 @@ class FpsCalculator:
                                             self.config_client,
                                             self.devMode)
         msgbus = mb.MsgbusContext(config)
-        subscriber = msgbus.new_subscriber(topic)
+        subscriber = msgbus.new_subscriber(self.topic)
         while not self.done_receiving:
             # Discarding both the meta-data & frame
             _, _ = subscriber.recv()
-            callback(topic)
+            self.calculate_fps()
         subscriber.close()
         return
 
-    def run(self, topic):
-        """ To run the respective data bus subscribers"""
-        config = Util.get_messagebus_config(self.topic, "sub",
-                                            self.publisher,
-                                            self.config_client,
-                                            self.devMode)
-        if config['type'] == 'opcua':
-            topicConfigs = []
-            topicConfigs.append({"ns": "streammanager",
-                                "name": topic, "dType": "string"})
-            self.start_time = time.time()
-            self.ieidbus.Subscribe(topicConfigs, len(topicConfigs),
-                                   "START", self.cbFunc)
-        elif 'zmq' in config['type']:
-            self.eisSubscriber(self.topic,
-                               callback=self.calculate_fps)
-            return
-
-    def calculate_fps(self, topic):
+    def calculate_fps(self):
         """ Calculates the FPS of required module"""
         # Setting timestamp after first frame receival
         if self.start_subscribing:
-            self.start_time = time.time()
-        self.start_subscribing = False
+            self.start_time = datetime.datetime.now()
+            self.start_subscribing = False
 
         # Incrementing frame count
         self.frame_count += 1
 
         # Check if all frames are received
         if self.frame_count == int(self.total_number_of_frames):
+            # Get time in milliseconds
+            end_time = datetime.datetime.now()
+            delta = end_time - self.start_time
+            diff = delta.total_seconds() * 1000
+
             # Calculating average fps
-            avg_fps = self.frame_count/(time.time()-self.start_time)
+            avg_fps = self.frame_count/diff
 
             # Updating fps per topic dict
             global avg_fps_per_topic
-            avg_fps_per_topic[self.topic] = avg_fps
+            avg_fps_per_topic[self.topic] = avg_fps * 1000
 
             # Notifying caller once all frames are received
             self.done_receiving = True
             return
 
-    def cbFunc(self, topic, msg):
-        # Uncomment below line to display classifier results
-        # logger.info("Msg: {} received on topic: {}".format(msg, topic))
-        self.calculate_fps(topic)
-
 
 def threadRunner(topic):
     """To run FpsCalculator for each topic"""
     dev_mode = bool(strtobool(config_dict['dev_mode']))
-    db_cert = config_dict['server_cert']
-    db_priv = config_dict['client_cert']
-    db_trust = config_dict['ca_cert']
     fps_app = FpsCalculator(dev_mode,
                             topic,
-                            db_cert,
-                            db_priv,
-                            db_trust,
                             total_number_of_frames)
-    fps_app.run(topic)
+    fps_app.eisSubscriber()
 
 
 if __name__ == "__main__":

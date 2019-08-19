@@ -11,34 +11,19 @@ This module calculates the FPS of any EIS modules based on the stream published 
     ```
 
     Needed only for Ubuntu 18.04
+
     ```sh
         sudo apt-get install -y python3-distutils
     ```
 
-2. Run these commands from IEdgeInsights/OpcuaBusAbstraction/py/test directory
+2. Run this command from current directory to set PYTHONPATH environment variable
 
     ```sh
-        make build_safestring_lib
-    ```
-
-    ```sh
-        make build
-    ```
-
-3. Run this command from IEdgeInsights/DataAnalytics/VideoAnalytics directory
-
-    ```sh
-        source ./setenv.sh
-    ```
-
-4. Run this command from current directory to set PYTHONPATH environment variable
-
-    ```sh
-        export PYTHONPATH="../../:../../libs/OpcuaBusAbstraction/py/:../../libs/OpcuaBusAbstraction/:../../libs/EISMessageBus"
+        export PYTHONPATH="../../:../../BaseLibs/libs/EISMessageBus:../../BaseLibs"
         export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
     ```
 
-5. If using FpsCalculator in IPC mode, make sure to set required permissions to socket file created in [IEI_INSTALL_PATH](/opt/intel/eis/sockets).
+3. If using FpsCalculator in IPC mode, make sure to set required permissions to socket file created in SOCKET_DIR in [docker_setup/.env](../../docker_setup/.env).
 
     ```sh
         sudo chmod -R 777 /opt/intel/eis/sockets
@@ -49,26 +34,6 @@ This module calculates the FPS of any EIS modules based on the stream published 
 ## Running FPS calculator
 
 1. Set environment variables accordingly in [config.json](config.json)
-
-    Change values of SUBSCRIBE_STREAM and SUBSCRIBE_BUS to required stream and message bus.
-    Currently supported streams for EISMessagebus:
-    1. camera1_stream
-    2. camera1_stream_results
-    3. cam_serial1_results (for multi-cam only)
-    4. cam_serial2_results (for multi-cam only)
-    5. cam_serial3_results (for multi-cam only)
-    6. cam_serial4_results (for multi-cam only)
-    7. cam_serial5_results (for multi-cam only)
-    8. cam_serial6_results (for multi-cam only)
-
-    Currently supported streams for OPCUA:
-    1. stream1_results
-    2. cam_serial1_results (for multi-cam only)
-    3. cam_serial2_results (for multi-cam only)
-    4. cam_serial3_results (for multi-cam only)
-    5. cam_serial4_results (for multi-cam only)
-    6. cam_serial5_results (for multi-cam only)
-    7. cam_serial6_results (for multi-cam only)
 
 2. Set the required output stream/streams and appropriate stream config in [config.json](config.json) file.
 
