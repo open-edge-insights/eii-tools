@@ -33,8 +33,8 @@ from xlwt import Workbook
 
 from distutils.util import strtobool
 # IMPORT the library to read from IES
-from BaseLibs.libs.common.py.util import Util
-from BaseLibs.libs.ConfigManager import ConfigManager
+from common.libs.common.py.util import Util
+from common.libs.ConfigManager import ConfigManager
 import eis.msgbus as mb
 
 logging.basicConfig(level=logging.DEBUG,
