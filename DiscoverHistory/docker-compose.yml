@@ -1,0 +1,23 @@
+version: '3.6'
+
+services:
+
+  # Define DiscoverHistory service
+  ia_discover_history:
+    build:
+      context: .
+      dockerfile: $PWD/Dockerfile
+      args:
+          EIS_VERSION: ${EIS_VERSION} 
+    image: ia_discover_history:${EIS_VERSION}
+    container_name: ia_discover_history
+    hostname: ia_discover_history
+    network_mode: host
+    environment:
+      PY_LOG_LEVEL: ${LOG_LEVEL}
+      DEV_MODE: "true"
+      no_proxy: ${NO_PROXY}
+     
+    volumes:
+      - "${SAVE_PATH}:/output/"
+      - "./config:/EIS/DiscoverHistory/config"

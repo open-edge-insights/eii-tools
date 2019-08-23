@@ -1,0 +1,11 @@
+{
+    "type": "zmq_tcp",
+    "imagestore_service": {
+        "host": "127.0.0.1",
+        "port": 5669
+    },
+    "influxconnector_service": {
+        "host": "127.0.0.1",
+        "port": 8675
+    }
+}
