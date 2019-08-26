@@ -92,7 +92,9 @@ class FpsCalculator:
                                             self.devMode)
 
         self.topic = self.topic.strip()
-        if not self.devmode:
+        mode_address = os.environ[topic + "_cfg"].split(",")
+        mode = mode_address[0].strip()
+        if (not self.devMode and mode == "zmq_tcp"):
             for key in config[self.topic]:
                 if config[topic][key] is None:
                     raise ValueError("Invalid Config")
