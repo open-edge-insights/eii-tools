@@ -90,6 +90,13 @@ class FpsCalculator:
                                             self.publisher,
                                             self.config_client,
                                             self.devMode)
+
+        self.topic = self.topic.strip()
+        if not self.devmode:
+            for key in config[self.topic]:
+                if config[topic][key] is None:
+                    raise ValueError("Invalid Config")
+
         msgbus = mb.MsgbusContext(config)
         subscriber = msgbus.new_subscriber(self.topic)
         while not self.done_receiving:
