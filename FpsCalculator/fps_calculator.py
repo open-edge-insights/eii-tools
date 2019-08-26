@@ -73,9 +73,9 @@ class FpsCalculator:
         }
         if not self.devMode:
             conf = {
-            "certFile": "../../docker_setup/provision/Certificates/root/root.pem",
-            "keyFile": "../../docker_setup/provision/Certificates/root/root-key.pem",
-            "trustFile": "../../docker_setup/provision/Certificates/ca_etcd/ca.pem"
+            "certFile": "../../docker_setup/provision/Certificates/root/root_client_certificate.pem",
+            "keyFile": "../../docker_setup/provision/Certificates/root/root_client_key.pem",
+            "trustFile": "../../docker_setup/provision/Certificates/ca/ca_certificate.pem"
             }
         cfg_mgr = ConfigManager()
         self.config_client = cfg_mgr.get_config_client("etcd", conf)
@@ -92,11 +92,11 @@ class FpsCalculator:
                                             self.devMode)
 
         self.topic = self.topic.strip()
-        mode_address = os.environ[topic + "_cfg"].split(",")
+        mode_address = os.environ[self.topic + "_cfg"].split(",")
         mode = mode_address[0].strip()
         if (not self.devMode and mode == "zmq_tcp"):
             for key in config[self.topic]:
-                if config[topic][key] is None:
+                if config[self.topic][key] is None:
                     raise ValueError("Invalid Config")
 
         msgbus = mb.MsgbusContext(config)
