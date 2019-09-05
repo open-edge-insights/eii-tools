@@ -1,2 +1,2 @@
 #!/bin/bash
-docker run --rm -it --net host publisher
+docker run --rm -itd --net host --name publisher publisher
