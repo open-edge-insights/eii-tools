@@ -16,6 +16,11 @@ Simple Python temperature sensor simulator.
     ```sh
     $ ./publisher.sh
     ```
+   If you want to publish data from csv row by row, then run the below mentioned script
+    ```sh
+    $ ./publisher_csv.sh
+    ```
+   You can also change filename, topic, sampling rate and subsample parameters in the publisher_csv.sh script.
 
 If you wish to see the messages going over MQTT, run the subscriber with the
 following command:
