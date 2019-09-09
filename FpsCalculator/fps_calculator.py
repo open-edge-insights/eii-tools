@@ -33,7 +33,8 @@ from xlwt import Workbook
 
 from distutils.util import strtobool
 # IMPORT the library to read from IES
-from common.libs.common.py.util import Util
+from util.util import Util
+from util.msgbusutil import MsgBusUtil
 from common.libs.ConfigManager import ConfigManager
 import eis.msgbus as mb
 
@@ -86,7 +87,7 @@ class FpsCalculator:
     def eisSubscriber(self):
         """ To subscribe over
         EISMessagebus. """
-        config = Util.get_messagebus_config(self.topic, "sub",
+        config = MsgBusUtil.get_messagebus_config(self.topic, "sub",
                                             self.publisher,
                                             self.config_client,
                                             self.devMode)

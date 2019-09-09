@@ -10,7 +10,7 @@ FROM pybase
 ARG HOST_TIME_ZONE=""
 
 COPY --from=common /libs ${PY_WORK_DIR}/libs
-COPY --from=common /Util ${PY_WORK_DIR}/Util
+COPY --from=common /util ${PY_WORK_DIR}/util
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN echo "$HOST_TIME_ZONE">/etc/timezone
@@ -37,4 +37,3 @@ WORKDIR ./DiscoverHistory/src
 
 
 ENTRYPOINT [ "python3.6", "main.py" ]
-HEALTHCHECK NONE
