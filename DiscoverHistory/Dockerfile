@@ -1,11 +1,11 @@
 # Dockerfile for FactoryControlApp
 ARG EIS_VERSION
-FROM ia_pybase:${EIS_VERSION} as pybase
+FROM ia_eisbase:${EIS_VERSION} as eisbase
 LABEL description="DiscoverHistory image"
 
 FROM ia_common:${EIS_VERSION} as common
 
-FROM pybase
+FROM eisbase
 
 ARG HOST_TIME_ZONE=""
 
