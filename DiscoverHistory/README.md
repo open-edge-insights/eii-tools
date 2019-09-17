@@ -20,7 +20,7 @@ README FOR DISCOVER HISTORY TOOL
     NOTE: The user can provide any select query of choice.
 
 
-# PROCEDURE TO RUN DISCOVERY TOOL #
+# PROCEDURE TO RUN DISCOVERY TOOL (DEFAULT: PROD MODE) #
 
  1. Open "query_config.json"
  2. Provide the required query to be passed on to InfluxDB.
@@ -34,6 +34,34 @@ README FOR DISCOVER HISTORY TOOL
     directory will be created)
  9. If the user changes the query in "query_config.json" then no need to run build command, just execute the up command.
 
+ ## ADDITIONAL STEP TO RUN DISCOVERY TOOL IN DEV MODE
+ 1. Open [.env](DiscoverHistory/.env)
+ 2. Set the DEV_MODE variable as "true".
+ ```
+    DEV_MODE=false
+ ```
+to
+ ```
+    DEV_MODE=true
+ ```
+3. Comment the following lines in the [docker-compose.yml](DiscoverHistory/docker-compose.yml)
+```
+    secrets:
+      - ca_etcd
+      - etcd_root_cert
+      - etcd_root_key
+
+```
+to
+```
+#    secrets:
+#      - ca_etcd
+#      - etcd_root_cert
+#      - etcd_root_key
+
+```
+### NOTE:Building the base images like ia_common, ia_eisbase are must in cases if this tool isn't run on the same node where EIS is running.
+### Please ensure that the base images i.e. ia_common and ia_eisbase are present on the node where this tool is run.
 
 # List of sample select queries #
 

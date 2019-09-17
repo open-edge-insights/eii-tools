@@ -30,10 +30,12 @@ import common
 import sys
 import os
 import logging
+from libs.ConfigManager import ConfigManager
 
 logger=logging.getLogger()
 logger.setLevel(logging.os.environ['PY_LOG_LEVEL'].upper())
 is_done = False
+
 def main():
     global is_done
     with open('../config/eis_config.json', 'r') as f:
@@ -43,6 +45,29 @@ def main():
         query_config = json.load(f)
 
     img_handle_queue = queue.Queue(maxsize=10000)
+    dev_Mode=os.environ["dev_Mode"]
+
+    if dev_Mode=="false":
+        conf = {
+            "certFile": "/run/secrets/etcd_root_cert",
+            "keyFile": "/run/secrets/etcd_root_key",
+            "trustFile": "/run/secrets/ca_etcd"
+            }
+
+        logger.info("config is: {}".format(conf))
+        cfg_mgr = ConfigManager()
+        config_client = cfg_mgr.get_config_client("etcd", conf)
+
+        influxConfig = config_client.GetConfig("/Publickeys/InfluxDBConnector")
+        eis_config['influxconnector_service']['server_public_key'] = influxConfig
+        imageConfig = config_client.GetConfig("/Publickeys/ImageStore")
+        eis_config['imagestore_service']['server_public_key'] = imageConfig
+        visualizerPublicKey = config_client.GetConfig("/Publickeys/Visualizer")
+        eis_config['influxconnector_service']['client_public_key'] = visualizerPublicKey
+        eis_config['imagestore_service']['client_public_key'] = visualizerPublicKey
+        visualizerPrivateKey = config_client.GetConfig("/Visualizer/private_key")
+        eis_config['influxconnector_service']['client_secret_key'] = visualizerPrivateKey
+        eis_config['imagestore_service']['client_secret_key'] = visualizerPrivateKey
 
     #This thread will retriueve the image from imagestore service
     #and will store into frames directory

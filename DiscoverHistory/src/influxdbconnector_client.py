@@ -49,7 +49,6 @@ def query_influxdb(eis_config,query_config,img_handle_queue):
         service.request(request)
         logger.info('[INFO] Waiting for response')
         response = service.recv()
-        
         if len(response['Data']) > 0:
             loaded_json = json.loads(response['Data'])
             index = -1
@@ -71,7 +70,7 @@ def query_influxdb(eis_config,query_config,img_handle_queue):
                     
 
             output_dir = "/output/" + "/" + "data"
-            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            now = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
             filename = str(now) + ".dat"
             common.write_to_file(filename, str.encode(response['Data']), output_dir)
 

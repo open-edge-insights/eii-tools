@@ -15,9 +15,21 @@ services:
     network_mode: host
     environment:
       PY_LOG_LEVEL: ${LOG_LEVEL}
-      DEV_MODE: "true"
+      dev_Mode: ${DEV_MODE}
       no_proxy: ${NO_PROXY}
-     
     volumes:
       - "${SAVE_PATH}:/output/"
       - "./config:/EIS/DiscoverHistory/config"
+    #comment secrets while running in DEV mode (DEV_MODE=true).
+    secrets:
+      - ca_etcd
+      - etcd_root_cert
+      - etcd_root_key
+
+secrets:
+  ca_etcd:
+    file: ../../docker_setup/provision/Certificates/ca/ca_certificate.pem
+  etcd_root_cert:
+    file: ../../docker_setup/provision/Certificates/root/root_client_certificate.pem
+  etcd_root_key:
+    file: ../../docker_setup/provision/Certificates/root/root_client_key.pem

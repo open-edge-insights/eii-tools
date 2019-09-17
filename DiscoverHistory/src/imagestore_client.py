@@ -37,7 +37,7 @@ logger=logging.getLogger()
 
 def save_images(elm, frame, dir,tag):
     img_handle = elm['img_handle']
-    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    now = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
     imgname = str(now) + "_" + tag + img_handle + ".png"
     if not os.path.exists(dir):
         os.makedirs(dir)
@@ -145,7 +145,7 @@ def retrieve_image_frames(eis_config,query_config,img_handle_queue):
             service.request(request)
             logger.info(f'[INFO] Waiting for response')
             response = service.recv()
-            output_dir = "/output/" + "/" + "frames"
+            output_dir = dir_name + "frames"
             draw_defects(elm, response[1],output_dir)
 
     except KeyboardInterrupt:
