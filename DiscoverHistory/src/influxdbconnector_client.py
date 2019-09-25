@@ -31,23 +31,24 @@ import imagestore_client
 import argparse
 import eis.msgbus as mb
 import common
+import os
 
 msgbus = None
 service = None
-logging.basicConfig(level=logging.DEBUG)
+
 logger=logging.getLogger()
-logger.setLevel(logging.DEBUG)
+
 def query_influxdb(eis_config,query_config,img_handle_queue):
     try:
-        logger.info(f'[INFO] Initializing message bus context')
+        logger.info(f'Initializing message bus context')
         msgbus = mb.MsgbusContext(eis_config)
-        logger.info('[INFO] Initializing service for topic \'{"influxconnector_service"}\'')
+        logger.info('Initializing service for topic \'{"influxconnector_service"}\'')
         service = msgbus.get_service("influxconnector_service")
         request = {'command':query_config["query"]}
-        logger.info(f'[INFO] Running...')
-        logger.info(f'[INFO] Sending request {request}')
+        logger.info(f'Running...')
+        logger.info(f'Sending request {request}')
         service.request(request)
-        logger.info('[INFO] Waiting for response')
+        logger.info('Waiting for response')
         response = service.recv()
         if len(response['Data']) > 0:
             loaded_json = json.loads(response['Data'])
@@ -77,5 +78,5 @@ def query_influxdb(eis_config,query_config,img_handle_queue):
         service.close()     
 
     except KeyboardInterrupt:
-        logger.info(f'[INFO] Quitting...')
+        logger.info(f' Quitting...')
         service.close()

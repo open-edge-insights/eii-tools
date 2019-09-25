@@ -39,12 +39,6 @@ from util.msgbusutil import MsgBusUtil
 from common.libs.ConfigManager import ConfigManager
 import eis.msgbus as mb
 
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s : %(levelname)s : \
-                    %(name)s : [%(filename)s] :' +
-                    '%(funcName)s : in line : [%(lineno)d] : %(message)s')
-logger = logging.getLogger(__name__)
-
 avg_fps_per_topic = {}
 
 
@@ -53,6 +47,7 @@ def get_config():
         config_dict = json.load(f)
         return config_dict
 
+logger = logging.getLogger(__name__)
 
 class FpsCalculator:
     """ A sample app to check FPS of
@@ -153,7 +148,6 @@ def invokeGC():
 
 def threadRunner(topic):
     """To run FpsCalculator for each topic"""
-    dev_mode = bool(strtobool(config_dict['dev_mode']))
     fps_app = FpsCalculator(dev_mode,
                             topic,
                             total_number_of_frames)
@@ -163,6 +157,18 @@ def threadRunner(topic):
 if __name__ == "__main__":
 
     config_dict = get_config()
+
+    dev_mode = bool(strtobool(config_dict['dev_mode']))
+
+    if dev_mode == True:
+        fmt_str = ('%(asctime)s : %(levelname)s  : {} : %(name)s : [%(filename)s] :' .format("Insecure Mode")+
+               '%(funcName)s : in line : [%(lineno)d] : %(message)s')
+    else:
+        fmt_str = ('%(asctime)s : %(levelname)s : %(name)s : [%(filename)s] :' +
+               '%(funcName)s : in line : [%(lineno)d] : %(message)s')
+
+    logging.basicConfig(level=logging.DEBUG,format=fmt_str)
+
     topics = config_dict['SubTopics']
     export_to_csv = bool(strtobool(config_dict['export_to_csv']))
     total_number_of_frames = int(config_dict['total_number_of_frames'])

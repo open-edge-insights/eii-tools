@@ -34,6 +34,17 @@ from libs.ConfigManager import ConfigManager
 
 logger=logging.getLogger()
 logger.setLevel(logging.os.environ['PY_LOG_LEVEL'].upper())
+dev_mode=os.environ["dev_Mode"]
+
+if dev_mode == "true":
+    fmt_str = ('%(asctime)s : %(levelname)s  : {} : %(name)s : [%(filename)s] :' .format("Insecure Mode")+
+               '%(funcName)s : in line : [%(lineno)d] : %(message)s')
+else:
+    fmt_str = ('%(asctime)s : %(levelname)s : %(name)s : [%(filename)s] :' +
+               '%(funcName)s : in line : [%(lineno)d] : %(message)s') 
+
+logging.basicConfig(format=fmt_str, level=logging.DEBUG)
+
 is_done = False
 
 def main():

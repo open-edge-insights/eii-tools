@@ -133,23 +133,23 @@ def retrieve_image_frames(eis_config,query_config,img_handle_queue):
     try:
         msgbus = mb.MsgbusContext(eis_config)
 
-        logger.info(f'[INFO] Initializing service for topic \'imagestore_service\'')
+        logger.info(f'Initializing service for topic \'imagestore_service\'')
         service = msgbus.get_service('imagestore_service')
 
-        logger.info(f'[INFO] Running...')
+        logger.info(f'Running...')
         while True:
             elm = img_handle_queue.get()
             img_handle = elm['img_handle']
             request = {'command': 'read', 'img_handle': img_handle}
-            logger.info(f'[INFO] Sending request {request}')
+            logger.info(f'Sending request {request}')
             service.request(request)
-            logger.info(f'[INFO] Waiting for response')
+            logger.info(f'Waiting for response')
             response = service.recv()
             output_dir = dir_name + "frames"
             draw_defects(elm, response[1],output_dir)
 
     except KeyboardInterrupt:
-        logger.info(f'[INFO] Quitting...')
+        logger.info(f'Quitting...')
     finally:
         if service is not None:
             service.close()
