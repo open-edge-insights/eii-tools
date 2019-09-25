@@ -28,6 +28,7 @@ import logging
 import time
 import datetime
 import threading
+import gc
 import xlwt
 from xlwt import Workbook
 
@@ -74,9 +75,12 @@ class FpsCalculator:
         }
         if not self.devMode:
             conf = {
-            "certFile": "../../docker_setup/provision/Certificates/root/root_client_certificate.pem",
-            "keyFile": "../../docker_setup/provision/Certificates/root/root_client_key.pem",
-            "trustFile": "../../docker_setup/provision/Certificates/ca/ca_certificate.pem"
+                "certFile": "../../docker_setup/provision\
+                /Certificates/root/root_client_certificate.pem",
+                "keyFile": "../../docker_setup/provision\
+                /Certificates/root/root_client_key.pem",
+                "trustFile": "../../docker_setup/provision\
+                /Certificates/ca/ca_certificate.pem"
             }
         cfg_mgr = ConfigManager()
         self.config_client = cfg_mgr.get_config_client("etcd", conf)
@@ -88,9 +92,9 @@ class FpsCalculator:
         """ To subscribe over
         EISMessagebus. """
         config = MsgBusUtil.get_messagebus_config(self.topic, "sub",
-                                            self.publisher,
-                                            self.config_client,
-                                            self.devMode)
+                                                  self.publisher,
+                                                  self.config_client,
+                                                  self.devMode)
 
         self.topic = self.topic.strip()
         mode_address = os.environ[self.topic + "_cfg"].split(",")
@@ -104,7 +108,9 @@ class FpsCalculator:
         subscriber = msgbus.new_subscriber(self.topic)
         while not self.done_receiving:
             # Discarding both the meta-data & frame
-            _, _ = subscriber.recv()
+            md, fr = subscriber.recv()
+            del md
+            del fr
             self.calculate_fps()
         subscriber.close()
         return
@@ -138,6 +144,13 @@ class FpsCalculator:
             return
 
 
+def invokeGC():
+    while True:
+        gc.enable()
+        gc.collect(generation=2)
+        time.sleep(3)
+
+
 def threadRunner(topic):
     """To run FpsCalculator for each topic"""
     dev_mode = bool(strtobool(config_dict['dev_mode']))
@@ -153,6 +166,9 @@ if __name__ == "__main__":
     topics = config_dict['SubTopics']
     export_to_csv = bool(strtobool(config_dict['export_to_csv']))
     total_number_of_frames = int(config_dict['total_number_of_frames'])
+
+    gc_thread = threading.Thread(target=invokeGC)
+    gc_thread.start()
 
     # Calculating FPS for each topic
     threads = []
