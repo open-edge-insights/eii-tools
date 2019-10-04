@@ -47,14 +47,16 @@ def get_config():
         config_dict = json.load(f)
         return config_dict
 
+
 logger = logging.getLogger(__name__)
+
 
 class FpsCalculator:
     """ A sample app to check FPS of
     individual modules. """
 
     def __init__(self, devMode, topics,
-                 total_number_of_frames):
+                 total_number_of_frames, config_dict):
         self.devMode = devMode
         self.publisher, self.topic = topic.split("/")
         os.environ[self.topic+'_cfg'] = config_dict[self.topic+'_cfg']
@@ -70,12 +72,9 @@ class FpsCalculator:
         }
         if not self.devMode:
             conf = {
-                "certFile": "../../docker_setup/provision\
-                /Certificates/root/root_client_certificate.pem",
-                "keyFile": "../../docker_setup/provision\
-                /Certificates/root/root_client_key.pem",
-                "trustFile": "../../docker_setup/provision\
-                /Certificates/ca/ca_certificate.pem"
+                "certFile": config_dict["certFile"],
+                "keyFile": config_dict["keyFile"],
+                "trustFile": config_dict["trustFile"]
             }
         cfg_mgr = ConfigManager()
         self.config_client = cfg_mgr.get_config_client("etcd", conf)
@@ -146,11 +145,12 @@ def invokeGC():
         time.sleep(3)
 
 
-def threadRunner(topic):
+def threadRunner(topic, config_dict):
     """To run FpsCalculator for each topic"""
     fps_app = FpsCalculator(dev_mode,
                             topic,
-                            total_number_of_frames)
+                            total_number_of_frames,
+                            config_dict)
     fps_app.eisSubscriber()
 
 
@@ -160,7 +160,7 @@ if __name__ == "__main__":
 
     dev_mode = bool(strtobool(config_dict['dev_mode']))
 
-    if dev_mode == True:
+    if dev_mode:
         fmt_str = ('%(asctime)s : %(levelname)s  : {} : %(name)s : [%(filename)s] :' .format("Insecure Mode")+
                '%(funcName)s : in line : [%(lineno)d] : %(message)s')
     else:
@@ -179,7 +179,7 @@ if __name__ == "__main__":
     # Calculating FPS for each topic
     threads = []
     for topic in topics:
-        thread = threading.Thread(target=threadRunner, args=(topic,))
+        thread = threading.Thread(target=threadRunner, args=(topic,config_dict,))
         threads.append(thread)
         thread.start()
     for thread in threads:

@@ -1,7 +1,11 @@
 {
-    "SubTopics": ["VideoAnalytics/camera1_stream_results"],
+    "SubTopics": ["VideoAnalytics/camera1_stream_results", "VideoIngestion/camera1_stream"],
     "camera1_stream_results_cfg": "zmq_tcp,127.0.0.1:65013",
+    "camera1_stream_cfg": "zmq_ipc,/opt/intel/eis/sockets/",
     "dev_mode" : "False",
     "total_number_of_frames" : 1000,
-    "export_to_csv" : "False"
+    "export_to_csv" : "False",
+    "certFile" : "../../docker_setup/provision/Certificates/root/root_client_certificate.pem",
+    "keyFile"  : "../../docker_setup/provision/Certificates/root/root_client_key.pem",
+    "trustFile": "../../docker_setup/provision/Certificates/ca/ca_certificate.pem"
 }
