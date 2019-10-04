@@ -20,6 +20,7 @@ services:
     volumes:
       - "${SAVE_PATH}:/output/"
       - "./config:/EIS/DiscoverHistory/config"
+      - "${EIS_INSTALL_PATH}/sockets:${SOCKET_DIR}"
     #comment secrets while running in DEV mode (DEV_MODE=true).
     secrets:
       - ca_etcd

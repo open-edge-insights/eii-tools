@@ -134,7 +134,7 @@ def retrieve_image_frames(eis_config,query_config,img_handle_queue):
         msgbus = mb.MsgbusContext(eis_config)
 
         logger.info(f'Initializing service for topic \'imagestore_service\'')
-        service = msgbus.get_service('imagestore_service')
+        service = msgbus.get_service('ImageStore')
 
         logger.info(f'Running...')
         while True:

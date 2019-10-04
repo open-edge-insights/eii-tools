@@ -78,6 +78,18 @@ to
 4. "select * from camera1_stream_results where time>=now()-1h"
     This query will return all the records from the current time, going back upto last 1 hour.
 
+## TO RUN THE TOOL IN zmq_ipc MODE
+Please make sure to change the content of [eis_config.json](DiscoverHistory/config/eis_config.json) 
+
+to
+```
+    {
+        "type": "zmq_ipc",
+        "socket_dir": "/EIS/sockets/"
+    }
+```
+
+
 NOTE: If you want good and bad frames then the query must contain the following parameters:
 	
 	*img_handle

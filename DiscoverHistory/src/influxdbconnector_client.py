@@ -43,7 +43,7 @@ def query_influxdb(eis_config,query_config,img_handle_queue):
         logger.info(f'Initializing message bus context')
         msgbus = mb.MsgbusContext(eis_config)
         logger.info('Initializing service for topic \'{"influxconnector_service"}\'')
-        service = msgbus.get_service("influxconnector_service")
+        service = msgbus.get_service("InfluxDBConnector")
         request = {'command':query_config["query"]}
         logger.info(f'Running...')
         logger.info(f'Sending request {request}')
