@@ -197,6 +197,7 @@ if __name__ == "__main__":
                      .format(avg_fps_per_topic))
         sheet1.write(2, 0, 'Total FPS for {0} frames {1}'
                      .format(total_number_of_frames, final_fps))
+        wb.save('FPS_results.xls')
         logger.info('Check FPS_results.xls file for total FPS...')
     else:
         logger.info('Average FPS for each topic {0}'
@@ -204,3 +205,6 @@ if __name__ == "__main__":
         logger.info('Total FPS for {0} frames {1}'
                     .format(total_number_of_frames,
                             final_fps))
+
+    # Exiting after Fps is calculated
+    os._exit(-1)

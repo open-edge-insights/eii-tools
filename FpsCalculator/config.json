@@ -1,7 +1,6 @@
 {
-    "SubTopics": ["VideoAnalytics/camera1_stream_results", "VideoIngestion/camera1_stream"],
+    "SubTopics": ["VideoAnalytics/camera1_stream_results"],
     "camera1_stream_results_cfg": "zmq_tcp,127.0.0.1:65013",
-    "camera1_stream_cfg": "zmq_ipc,/opt/intel/eis/sockets/",
     "dev_mode" : "False",
     "total_number_of_frames" : 1000,
     "export_to_csv" : "False",
