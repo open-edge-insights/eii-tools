@@ -1,2 +1,3 @@
 #!/bin/bash
-docker run --rm -itd --net host --name publisher publisher
+echo "*****Running publisher container*****"
+docker run --rm -it --net host --name publisher publisher

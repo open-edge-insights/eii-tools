@@ -1,8 +1,3 @@
 #!/bin/bash
-
-if [[ "$(docker images -q publisher:latest 2> /dev/null)" != "" ]]; then
-    echo "-- Deleting previous image"
-    docker rmi -f publisher
-fi
-
+echo "*****Building publisher image*****"
 docker build -t publisher .
