@@ -15,8 +15,8 @@ COPY --from=common /util ${PY_WORK_DIR}/util
 ARG DEBIAN_FRONTEND=noninteractive
 RUN echo "$HOST_TIME_ZONE">/etc/timezone
 RUN cat /etc/timezone
-RUN apt-get update
-RUN apt-get install -y tzdata && \
+RUN apt-get update && \
+    apt-get install -y tzdata && \
     ln -sf /usr/share/zoneinfo/${HOST_TIME_ZONE} /etc/localtime && \
     dpkg-reconfigure -f noninteractive tzdata
 
