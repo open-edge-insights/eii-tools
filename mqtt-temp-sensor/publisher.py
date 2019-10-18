@@ -90,6 +90,8 @@ def main():
                 print('-- Publishing message', ts)
                 msg = { 'ts': ts, 'temperature': random.uniform(10, 30) }
                 client.publish(TOPIC, json.dumps(msg), qos=args.qos)
+                if args.interval > 1000:
+                    args.interval = 1000
                 time.sleep(args.interval)
     except KeyboardInterrupt:
         print('-- Quitting')
