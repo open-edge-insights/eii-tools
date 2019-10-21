@@ -48,8 +48,8 @@ This module calculates the FPS of any EIS modules based on the stream published 
 6. If using FpsCalculator in PROD mode, make sure to set required permissions to certificates.
 
     ```sh
-        sudo chmod -R 777 ../../docker_setup/provision/Certificates/ca
-        sudo chmod -R 777 ../../docker_setup/provision/Certificates/root
+        sudo chmod -R 755 ../../docker_setup/provision/Certificates/ca
+        sudo chmod -R 755 ../../docker_setup/provision/Certificates/root
     ```
 
     Caution: This step will make the certs insecure. Please do not do it on a production machine.
