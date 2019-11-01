@@ -9,9 +9,6 @@ FROM eisbase
 
 ARG HOST_TIME_ZONE=""
 
-COPY --from=common /libs ${PY_WORK_DIR}/libs
-COPY --from=common /util ${PY_WORK_DIR}/util
-
 ARG DEBIAN_FRONTEND=noninteractive
 RUN echo "$HOST_TIME_ZONE">/etc/timezone
 RUN cat /etc/timezone
@@ -20,17 +17,16 @@ RUN apt-get update && \
     ln -sf /usr/share/zoneinfo/${HOST_TIME_ZONE} /etc/localtime && \
     dpkg-reconfigure -f noninteractive tzdata
 
+COPY --from=common ${GO_WORK_DIR}/common/libs ${PY_WORK_DIR}/libs
+COPY --from=common ${GO_WORK_DIR}/common/util ${PY_WORK_DIR}/util
+COPY --from=common ${GO_WORK_DIR}/common/cmake ${PY_WORK_DIR}/common/cmake
+COPY --from=common /usr/local/lib /usr/local/lib
+COPY --from=common /usr/local/lib/python3.6/dist-packages/ /usr/local/lib/python3.6/dist-packages/
 
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 RUN apt-get install -y python3.6-tk
-RUN cd ./libs/EISMessageBus && \
-    rm -rf build deps && \
-    mkdir build && \
-    cd build && \
-    cmake -DWITH_PYTHON=ON .. && \
-    make && \
-    make install
+
 ENV PYTHONPATH ${PYTHONPATH}:.:../../
 COPY ./ ./DiscoverHistory
 WORKDIR ./DiscoverHistory/src
