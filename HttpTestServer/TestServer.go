@@ -138,7 +138,7 @@ func (t *testServer) requestImage(metadata []byte) {
 	topic := fmt.Sprintf("%v", metadataJSON["topic"])
 
 	// Request images only for streams containing results
-	if strings.Contains(topic, "results") {
+	if strings.Contains(topic, "stream_results") {
 
 		imgHandle := fmt.Sprintf("%v", metadataJSON["img_handle"])
 

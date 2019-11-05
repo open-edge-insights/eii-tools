@@ -2,7 +2,7 @@
 
 HttpTestServer runs a simple HTTP Test server with security being optional.
 
-* To Run test rde test application
+* To Run test rest data export test application
 
     1. To run the HttpTestServer
     ```
