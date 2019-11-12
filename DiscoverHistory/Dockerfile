@@ -31,5 +31,11 @@ ENV PYTHONPATH ${PYTHONPATH}:.:../../
 COPY ./ ./DiscoverHistory
 WORKDIR ./DiscoverHistory/src
 
+#Removing build dependencies
+RUN apt-get remove -y wget && \
+    apt-get remove -y git && \
+    apt-get remove curl && \
+    apt-get autoremove -y
+
 
 ENTRYPOINT [ "python3.6", "main.py" ]
