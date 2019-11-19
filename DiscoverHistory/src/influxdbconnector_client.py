@@ -53,7 +53,7 @@ def query_influxdb(eis_config,query_config,img_handle_queue):
         if len(response['Data']) > 0:
             loaded_json = json.loads(response['Data'])
             index = -1
-            valid_input=['channel','defects','encoding_level','encoding_type','height','width']         
+            valid_input=['channels','defects','encoding_level','encoding_type','height','width']
             check = all(item in loaded_json['columns'] for item in valid_input)
             if check is True:
                 for key in loaded_json['columns']:
@@ -70,7 +70,7 @@ def query_influxdb(eis_config,query_config,img_handle_queue):
                     img_handle_queue.put(temp_dict)
                     
 
-            output_dir = "/output/" + "/" + "data"
+            output_dir = "/output" + "/" + "data"
             now = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
             filename = str(now) + ".dat"
             common.write_to_file(filename, str.encode(response['Data']), output_dir)

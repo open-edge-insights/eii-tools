@@ -64,7 +64,7 @@ def draw_defects(elm, frame, dir_name) :
                 logger.error("frame: {}, exception: {}".format(frame, ex))
         else:
             logger.info("Encoding not enabled...")
-            frame = np.reshape(frame, (height, width, channel))
+            frame = np.reshape(frame, (height, width, channels))
 
          # Display information about frame
         (dx, dy) = (20, 10)
