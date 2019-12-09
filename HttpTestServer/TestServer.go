@@ -113,8 +113,13 @@ func (t *testServer) startTestServer() {
 
 		// Create a Server instance to listen on port with the TLS config
 		server := &http.Server{
-			Addr:      t.host + ":" + t.port,
-			TLSConfig: tlsConfig,
+			Addr:              t.host + ":" + t.port,
+			ReadTimeout:       60 * time.Second,
+			ReadHeaderTimeout: 60 * time.Second,
+			WriteTimeout:      60 * time.Second,
+			IdleTimeout:       60 * time.Second,
+			MaxHeaderBytes:    1 << 20,
+			TLSConfig:         tlsConfig,
 		}
 
 		// Listen to HTTPS connections with the server certificate and wait
@@ -130,7 +135,7 @@ func (t *testServer) startTestServer() {
 func (t *testServer) requestImage(metadata []byte) {
 
 	// Timeout for every request
-	timeout := time.Duration(10 * time.Second)
+	timeout := time.Duration(60 * time.Second)
 
 	// Fetching topic from metadata
 	var metadataJSON map[string]interface{}
