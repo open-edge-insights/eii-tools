@@ -200,6 +200,8 @@ func (t *testServer) requestImage(metadata []byte) {
 
 // responseServer starts a server to receive POST requests
 func (t *testServer) responseServer(w http.ResponseWriter, r *http.Request) {
+	// Setting content type for encoding
+	w.Header().Set("Content-type", "text/plain; charset=utf-8")
 
 	switch r.Method {
 	case "GET":
