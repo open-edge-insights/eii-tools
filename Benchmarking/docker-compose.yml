@@ -1,0 +1,1728 @@
+version: '3.6'
+
+services:
+
+  ##----Start: EIS Base Images -- This Base images must be included for building any EIS servcies ----
+  ## Define ia_eisbase service
+  ia_eisbase:
+    build:
+      context: $PWD/../common
+      dockerfile: $PWD/../common/dockerfiles/Dockerfile.eisbase
+      args:
+          UBUNTU_IMAGE_VERSION: ${UBUNTU_IMAGE_VERSION}
+          EIS_VERSION: ${EIS_VERSION}
+    image: ${DOCKER_REGISTRY}ia_eisbase:${EIS_VERSION}
+
+  ## Define ia_common service
+  ia_common:
+    depends_on:
+      - ia_eisbase
+    build:
+      context: $PWD/../common
+      dockerfile: $PWD/../common/dockerfiles/Dockerfile.common
+      args:
+          EIS_VERSION: ${EIS_VERSION}
+          # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
+          CMAKE_BUILD_TYPE: "Release"
+    read_only: true
+    image: ${DOCKER_REGISTRY}ia_common:${EIS_VERSION}
+
+  ## Define ia_openvino_base service
+  ia_openvino_base:
+    depends_on:
+      - ia_common
+    build:
+      context: $PWD/../common/openvino
+      dockerfile: $PWD/../common/openvino/Dockerfile.openvino
+      args:
+          EIS_VERSION: ${EIS_VERSION}
+    read_only: true
+    image: ${DOCKER_REGISTRY}ia_openvino_base:${EIS_VERSION}
+
+  ##----End: EIS Base Images---- -- This Base images must be included for building any EIS servcies ----
+
+  ## Define ETCD UI service - must be included to view ETCD data over web UI
+  ia_etcd_ui:
+    build:
+      context: $PWD/../EtcdUI
+      dockerfile: $PWD/../EtcdUI/Dockerfile
+      args:
+        ETCD_KEEPER_VERSION: ${ETCD_KEEPER_VERSION}
+        EIS_VERSION: ${EIS_VERSION}
+    read_only: true
+    image: ${DOCKER_REGISTRY}ia_etcd_ui:${EIS_VERSION}
+    container_name: ia_etcd_ui
+    hostname: ia_etcd_ui
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      AppName: "EtcdUi"
+      DEV_MODE: ${DEV_MODE}
+    user: ${EIS_UID}
+    secrets:
+      - ca_etcd
+      - etcd_root_cert
+      - etcd_root_key
+
+  ##----Start: EIS Containers ----
+  ## Define VideoIngestion service
+
+  ia_video_ingestion1:
+    depends_on:
+      - ia_openvino_base
+    build:
+      context: ../VideoIngestion
+      dockerfile: $PWD/../VideoIngestion/Dockerfile
+      args:
+        EIS_VERSION: ${EIS_VERSION}
+        EIS_UID: ${EIS_UID}
+        EIS_USER_NAME: ${EIS_USER_NAME}
+        # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
+        CMAKE_BUILD_TYPE: "Release"
+        WITH_PROFILE: "ON"
+    read_only: true
+    image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
+    container_name: ia_video_ingestion1
+    hostname: ia_video_ingestion1
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      AppName: "VideoIngestion1"
+      DEV_MODE: ${DEV_MODE}
+      PROFILING_MODE: ${PROFILING_MODE}
+      no_proxy: ${no_proxy},${RTSP_CAMERA_IP}
+
+      # MessageBus Endpoint Configuration
+      # Setting Visualizer as a subscriber here for FpsCalculator
+      Clients: "VideoAnalytics,Visualizer,RestDataExport,WebVisualizer,TLS_RemoteAgent"
+      CertType: "zmq"
+      ZMQ_RECV_HWM: "1000"
+
+      # Use IPC mode (zmq_ipc) when VideoIngestion and VideoAnalytics based
+      # containers are running on the same host. If they are running on diff
+      # host, please use TCP mode for communication.
+      # Eg: Stream cfg for
+      # IPC: zmq_ipc, <absolut_socket_directory_path>
+      # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+      PubTopics: "camera1_stream"
+      camera1_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
+    volumes:
+      - "vol_eis_socket:${SOCKET_DIR}"
+      - "/var/tmp:/var/tmp"  
+    privileged: true
+    devices:
+      - "/dev/dri"
+      - "/dev/:/dev/"
+    secrets:
+      - ca_etcd
+      - etcd_VideoIngestion1_cert
+      - etcd_VideoIngestion1_key 
+      
+  ia_video_ingestion2:
+    depends_on:
+      - ia_openvino_base
+    build:
+      context: ../VideoIngestion
+      dockerfile: $PWD/../VideoIngestion/Dockerfile
+      args:
+        EIS_VERSION: ${EIS_VERSION}
+        EIS_UID: ${EIS_UID}
+        EIS_USER_NAME: ${EIS_USER_NAME}
+        # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
+        CMAKE_BUILD_TYPE: "Release"
+        WITH_PROFILE: "ON"
+    read_only: true
+    image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
+    container_name: ia_video_ingestion2
+    hostname: ia_video_ingestion2
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      AppName: "VideoIngestion2"
+      DEV_MODE: ${DEV_MODE}
+      PROFILING_MODE: ${PROFILING_MODE}
+      no_proxy: ${no_proxy},${RTSP_CAMERA_IP}
+
+      # MessageBus Endpoint Configuration
+      # Setting Visualizer as a subscriber here for FpsCalculator
+      Clients: "VideoAnalytics,Visualizer,RestDataExport,WebVisualizer,TLS_RemoteAgent"
+      CertType: "zmq"
+      ZMQ_RECV_HWM: "1000"
+
+      # Use IPC mode (zmq_ipc) when VideoIngestion and VideoAnalytics based
+      # containers are running on the same host. If they are running on diff
+      # host, please use TCP mode for communication.
+      # Eg: Stream cfg for
+      # IPC: zmq_ipc, <absolut_socket_directory_path>
+      # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+      PubTopics: "camera2_stream"
+      camera2_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
+    volumes:
+      - "vol_eis_socket:${SOCKET_DIR}"
+      - "/var/tmp:/var/tmp"  
+    privileged: true
+    devices:
+      - "/dev/dri"
+      - "/dev/:/dev/"
+    secrets:
+      - ca_etcd
+      - etcd_VideoIngestion2_cert
+      - etcd_VideoIngestion2_key
+
+  ia_video_ingestion3:
+    depends_on:
+      - ia_openvino_base
+    build:
+      context: ../VideoIngestion
+      dockerfile: $PWD/../VideoIngestion/Dockerfile
+      args:
+        EIS_VERSION: ${EIS_VERSION}
+        EIS_UID: ${EIS_UID}
+        EIS_USER_NAME: ${EIS_USER_NAME}
+        # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
+        CMAKE_BUILD_TYPE: "Release"
+        WITH_PROFILE: "ON"
+    read_only: true
+    image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
+    container_name: ia_video_ingestion3
+    hostname: ia_video_ingestion3
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      AppName: "VideoIngestion3"
+      DEV_MODE: ${DEV_MODE}
+      PROFILING_MODE: ${PROFILING_MODE}
+      no_proxy: ${no_proxy},${RTSP_CAMERA_IP}
+
+      # MessageBus Endpoint Configuration
+      # Setting Visualizer as a subscriber here for FpsCalculator
+      Clients: "VideoAnalytics,Visualizer,RestDataExport,WebVisualizer,TLS_RemoteAgent"
+      CertType: "zmq"
+      ZMQ_RECV_HWM: "1000"
+
+      # Use IPC mode (zmq_ipc) when VideoIngestion and VideoAnalytics based
+      # containers are running on the same host. If they are running on diff
+      # host, please use TCP mode for communication.
+      # Eg: Stream cfg for
+      # IPC: zmq_ipc, <absolut_socket_directory_path>
+      # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+      PubTopics: "camera3_stream"
+      camera3_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
+    volumes:
+      - "vol_eis_socket:${SOCKET_DIR}"
+      - "/var/tmp:/var/tmp"  
+    privileged: true
+    devices:
+      - "/dev/dri"
+      - "/dev/:/dev/"
+    secrets:
+      - ca_etcd
+      - etcd_VideoIngestion3_cert
+      - etcd_VideoIngestion3_key
+      
+  ia_video_ingestion4:
+    depends_on:
+      - ia_openvino_base
+    build:
+      context: ../VideoIngestion
+      dockerfile: $PWD/../VideoIngestion/Dockerfile
+      args:
+        EIS_VERSION: ${EIS_VERSION}
+        EIS_UID: ${EIS_UID}
+        EIS_USER_NAME: ${EIS_USER_NAME}
+        # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
+        CMAKE_BUILD_TYPE: "Release"
+        WITH_PROFILE: "ON"
+    read_only: true
+    image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
+    container_name: ia_video_ingestion4
+    hostname: ia_video_ingestion4
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      AppName: "VideoIngestion4"
+      DEV_MODE: ${DEV_MODE}
+      PROFILING_MODE: ${PROFILING_MODE}
+      no_proxy: ${no_proxy},${RTSP_CAMERA_IP}
+
+      # MessageBus Endpoint Configuration
+      # Setting Visualizer as a subscriber here for FpsCalculator
+      Clients: "VideoAnalytics,Visualizer,RestDataExport,WebVisualizer,TLS_RemoteAgent"
+      CertType: "zmq"
+      ZMQ_RECV_HWM: "1000"
+
+      # Use IPC mode (zmq_ipc) when VideoIngestion and VideoAnalytics based
+      # containers are running on the same host. If they are running on diff
+      # host, please use TCP mode for communication.
+      # Eg: Stream cfg for
+      # IPC: zmq_ipc, <absolut_socket_directory_path>
+      # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+      PubTopics: "camera4_stream"
+      camera4_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
+    volumes:
+      - "vol_eis_socket:${SOCKET_DIR}"
+      - "/var/tmp:/var/tmp"  
+    privileged: true
+    devices:
+      - "/dev/dri"
+      - "/dev/:/dev/"
+    secrets:
+      - ca_etcd
+      - etcd_VideoIngestion4_cert
+      - etcd_VideoIngestion4_key
+
+  ia_video_ingestion5:
+    depends_on:
+      - ia_openvino_base
+    build:
+      context: ../VideoIngestion
+      dockerfile: $PWD/../VideoIngestion/Dockerfile
+      args:
+        EIS_VERSION: ${EIS_VERSION}
+        EIS_UID: ${EIS_UID}
+        EIS_USER_NAME: ${EIS_USER_NAME}
+        # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
+        CMAKE_BUILD_TYPE: "Release"
+        WITH_PROFILE: "ON"
+    read_only: true
+    image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
+    container_name: ia_video_ingestion5
+    hostname: ia_video_ingestion5
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      AppName: "VideoIngestion5"
+      DEV_MODE: ${DEV_MODE}
+      PROFILING_MODE: ${PROFILING_MODE}
+      no_proxy: ${no_proxy},${RTSP_CAMERA_IP}
+
+      # MessageBus Endpoint Configuration
+      # Setting Visualizer as a subscriber here for FpsCalculator
+      Clients: "VideoAnalytics,Visualizer,RestDataExport,WebVisualizer,TLS_RemoteAgent"
+      CertType: "zmq"
+      ZMQ_RECV_HWM: "1000"
+
+      # Use IPC mode (zmq_ipc) when VideoIngestion and VideoAnalytics based
+      # containers are running on the same host. If they are running on diff
+      # host, please use TCP mode for communication.
+      # Eg: Stream cfg for
+      # IPC: zmq_ipc, <absolut_socket_directory_path>
+      # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+      PubTopics: "camera5_stream"
+      camera5_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
+    volumes:
+      - "vol_eis_socket:${SOCKET_DIR}"
+      - "/var/tmp:/var/tmp"  
+    privileged: true
+    devices:
+      - "/dev/dri"
+      - "/dev/:/dev/"
+    secrets:
+      - ca_etcd
+      - etcd_VideoIngestion5_cert
+      - etcd_VideoIngestion5_key 
+      
+  ia_video_ingestion6:
+    depends_on:
+      - ia_openvino_base
+    build:
+      context: ../VideoIngestion
+      dockerfile: $PWD/../VideoIngestion/Dockerfile
+      args:
+        EIS_VERSION: ${EIS_VERSION}
+        EIS_UID: ${EIS_UID}
+        EIS_USER_NAME: ${EIS_USER_NAME}
+        # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
+        CMAKE_BUILD_TYPE: "Release"
+        WITH_PROFILE: "ON"
+    read_only: true
+    image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
+    container_name: ia_video_ingestion6
+    hostname: ia_video_ingestion6
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      AppName: "VideoIngestion6"
+      DEV_MODE: ${DEV_MODE}
+      PROFILING_MODE: ${PROFILING_MODE}
+      no_proxy: ${no_proxy},${RTSP_CAMERA_IP}
+
+      # MessageBus Endpoint Configuration
+      # Setting Visualizer as a subscriber here for FpsCalculator
+      Clients: "VideoAnalytics,Visualizer,RestDataExport,WebVisualizer,TLS_RemoteAgent"
+      CertType: "zmq"
+      ZMQ_RECV_HWM: "1000"
+
+      # Use IPC mode (zmq_ipc) when VideoIngestion and VideoAnalytics based
+      # containers are running on the same host. If they are running on diff
+      # host, please use TCP mode for communication.
+      # Eg: Stream cfg for
+      # IPC: zmq_ipc, <absolut_socket_directory_path>
+      # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+      PubTopics: "camera6_stream"
+      camera6_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
+    volumes:
+      - "vol_eis_socket:${SOCKET_DIR}"
+      - "/var/tmp:/var/tmp"  
+    privileged: true
+    devices:
+      - "/dev/dri"
+      - "/dev/:/dev/"
+    secrets:
+      - ca_etcd
+      - etcd_VideoIngestion6_cert
+      - etcd_VideoIngestion6_key
+
+  ia_video_ingestion7:
+    depends_on:
+      - ia_openvino_base
+    build:
+      context: ../VideoIngestion
+      dockerfile: $PWD/../VideoIngestion/Dockerfile
+      args:
+        EIS_VERSION: ${EIS_VERSION}
+        EIS_UID: ${EIS_UID}
+        EIS_USER_NAME: ${EIS_USER_NAME}
+        # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
+        CMAKE_BUILD_TYPE: "Release"
+        WITH_PROFILE: "ON"
+    read_only: true
+    image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
+    container_name: ia_video_ingestion7
+    hostname: ia_video_ingestion7
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      AppName: "VideoIngestion7"
+      DEV_MODE: ${DEV_MODE}
+      PROFILING_MODE: ${PROFILING_MODE}
+      no_proxy: ${no_proxy},${RTSP_CAMERA_IP}
+
+      # MessageBus Endpoint Configuration
+      # Setting Visualizer as a subscriber here for FpsCalculator
+      Clients: "VideoAnalytics,Visualizer,RestDataExport,WebVisualizer,TLS_RemoteAgent"
+      CertType: "zmq"
+      ZMQ_RECV_HWM: "1000"
+
+      # Use IPC mode (zmq_ipc) when VideoIngestion and VideoAnalytics based
+      # containers are running on the same host. If they are running on diff
+      # host, please use TCP mode for communication.
+      # Eg: Stream cfg for
+      # IPC: zmq_ipc, <absolut_socket_directory_path>
+      # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+      PubTopics: "camera7_stream"
+      camera7_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
+    volumes:
+      - "vol_eis_socket:${SOCKET_DIR}"
+      - "/var/tmp:/var/tmp"  
+    privileged: true
+    devices:
+      - "/dev/dri"
+      - "/dev/:/dev/"
+    secrets:
+      - ca_etcd
+      - etcd_VideoIngestion7_cert
+      - etcd_VideoIngestion7_key     
+
+  ia_video_ingestion8:
+    depends_on:
+      - ia_openvino_base
+    build:
+      context: ../VideoIngestion
+      dockerfile: $PWD/../VideoIngestion/Dockerfile
+      args:
+        EIS_VERSION: ${EIS_VERSION}
+        EIS_UID: ${EIS_UID}
+        EIS_USER_NAME: ${EIS_USER_NAME}
+        # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
+        CMAKE_BUILD_TYPE: "Release"
+        WITH_PROFILE: "ON"
+    read_only: true
+    image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
+    container_name: ia_video_ingestion8
+    hostname: ia_video_ingestion8
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      AppName: "VideoIngestion8"
+      DEV_MODE: ${DEV_MODE}
+      PROFILING_MODE: ${PROFILING_MODE}
+      no_proxy: ${no_proxy},${RTSP_CAMERA_IP}
+
+      # MessageBus Endpoint Configuration
+      # Setting Visualizer as a subscriber here for FpsCalculator
+      Clients: "VideoAnalytics,Visualizer,RestDataExport,WebVisualizer,TLS_RemoteAgent"
+      CertType: "zmq"
+      ZMQ_RECV_HWM: "1000"
+
+      # Use IPC mode (zmq_ipc) when VideoIngestion and VideoAnalytics based
+      # containers are running on the same host. If they are running on diff
+      # host, please use TCP mode for communication.
+      # Eg: Stream cfg for
+      # IPC: zmq_ipc, <absolut_socket_directory_path>
+      # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+      PubTopics: "camera8_stream"
+      camera8_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
+    volumes:
+      - "vol_eis_socket:${SOCKET_DIR}"
+      - "/var/tmp:/var/tmp"  
+    privileged: true
+    devices:
+      - "/dev/dri"
+      - "/dev/:/dev/"
+    secrets:
+      - ca_etcd
+      - etcd_VideoIngestion8_cert
+      - etcd_VideoIngestion8_key
+
+  ia_video_ingestion9:
+    depends_on:
+      - ia_openvino_base
+    build:
+      context: ../VideoIngestion
+      dockerfile: $PWD/../VideoIngestion/Dockerfile
+      args:
+        EIS_VERSION: ${EIS_VERSION}
+        EIS_UID: ${EIS_UID}
+        EIS_USER_NAME: ${EIS_USER_NAME}
+        # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
+        CMAKE_BUILD_TYPE: "Release"
+        WITH_PROFILE: "ON"
+    read_only: true
+    image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
+    container_name: ia_video_ingestion9
+    hostname: ia_video_ingestion9
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      AppName: "VideoIngestion9"
+      DEV_MODE: ${DEV_MODE}
+      PROFILING_MODE: ${PROFILING_MODE}
+      no_proxy: ${no_proxy},${RTSP_CAMERA_IP}
+
+      # MessageBus Endpoint Configuration
+      # Setting Visualizer as a subscriber here for FpsCalculator
+      Clients: "VideoAnalytics,Visualizer,RestDataExport,WebVisualizer,TLS_RemoteAgent"
+      CertType: "zmq"
+      ZMQ_RECV_HWM: "1000"
+
+      # Use IPC mode (zmq_ipc) when VideoIngestion and VideoAnalytics based
+      # containers are running on the same host. If they are running on diff
+      # host, please use TCP mode for communication.
+      # Eg: Stream cfg for
+      # IPC: zmq_ipc, <absolut_socket_directory_path>
+      # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+      PubTopics: "camera9_stream"
+      camera9_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
+    volumes:
+      - "vol_eis_socket:${SOCKET_DIR}"
+      - "/var/tmp:/var/tmp"  
+    privileged: true
+    devices:
+      - "/dev/dri"
+      - "/dev/:/dev/"
+    secrets:
+      - ca_etcd
+      - etcd_VideoIngestion9_cert
+      - etcd_VideoIngestion9_key 
+      
+  ia_video_ingestion10:
+    depends_on:
+      - ia_openvino_base
+    build:
+      context: ../VideoIngestion
+      dockerfile: $PWD/../VideoIngestion/Dockerfile
+      args:
+        EIS_VERSION: ${EIS_VERSION}
+        EIS_UID: ${EIS_UID}
+        EIS_USER_NAME: ${EIS_USER_NAME}
+        # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
+        CMAKE_BUILD_TYPE: "Release"
+        WITH_PROFILE: "ON"
+    read_only: true
+    image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
+    container_name: ia_video_ingestion10
+    hostname: ia_video_ingestion10
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      AppName: "VideoIngestion10"
+      DEV_MODE: ${DEV_MODE}
+      PROFILING_MODE: ${PROFILING_MODE}
+      no_proxy: ${no_proxy},${RTSP_CAMERA_IP}
+
+      # MessageBus Endpoint Configuration
+      # Setting Visualizer as a subscriber here for FpsCalculator
+      Clients: "VideoAnalytics,Visualizer,RestDataExport,WebVisualizer,TLS_RemoteAgent"
+      CertType: "zmq"
+      ZMQ_RECV_HWM: "1000"
+
+      # Use IPC mode (zmq_ipc) when VideoIngestion and VideoAnalytics based
+      # containers are running on the same host. If they are running on diff
+      # host, please use TCP mode for communication.
+      # Eg: Stream cfg for
+      # IPC: zmq_ipc, <absolut_socket_directory_path>
+      # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+      PubTopics: "camera10_stream"
+      camera10_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
+    volumes:
+      - "vol_eis_socket:${SOCKET_DIR}"
+      - "/var/tmp:/var/tmp"  
+    privileged: true
+    devices:
+      - "/dev/dri"
+      - "/dev/:/dev/"
+    secrets:
+      - ca_etcd
+      - etcd_VideoIngestion10_cert
+      - etcd_VideoIngestion10_key
+
+  ia_video_ingestion11:
+    depends_on:
+      - ia_openvino_base
+    build:
+      context: ../VideoIngestion
+      dockerfile: $PWD/../VideoIngestion/Dockerfile
+      args:
+        EIS_VERSION: ${EIS_VERSION}
+        EIS_UID: ${EIS_UID}
+        EIS_USER_NAME: ${EIS_USER_NAME}
+        # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
+        CMAKE_BUILD_TYPE: "Release"
+        WITH_PROFILE: "ON"
+    read_only: true
+    image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
+    container_name: ia_video_ingestion11
+    hostname: ia_video_ingestion11
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      AppName: "VideoIngestion11"
+      DEV_MODE: ${DEV_MODE}
+      PROFILING_MODE: ${PROFILING_MODE}
+      no_proxy: ${no_proxy},${RTSP_CAMERA_IP}
+
+      # MessageBus Endpoint Configuration
+      # Setting Visualizer as a subscriber here for FpsCalculator
+      Clients: "VideoAnalytics,Visualizer,RestDataExport,WebVisualizer,TLS_RemoteAgent"
+      CertType: "zmq"
+      ZMQ_RECV_HWM: "1000"
+
+      # Use IPC mode (zmq_ipc) when VideoIngestion and VideoAnalytics based
+      # containers are running on the same host. If they are running on diff
+      # host, please use TCP mode for communication.
+      # Eg: Stream cfg for
+      # IPC: zmq_ipc, <absolut_socket_directory_path>
+      # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+      PubTopics: "camera11_stream"
+      camera11_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
+    volumes:
+      - "vol_eis_socket:${SOCKET_DIR}"
+      - "/var/tmp:/var/tmp"  
+    privileged: true
+    devices:
+      - "/dev/dri"
+      - "/dev/:/dev/"
+    secrets:
+      - ca_etcd
+      - etcd_VideoIngestion11_cert
+      - etcd_VideoIngestion11_key
+      
+  ia_video_ingestion12:
+    depends_on:
+      - ia_openvino_base
+    build:
+      context: ../VideoIngestion
+      dockerfile: $PWD/../VideoIngestion/Dockerfile
+      args:
+        EIS_VERSION: ${EIS_VERSION}
+        EIS_UID: ${EIS_UID}
+        EIS_USER_NAME: ${EIS_USER_NAME}
+        # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
+        CMAKE_BUILD_TYPE: "Release"
+        WITH_PROFILE: "ON"
+    read_only: true
+    image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
+    container_name: ia_video_ingestion12
+    hostname: ia_video_ingestion12
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      AppName: "VideoIngestion12"
+      DEV_MODE: ${DEV_MODE}
+      PROFILING_MODE: ${PROFILING_MODE}
+      no_proxy: ${no_proxy},${RTSP_CAMERA_IP}
+
+      # MessageBus Endpoint Configuration
+      # Setting Visualizer as a subscriber here for FpsCalculator
+      Clients: "VideoAnalytics,Visualizer,RestDataExport,WebVisualizer,TLS_RemoteAgent"
+      CertType: "zmq"
+      ZMQ_RECV_HWM: "1000"
+
+      # Use IPC mode (zmq_ipc) when VideoIngestion and VideoAnalytics based
+      # containers are running on the same host. If they are running on diff
+      # host, please use TCP mode for communication.
+      # Eg: Stream cfg for
+      # IPC: zmq_ipc, <absolut_socket_directory_path>
+      # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+      PubTopics: "camera12_stream"
+      camera12_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
+    volumes:
+      - "vol_eis_socket:${SOCKET_DIR}"
+      - "/var/tmp:/var/tmp"  
+    privileged: true
+    devices:
+      - "/dev/dri"
+      - "/dev/:/dev/"
+    secrets:
+      - ca_etcd
+      - etcd_VideoIngestion12_cert
+      - etcd_VideoIngestion12_key
+
+  ia_video_ingestion13:
+    depends_on:
+      - ia_openvino_base
+    build:
+      context: ../VideoIngestion
+      dockerfile: $PWD/../VideoIngestion/Dockerfile
+      args:
+        EIS_VERSION: ${EIS_VERSION}
+        EIS_UID: ${EIS_UID}
+        EIS_USER_NAME: ${EIS_USER_NAME}
+        # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
+        CMAKE_BUILD_TYPE: "Release"
+        WITH_PROFILE: "ON"
+    read_only: true
+    image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
+    container_name: ia_video_ingestion13
+    hostname: ia_video_ingestion13
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      AppName: "VideoIngestion13"
+      DEV_MODE: ${DEV_MODE}
+      PROFILING_MODE: ${PROFILING_MODE}
+      no_proxy: ${no_proxy},${RTSP_CAMERA_IP}
+
+      # MessageBus Endpoint Configuration
+      # Setting Visualizer as a subscriber here for FpsCalculator
+      Clients: "VideoAnalytics,Visualizer,RestDataExport,WebVisualizer,TLS_RemoteAgent"
+      CertType: "zmq"
+      ZMQ_RECV_HWM: "1000"
+
+      # Use IPC mode (zmq_ipc) when VideoIngestion and VideoAnalytics based
+      # containers are running on the same host. If they are running on diff
+      # host, please use TCP mode for communication.
+      # Eg: Stream cfg for
+      # IPC: zmq_ipc, <absolut_socket_directory_path>
+      # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+      PubTopics: "camera13_stream"
+      camera13_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
+    volumes:
+      - "vol_eis_socket:${SOCKET_DIR}"
+      - "/var/tmp:/var/tmp"  
+    privileged: true
+    devices:
+      - "/dev/dri"
+      - "/dev/:/dev/"
+    secrets:
+      - ca_etcd
+      - etcd_VideoIngestion13_cert
+      - etcd_VideoIngestion13_key 
+      
+  ia_video_ingestion14:
+    depends_on:
+      - ia_openvino_base
+    build:
+      context: ../VideoIngestion
+      dockerfile: $PWD/../VideoIngestion/Dockerfile
+      args:
+        EIS_VERSION: ${EIS_VERSION}
+        EIS_UID: ${EIS_UID}
+        EIS_USER_NAME: ${EIS_USER_NAME}
+        # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
+        CMAKE_BUILD_TYPE: "Release"
+        WITH_PROFILE: "ON"
+    read_only: true
+    image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
+    container_name: ia_video_ingestion14
+    hostname: ia_video_ingestion14
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      AppName: "VideoIngestion14"
+      DEV_MODE: ${DEV_MODE}
+      PROFILING_MODE: ${PROFILING_MODE}
+      no_proxy: ${no_proxy},${RTSP_CAMERA_IP}
+
+      # MessageBus Endpoint Configuration
+      # Setting Visualizer as a subscriber here for FpsCalculator
+      Clients: "VideoAnalytics,Visualizer,RestDataExport,WebVisualizer,TLS_RemoteAgent"
+      CertType: "zmq"
+      ZMQ_RECV_HWM: "1000"
+
+      # Use IPC mode (zmq_ipc) when VideoIngestion and VideoAnalytics based
+      # containers are running on the same host. If they are running on diff
+      # host, please use TCP mode for communication.
+      # Eg: Stream cfg for
+      # IPC: zmq_ipc, <absolut_socket_directory_path>
+      # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+      PubTopics: "camera14_stream"
+      camera14_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
+    volumes:
+      - "vol_eis_socket:${SOCKET_DIR}"
+      - "/var/tmp:/var/tmp"  
+    privileged: true
+    devices:
+      - "/dev/dri"
+      - "/dev/:/dev/"
+    secrets:
+      - ca_etcd
+      - etcd_VideoIngestion14_cert
+      - etcd_VideoIngestion14_key
+
+  ia_video_ingestion15:
+    depends_on:
+      - ia_openvino_base
+    build:
+      context: ../VideoIngestion
+      dockerfile: $PWD/../VideoIngestion/Dockerfile
+      args:
+        EIS_VERSION: ${EIS_VERSION}
+        EIS_UID: ${EIS_UID}
+        EIS_USER_NAME: ${EIS_USER_NAME}
+        # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
+        CMAKE_BUILD_TYPE: "Release"
+        WITH_PROFILE: "ON"
+    read_only: true
+    image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
+    container_name: ia_video_ingestion15
+    hostname: ia_video_ingestion15
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      AppName: "VideoIngestion15"
+      DEV_MODE: ${DEV_MODE}
+      PROFILING_MODE: ${PROFILING_MODE}
+      no_proxy: ${no_proxy},${RTSP_CAMERA_IP}
+
+      # MessageBus Endpoint Configuration
+      # Setting Visualizer as a subscriber here for FpsCalculator
+      Clients: "VideoAnalytics,Visualizer,RestDataExport,WebVisualizer,TLS_RemoteAgent"
+      CertType: "zmq"
+      ZMQ_RECV_HWM: "1000"
+
+      # Use IPC mode (zmq_ipc) when VideoIngestion and VideoAnalytics based
+      # containers are running on the same host. If they are running on diff
+      # host, please use TCP mode for communication.
+      # Eg: Stream cfg for
+      # IPC: zmq_ipc, <absolut_socket_directory_path>
+      # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+      PubTopics: "camera15_stream"
+      camera15_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
+    volumes:
+      - "vol_eis_socket:${SOCKET_DIR}"
+      - "/var/tmp:/var/tmp"  
+    privileged: true
+    devices:
+      - "/dev/dri"
+      - "/dev/:/dev/"
+    secrets:
+      - ca_etcd
+      - etcd_VideoIngestion15_cert
+      - etcd_VideoIngestion15_key
+
+  ia_video_ingestion16:
+    depends_on:
+      - ia_openvino_base
+    build:
+      context: ../VideoIngestion
+      dockerfile: $PWD/../VideoIngestion/Dockerfile
+      args:
+        EIS_VERSION: ${EIS_VERSION}
+        EIS_UID: ${EIS_UID}
+        EIS_USER_NAME: ${EIS_USER_NAME}
+        # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
+        CMAKE_BUILD_TYPE: "Release"
+        WITH_PROFILE: "ON"
+    read_only: true
+    image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
+    container_name: ia_video_ingestion16
+    hostname: ia_video_ingestion16
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      AppName: "VideoIngestion16"
+      DEV_MODE: ${DEV_MODE}
+      PROFILING_MODE: ${PROFILING_MODE}
+      no_proxy: ${no_proxy},${RTSP_CAMERA_IP}
+
+      # MessageBus Endpoint Configuration
+      # Setting Visualizer as a subscriber here for FpsCalculator
+      Clients: "VideoAnalytics,Visualizer,RestDataExport,WebVisualizer,TLS_RemoteAgent"
+      CertType: "zmq"
+      ZMQ_RECV_HWM: "1000"
+
+      # Use IPC mode (zmq_ipc) when VideoIngestion and VideoAnalytics based
+      # containers are running on the same host. If they are running on diff
+      # host, please use TCP mode for communication.
+      # Eg: Stream cfg for
+      # IPC: zmq_ipc, <absolut_socket_directory_path>
+      # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+      PubTopics: "camera16_stream"
+      camera16_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
+    volumes:
+      - "vol_eis_socket:${SOCKET_DIR}"
+      - "/var/tmp:/var/tmp"  
+    privileged: true
+    devices:
+      - "/dev/dri"
+      - "/dev/:/dev/"
+    secrets:
+      - ca_etcd
+      - etcd_VideoIngestion16_cert
+      - etcd_VideoIngestion16_key    
+
+  ia_video_ingestion17:
+    depends_on:
+      - ia_openvino_base
+    build:
+      context: ../VideoIngestion
+      dockerfile: $PWD/../VideoIngestion/Dockerfile
+      args:
+        EIS_VERSION: ${EIS_VERSION}
+        EIS_UID: ${EIS_UID}
+        EIS_USER_NAME: ${EIS_USER_NAME}
+        # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
+        CMAKE_BUILD_TYPE: "Release"
+        WITH_PROFILE: "ON"
+    read_only: true
+    image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
+    container_name: ia_video_ingestion17
+    hostname: ia_video_ingestion17
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      AppName: "VideoIngestion17"
+      DEV_MODE: ${DEV_MODE}
+      PROFILING_MODE: ${PROFILING_MODE}
+      no_proxy: ${no_proxy},${RTSP_CAMERA_IP}
+
+      # MessageBus Endpoint Configuration
+      # Setting Visualizer as a subscriber here for FpsCalculator
+      Clients: "VideoAnalytics,Visualizer,RestDataExport,WebVisualizer,TLS_RemoteAgent"
+      CertType: "zmq"
+      ZMQ_RECV_HWM: "1000"
+
+      # Use IPC mode (zmq_ipc) when VideoIngestion and VideoAnalytics based
+      # containers are running on the same host. If they are running on diff
+      # host, please use TCP mode for communication.
+      # Eg: Stream cfg for
+      # IPC: zmq_ipc, <absolut_socket_directory_path>
+      # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+      PubTopics: "camera17_stream"
+      camera17_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
+    volumes:
+      - "vol_eis_socket:${SOCKET_DIR}"
+      - "/var/tmp:/var/tmp"  
+    privileged: true
+    devices:
+      - "/dev/dri"
+      - "/dev/:/dev/"
+    secrets:
+      - ca_etcd
+      - etcd_VideoIngestion17_cert
+      - etcd_VideoIngestion17_key 
+
+  ia_video_ingestion18:
+    depends_on:
+      - ia_openvino_base
+    build:
+      context: ../VideoIngestion
+      dockerfile: $PWD/../VideoIngestion/Dockerfile
+      args:
+        EIS_VERSION: ${EIS_VERSION}
+        EIS_UID: ${EIS_UID}
+        EIS_USER_NAME: ${EIS_USER_NAME}
+        # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
+        CMAKE_BUILD_TYPE: "Release"
+        WITH_PROFILE: "ON"
+    read_only: true
+    image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
+    container_name: ia_video_ingestion18
+    hostname: ia_video_ingestion18
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      AppName: "VideoIngestion18"
+      DEV_MODE: ${DEV_MODE}
+      PROFILING_MODE: ${PROFILING_MODE}
+      no_proxy: ${no_proxy},${RTSP_CAMERA_IP}
+
+      # MessageBus Endpoint Configuration
+      # Setting Visualizer as a subscriber here for FpsCalculator
+      Clients: "VideoAnalytics,Visualizer,RestDataExport,WebVisualizer,TLS_RemoteAgent"
+      CertType: "zmq"
+      ZMQ_RECV_HWM: "1000"
+
+      # Use IPC mode (zmq_ipc) when VideoIngestion and VideoAnalytics based
+      # containers are running on the same host. If they are running on diff
+      # host, please use TCP mode for communication.
+      # Eg: Stream cfg for
+      # IPC: zmq_ipc, <absolut_socket_directory_path>
+      # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+      PubTopics: "camera18_stream"
+      camera18_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
+    volumes:
+      - "vol_eis_socket:${SOCKET_DIR}"
+      - "/var/tmp:/var/tmp"  
+    privileged: true
+    devices:
+      - "/dev/dri"
+      - "/dev/:/dev/"
+    secrets:
+      - ca_etcd
+      - etcd_VideoIngestion18_cert
+      - etcd_VideoIngestion18_key    
+
+  # ## Define VideoAnalytics service
+  # ia_video_analytics:
+  #   depends_on:
+  #     - ia_openvino_base
+  #   build:
+  #     context: $PWD/../VideoAnalytics
+  #     dockerfile: $PWD/../VideoAnalytics/Dockerfile
+  #     args:
+  #       EIS_VERSION: ${EIS_VERSION}
+  #       EIS_UID: ${EIS_UID}
+  #       EIS_USER_NAME: ${EIS_USER_NAME}
+  #       # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
+  #       CMAKE_BUILD_TYPE: "Release"
+  #   image: ${DOCKER_REGISTRY}ia_video_analytics:${EIS_VERSION}
+  #   container_name: ia_video_analytics
+  #   hostname: ia_video_analytics
+  #   network_mode: host
+  #   restart: unless-stopped
+  #   environment:
+  #     AppName: "VideoAnalytics"
+  #     DEV_MODE: ${DEV_MODE}
+  #     PROFILING_MODE: ${PROFILING_MODE}
+  #     no_proxy: ${no_proxy}
+
+  #     # MessageBus Endpoint Configuration
+  #     Clients : "Visualizer,FactoryControlApp,OpcuaExport,ImageStore,InfluxDBConnector,RestDataExport,WebVisualizer,TLS_RemoteAgent"
+  #     CertType: "zmq"
+  #     ZMQ_RECV_HWM: "1000"
+
+  #     # Use IPC mode (zmq_ipc) when VideoIngestion and VideoAnalytics based
+  #     # containers are running on the same host. If they are running on diff
+  #     # host, please use TCP mode for communication.
+  #     # Eg: Stream cfg for
+  #     # IPC: zmq_ipc, <absolute_socket_directory_path>
+  #     # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+  #     SubTopics: "VideoIngestion/camera1_stream"
+  #     camera1_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
+  #     PubTopics: "camera1_stream_results"
+  #     camera1_stream_results_cfg: "zmq_tcp,127.0.0.1:65013"
+  #     # camera1_stream_results_cfg: "zmq_ipc,${SOCKET_DIR}/"
+  #   privileged: true
+  #   volumes:
+  #     - "/var/tmp:/var/tmp"
+  #     - "/dev:/dev"
+  #     - "vol_eis_socket:${SOCKET_DIR}"
+  #   devices:
+  #     - "/dev/dri"
+  #     - "/dev/ion:/dev/ion"
+  #   secrets:
+  #     - ca_etcd
+  #     - etcd_VideoAnalytics_cert
+  #     - etcd_VideoAnalytics_key
+
+  # ## Define Visualizer service
+  # ia_visualizer:
+  #   depends_on:
+  #     - ia_common
+  #   build:
+  #     context: $PWD/../Visualizer
+  #     dockerfile: $PWD/../Visualizer/Dockerfile
+  #     args:
+  #       EIS_VERSION: ${EIS_VERSION}
+  #       EIS_UID: ${EIS_UID}
+  #       EIS_USER_NAME: ${EIS_USER_NAME}
+  #   read_only: true
+  #   image: ${DOCKER_REGISTRY}ia_visualizer:${EIS_VERSION}
+  #   container_name: ia_visualizer
+  #   hostname: ia_visualizer
+  #   network_mode: host
+  #   ipc: host
+  #   restart: unless-stopped
+  #   # For safety gear demo, use "safety_demo_label.json"
+  #   # For pcb demo, use "pcb_demo_label.json"
+  #   command: ["pcb_demo_label.json"]
+  #   environment:
+  #     AppName: "Visualizer"
+  #     DISPLAY: ":0"
+  #     IMAGE_DIR: ${EIS_INSTALL_PATH}/saved_images
+  #     DEV_MODE: ${DEV_MODE}
+  #     PROFILING_MODE: ${PROFILING_MODE}
+  #     no_proxy: ${no_proxy}
+
+  #     # MessageBus Endpoint Configuration
+  #     CertType: "zmq"
+  #     ZMQ_RECV_HWM: "1000"
+
+  #     # Use IPC mode (zmq_ipc) when VideoIngestion, VideoAnalytics and Visualizer
+  #     # based containers are running on the same host. If they are running on diff
+  #     # host, please use TCP mode for communication.
+  #     # Eg: Stream cfg for
+  #     # IPC: zmq_ipc, <absolute_socket_directory_path>
+  #     # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+
+  #     # For default video streaming usecase alone
+  #     SubTopics: "VideoAnalytics/camera1_stream_results"
+  #     camera1_stream_results_cfg : "zmq_tcp,127.0.0.1:65013"
+
+  #   volumes:
+  #     - "${EIS_INSTALL_PATH}/saved_images:${EIS_INSTALL_PATH}/saved_images"
+  #     - "/tmp/.X11-unix:/tmp/.X11-unix"
+  #     - "vol_eis_socket:${SOCKET_DIR}"
+  #   user: ${EIS_UID}
+  #   secrets:
+  #     - ca_etcd
+  #     - etcd_Visualizer_cert
+  #     - etcd_Visualizer_key
+
+  # ## Define WebVisualizer service
+  # ia_web_visualizer:
+  #   depends_on:
+  #     - ia_common
+  #   build:
+  #     context: $PWD/../WebVisualizer
+  #     dockerfile: $PWD/../WebVisualizer/Dockerfile
+  #     args:
+  #       EIS_VERSION: ${EIS_VERSION}
+  #       EIS_UID: ${EIS_UID}
+  #       EIS_USER_NAME: ${EIS_USER_NAME}
+  #   # read_only: true
+  #   image: ${DOCKER_REGISTRY}ia_web_visualizer:${EIS_VERSION}
+  #   container_name: ia_web_visualizer
+  #   hostname: ia_web_visualizer
+  #   network_mode: host
+  #   ipc: host
+  #   restart: unless-stopped
+  #   command: ["pcb_demo_label.json"]
+  #   environment:
+  #     AppName: "WebVisualizer"
+  #     IMAGE_DIR: ${EIS_INSTALL_PATH}/saved_images
+  #     DEV_MODE: ${DEV_MODE}
+  #     PROFILING_MODE: ${PROFILING_MODE}
+  #     no_proxy: ${no_proxy}
+
+  #     # MessageBus Endpoint Configuration
+  #     CertType: "zmq,pem"
+  #     ZMQ_RECV_HWM: "1000"
+
+  #     # Use IPC mode (zmq_ipc) when VideoIngestion, VideoAnalytics and Visualizer
+  #     # based containers are running on the same host. If they are running on diff
+  #     # host, please use TCP mode for communication.
+  #     # Eg: Stream cfg for
+  #     # IPC: zmq_ipc, <absolute_socket_directory_path>
+  #     # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+
+  #     # For default video streaming usecase alone
+  #     SubTopics: "VideoAnalytics/camera1_stream_results"
+  #     camera1_stream_results_cfg : "zmq_tcp,127.0.0.1:65013"
+
+  #   volumes:
+  #     - "${EIS_INSTALL_PATH}/saved_images:${EIS_INSTALL_PATH}/saved_images"
+  #     - "/tmp/.X11-unix:/tmp/.X11-unix"
+  #     - "vol_eis_socket:${SOCKET_DIR}"
+  #   secrets:
+  #     - ca_etcd
+  #     - etcd_WebVisualizer_cert
+  #     - etcd_WebVisualizer_key
+
+
+  # ## Start Grafana service
+  # ia_grafana:
+  #   depends_on:
+  #     - ia_common
+  #   build:
+  #     context: $PWD/../Grafana
+  #     dockerfile: $PWD/../Grafana/Dockerfile
+  #     args:
+  #         EIS_VERSION: ${EIS_VERSION}
+  #         GRAFANA_VERSION: ${GRAFANA_VERSION}
+  #         EIS_UID: ${EIS_UID}
+  #   image: ${DOCKER_REGISTRY}ia_grafana:${EIS_VERSION}
+  #   container_name: ia_grafana
+  #   hostname: ia_grafana
+  #   network_mode: host
+  #   restart: unless-stopped
+  #   environment:
+  #     AppName: "Grafana"
+  #     InfluxDbAppName: "InfluxDBConnector"
+  #     CertType: "pem"
+  #     DEV_MODE: ${DEV_MODE}
+  #   secrets:
+  #     - ca_etcd
+  #     - etcd_Grafana_cert
+  #     - etcd_Grafana_key
+  #     - etcd_InfluxDBConnector_cert
+  #     - etcd_InfluxDBConnector_key
+
+  # ## Define RestDataExport service
+  # ia_rest_export:
+  #   depends_on:
+  #     - ia_common
+  #   build:
+  #     context: $PWD/../RestDataExport
+  #     dockerfile: $PWD/../RestDataExport/Dockerfile
+  #     args:
+  #       EIS_VERSION: ${EIS_VERSION}
+  #   image: ${DOCKER_REGISTRY}ia_rest_export:${EIS_VERSION}
+  #   container_name: ia_rest_export
+  #   hostname: ia_rest_export
+  #   network_mode: host
+  #   restart: unless-stopped
+  #   environment:
+  #     AppName: "RestDataExport"
+  #     DEV_MODE: ${DEV_MODE}
+  #     no_proxy: ${no_proxy}
+  #     Server: "zmq_tcp,127.0.0.1:5669"
+
+  #     # MessageBus Endpoint Configuration
+  #     CertType: "zmq,pem"
+
+  #     # Use IPC mode (zmq_ipc) when VideoIngestion, VideoAnalytics and Visualizer
+  #     # based containers are running on the same host. If they are running on diff
+  #     # host, please use TCP mode for communication.
+  #     # Eg: Stream cfg for
+  #     # IPC: zmq_ipc, <absolute_socket_directory_path>
+  #     # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+  #     # PubTopics: "cam_serial1_results,cam_serial2_results"
+  #     # OpcuaExportCfg: "opcua,localhost:65003"
+  #     SubTopics: "VideoAnalytics/camera1_stream_results,VideoIngestion/camera1_stream"
+  #     camera1_stream_results_cfg: "zmq_tcp,127.0.0.1:65013"
+  #     camera1_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
+  #   volumes:
+  #     - "${EIS_INSTALL_PATH}/sockets:${SOCKET_DIR}"
+  #     - "${EIS_INSTALL_PATH}:${EIS_INSTALL_PATH}"
+  #   user: ${EIS_UID}
+  #   secrets:
+  #     - ca_etcd
+  #     - etcd_RestDataExport_cert
+  #     - etcd_RestDataExport_key
+
+  # ## Define telegraf service
+  # ia_telegraf:
+  #   depends_on:
+  #     - ia_common
+  #   build:
+  #     context: $PWD/../Telegraf
+  #     dockerfile: $PWD/../Telegraf/Dockerfile
+  #     args:
+  #       EIS_VERSION: ${EIS_VERSION}
+  #       EIS_UID: ${EIS_UID}
+  #   container_name: ia_telegraf
+  #   hostname: ia_telegraf
+  #   network_mode: host
+  #   image: ${DOCKER_REGISTRY}ia_telegraf:${EIS_VERSION}
+  #   restart: unless-stopped
+  #   environment:
+  #     AppName: "Telegraf"
+  #     InfluxDbAppName: "InfluxDBConnector"
+  #     CertType: ""
+  #     DEV_MODE: ${DEV_MODE}
+  #     no_proxy: ${no_proxy}
+  #   volumes:
+  #     - "./config/telegraf.conf:/etc/Telegraf/telegraf.conf"
+  #     - "./config/telegraf_devmode.conf:/etc/Telegraf/telegraf_devmode.conf"
+  #   user: ${EIS_UID}
+  #   secrets:
+  #     - ca_etcd
+  #     - etcd_InfluxDBConnector_cert
+  #     - etcd_InfluxDBConnector_key
+
+  # ## Define influxdb connector service
+  # ia_influxdbconnector:
+  #   depends_on:
+  #     - ia_common
+  #   build:
+  #     context: $PWD/../InfluxDBConnector
+  #     dockerfile: $PWD/../InfluxDBConnector/Dockerfile
+  #     args:
+  #       EIS_VERSION: ${EIS_VERSION}
+  #       EIS_UID: ${EIS_UID}
+  #       INFLUXDB_VERSION: ${INFLUXDB_VERSION}
+  #   image: ${DOCKER_REGISTRY}ia_influxdbconnector:${EIS_VERSION}
+  #   container_name: ia_influxdbconnector
+  #   hostname: ia_influxdbconnector
+  #   network_mode: host
+  #   restart: unless-stopped
+  #   environment:
+  #     AppName: "InfluxDBConnector"
+  #     CertType: "zmq,pem"
+  #     DEV_MODE: ${DEV_MODE}
+  #     PROFILING_MODE: ${PROFILING_MODE}
+  #     no_proxy: ${no_proxy}
+
+  #     # MessageBus Endpoint Configuration
+  #     Clients: "Visualizer,DiscoveryCreek"
+  #     Server: "zmq_tcp,127.0.0.1:8675"
+  #     # Server: "zmq_ipc,${SOCKET_DIR}/"
+  #     INFLUXDB_TLS_CIPHERS: ${TLS_CIPHERS}
+  #     # Use IPC mode (zmq_ipc) when VideoIngestion, VideoAnalytics and Visualizer
+  #     # based containers are running on the same host. If they are running on diff
+  #     # host, please use TCP mode for communication.
+  #     # Eg: Stream cfg for
+  #     # IPC: zmq_ipc, <absolute_socket_directory_path>
+  #     # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+  #     SubTopics: "VideoAnalytics/camera1_stream_results,DiscoveryCreek/dc_point_data_results"
+  #     dc_point_data_results_cfg: "zmq_tcp,127.0.0.1:65014"
+  #     camera1_stream_results_cfg: "zmq_tcp,127.0.0.1:65013"
+  #     PubTopics: "point_data,point_classifier_results"
+  #     point_data_cfg: "zmq_tcp,127.0.0.1:65015"
+  #     # point_data_cfg: "zmq_ipc,${SOCKET_DIR}/"
+  #     point_classifier_results_cfg: "zmq_tcp,127.0.0.1:65016"
+  #   volumes:
+  #     - "vol_influxdb_data:/influxdata"
+  #     - "./config/influxdb.conf:/etc/influxdb/influxdb.conf"
+  #     - "./config/ignore_attributes.cfg:/EIS/go/src/IEdgeInsights/InfluxDBConnector/ignore_attributes.cfg"
+  #     - "./config/influxdb_devmode.conf:/etc/influxdb/influxdb_devmode.conf"
+  #     - "vol_eis_socket:${SOCKET_DIR}"
+  #   user: ${EIS_UID}
+  #   secrets:
+  #     - ca_etcd
+  #     - etcd_InfluxDBConnector_cert
+  #     - etcd_InfluxDBConnector_key
+
+
+  # ## Define Discovery Creek service
+  # ia_dc:
+  #   depends_on:
+  #     - ia_common
+  #   build:
+  #     context: $PWD/../DiscoveryCreek/
+  #     dockerfile: $PWD/../DiscoveryCreek/Dockerfile
+  #     args:
+  #       EIS_VERSION: ${EIS_VERSION}
+  #       EIS_UID: ${EIS_UID}
+  #       EIS_USER_NAME: ${EIS_USER_NAME}
+  #   image: ${DOCKER_REGISTRY}ia_dc:${EIS_VERSION}
+  #   container_name: ia_dc
+  #   hostname: ia_dc
+  #   network_mode: host
+  #   restart: unless-stopped
+  #   read_only: true
+  #   tmpfs: /tmp
+  #   environment:
+  #     AppName: "DiscoveryCreek"
+  #     DEV_MODE: ${DEV_MODE}
+  #     no_proxy: ${no_proxy}
+
+  #     # MessageBus Endpoint Configuration
+  #     Clients : "InfluxDBConnector,Visualizer"
+  #     CertType: "zmq"
+
+  #     # Use IPC mode (zmq_ipc) when VideoIngestion, VideoAnalytics and Visualizer
+  #     # based containers are running on the same host. If they are running on diff
+  #     # host, please use TCP mode for communication.
+  #     # Eg: Stream cfg for
+  #     # IPC: zmq_ipc, <absolute_socket_directory_path>
+  #     # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+  #     SubTopics: "InfluxDBConnector/point_data"
+  #     point_data_cfg: "zmq_tcp,127.0.0.1:65015"
+  #     PubTopics: "dc_point_data_results"
+  #     dc_point_data_results_cfg: "zmq_tcp,127.0.0.1:65014"
+
+  #   volumes:
+  #     - "vol_eis_socket:${SOCKET_DIR}"
+  #   user: ${EIS_UID}
+  #   secrets:
+  #     - ca_etcd
+  #     - etcd_DiscoveryCreek_cert
+  #     - etcd_DiscoveryCreek_key
+
+  # ## Define DataAnalytics service
+  # ia_data_analytics:
+  #   depends_on:
+  #     - ia_common
+  #   build:
+  #     context: $PWD/../TimeSeriesAnalytics/
+  #     dockerfile: $PWD/../TimeSeriesAnalytics/Dockerfile
+  #     args:
+  #       EIS_VERSION: ${EIS_VERSION}
+  #       EIS_UID: ${EIS_UID}
+  #   image: ${DOCKER_REGISTRY}ia_data_analytics:${EIS_VERSION}
+  #   container_name: ia_data_analytics
+  #   hostname: ia_data_analytics
+  #   network_mode: host
+  #   restart: unless-stopped
+  #   environment:
+  #     AppName: "Kapacitor"
+  #     DEV_MODE: ${DEV_MODE}
+  #     no_proxy: ${no_proxy}
+
+  #     CertType: "pem"
+  #   volumes:
+  #     - "./config/kapacitor.conf:/etc/kapacitor/kapacitor.conf"
+  #     - "./config/kapacitor_devmode.conf:/etc/kapacitor/kapacitor_devmode.conf"
+  #   devices:
+  #     - "/dev/dri"
+  #   user: ${EIS_UID}
+  #   secrets:
+  #     - ca_etcd
+  #     - etcd_Kapacitor_cert
+  #     - etcd_Kapacitor_key
+
+
+  # ## Define Imagestore service which hosts minio dbs
+  # ia_imagestore:
+  #   depends_on:
+  #     - ia_common
+  #   build:
+  #     context: $PWD/../ImageStore
+  #     dockerfile: $PWD/../ImageStore/Dockerfile
+  #     args:
+  #       EIS_VERSION: ${EIS_VERSION}
+  #       MINIO_VERSION: ${MINIO_VERSION}
+  #       EIS_UID: ${EIS_UID}
+  #   image: ${DOCKER_REGISTRY}ia_imagestore:${EIS_VERSION}
+  #   container_name: ia_imagestore
+  #   hostname: ia_imagestore
+  #   network_mode: host
+  #   restart: unless-stopped
+  #   environment:
+  #     AppName: "ImageStore"
+  #     DEV_MODE: ${DEV_MODE}
+  #     no_proxy: ${no_proxy}
+
+  #     # MessageBus Endpoint Configuration
+  #     # Uncomment the following line if using Discover history tool in PROD mode
+  #     CertType: "zmq"
+  #     Server: "zmq_tcp,127.0.0.1:5669"
+  #     Clients: "Visualizer,RestDataExport"
+  #     # Server: "zmq_ipc,${SOCKET_DIR}/"
+  #     # Use IPC mode (zmq_ipc) when VideoIngestion, VideoAnalytics and Visualizer
+  #     # based containers are running on the same host. If they are running on diff
+  #     # host, please use TCP mode for communication.
+  #     # Eg: Stream cfg for
+  #     # IPC: zmq_ipc, <absolute_socket_directory_path>
+  #     # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+  #     SubTopics: "VideoAnalytics/camera1_stream_results"
+  #     camera1_stream_results_cfg: "zmq_tcp,127.0.0.1:65013"
+  #   volumes:
+  #     - "vol_imagestore_data:/data"
+  #     - "vol_eis_socket:${SOCKET_DIR}"
+  #   user: ${EIS_UID}
+  #   secrets:
+  #     - ca_etcd
+  #     - etcd_ImageStore_cert
+  #     - etcd_ImageStore_key
+
+
+  # ## Define FactoryControlApp service
+  # ia_factoryctrl_app:
+  #   depends_on:
+  #     - ia_common
+  #   build:
+  #     context: $PWD/../FactoryControlApp
+  #     dockerfile: $PWD/../FactoryControlApp/Dockerfile
+  #     args:
+  #       EIS_VERSION: ${EIS_VERSION}
+  #       EIS_UID: ${EIS_UID}
+  #       EIS_USER_NAME: ${EIS_USER_NAME}
+  #   read_only: true
+  #   image: ${DOCKER_REGISTRY}ia_factoryctrl_app:${EIS_VERSION}
+  #   container_name: ia_factoryctrl_app
+  #   hostname: ia_factoryctrl_app
+  #   network_mode: host
+  #   restart: unless-stopped
+  #   environment:
+  #     AppName: "FactoryControlApp"
+  #     DEV_MODE: ${DEV_MODE}
+
+  #     # MessageBus Endpoint Configuration
+  #     CertType: "zmq"
+
+  #     # Use IPC mode (zmq_ipc) when VideoIngestion, VideoAnalytics and Visualizer
+  #     # based containers are running on the same host. If they are running on diff
+  #     # host, please use TCP mode for communication.
+  #     # Eg: Stream cfg for
+  #     # IPC: zmq_ipc, <absolute_socket_directory_path>
+  #     # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+  #     SubTopics: "VideoAnalytics/camera1_stream_results"
+  #     camera1_stream_results_cfg : "zmq_tcp,127.0.0.1:65013"
+  #   volumes:
+  #     - "vol_eis_socket:${SOCKET_DIR}"
+  #   user: ${EIS_UID}
+  #   secrets:
+  #     - ca_etcd
+  #     - etcd_FactoryControlApp_cert
+  #     - etcd_FactoryControlApp_key
+
+  # ## Define OpcuaExport service
+  # ia_opcua_export:
+  #   depends_on:
+  #     - ia_common
+  #   build:
+  #     context: $PWD/../OpcuaExport
+  #     dockerfile: $PWD/../OpcuaExport/Dockerfile
+  #     args:
+  #       EIS_VERSION: ${EIS_VERSION}
+  #   image: ${DOCKER_REGISTRY}ia_opcua_export:${EIS_VERSION}
+  #   container_name: ia_opcua_export
+  #   hostname: ia_opcua_export
+  #   network_mode: host
+  #   restart: unless-stopped
+  #   environment:
+  #     AppName: "OpcuaExport"
+  #     DEV_MODE: ${DEV_MODE}
+  #     no_proxy: ${no_proxy}
+
+  #     # MessageBus Endpoint Configuration
+  #     CertType: "zmq,der"
+
+  #     # Use IPC mode (zmq_ipc) when VideoIngestion, VideoAnalytics and Visualizer
+  #     # based containers are running on the same host. If they are running on diff
+  #     # host, please use TCP mode for communication.
+  #     # Eg: Stream cfg for
+  #     # IPC: zmq_ipc, <absolute_socket_directory_path>
+  #     # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+  #     PubTopics: "cam_serial1_results,cam_serial2_results"
+  #     OpcuaExportCfg: "opcua,localhost:65003"
+  #     SubTopics: "VideoAnalytics/camera1_stream_results"
+  #     camera1_stream_results_cfg: "zmq_tcp,127.0.0.1:65013"
+  #   volumes:
+  #     - "vol_eis_socket:${SOCKET_DIR}"
+  #   user: ${EIS_UID}
+  #   secrets:
+  #     - ca_etcd
+  #     - etcd_OpcuaExport_cert
+  #     - etcd_OpcuaExport_key
+
+
+  # ## Define TLS_RemoteAgent service
+  # ia_tls_remoteagent:
+  #   depends_on:
+  #     - ia_common
+  #   build:
+  #     context: $PWD/../TLSRemoteAgent
+  #     dockerfile: $PWD/../TLSRemoteAgent/Dockerfile
+  #     args:
+  #       EIS_VERSION: ${EIS_VERSION}
+  #       EIS_UID: ${EIS_UID}
+  #       EIS_USER_NAME: ${EIS_USER_NAME}
+  #   read_only: false
+  #   image: ${DOCKER_REGISTRY}ia_tls_remoteagent:${EIS_VERSION}
+  #   container_name: ia_tls_remoteagent
+  #   hostname: ia_tls_remoteagent
+  #   network_mode: host
+  #   ipc: host
+  #   restart: unless-stopped
+  #   environment:
+  #     AppName: "TLS_RemoteAgent"
+  #     DISPLAY: ":0"
+  #     IMAGE_DIR: ${EIS_INSTALL_PATH}/saved_images
+  #     DEV_MODE: ${DEV_MODE}
+  #     PROFILING_MODE: ${PROFILING_MODE}
+  #     no_proxy: ${no_proxy}
+
+  #     # MessageBus Endpoint Configuration
+  #     CertType: "zmq"
+
+  #     # Use IPC mode (zmq_ipc) when VideoIngestion, VideoAnalytics and Visualizer
+  #     # based containers are running on the same host. If they are running on diff
+  #     # host, please use TCP mode for communication.
+  #     # Eg: Stream cfg for
+  #     # IPC: zmq_ipc, <absolute_socket_directory_path>
+  #     # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+
+  #     # For default video streaming usecase alone
+  #     SubTopics: "VideoAnalytics/camera1_stream_results"
+  #     camera1_stream_results_cfg : "zmq_tcp,127.0.0.1:65013"
+
+  #     # For multiple video analytics usecase, with 3rd stream using gva plugin directly from VideoIngestion container
+  #     # SubTopics: "VideoAnalytics/camera1_stream_results,VideoAnalytics2/camera2_stream_results,VideoIngestion3/camera3_stream"
+  #     # camera1_stream_results_cfg : "zmq_tcp,127.0.0.1:65013"
+  #     # camera2_stream_results_cfg : "zmq_tcp,127.0.0.1:65014"
+  #     # camera3_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
+  #   volumes:
+  #     - "${EIS_INSTALL_PATH}/saved_images:${EIS_INSTALL_PATH}/saved_images"
+  #     - "/tmp/.X11-unix:/tmp/.X11-unix"
+  #     - "vol_eis_socket:${SOCKET_DIR}"
+  #     - "$PWD/../common/udfs/model_repo:/EIS/common/udfs/model_repo"
+  #   secrets:
+  #     - ca_etcd
+  #     - etcd_TLS_RemoteAgent_cert
+  #     - etcd_TLS_RemoteAgent_key
+
+
+volumes:
+  vol_influxdb_data:
+    driver: local
+    driver_opts:
+      type: local
+      o: bind
+      device: ${EIS_INSTALL_PATH}/data/influxdata
+  vol_imagestore_data:
+    driver: local
+    driver_opts:
+      type: local
+      o: bind
+      device: ${EIS_INSTALL_PATH}/data
+  vol_eis_socket:
+    driver: local
+    driver_opts:
+      type: local
+      o: bind
+      device: ${EIS_INSTALL_PATH}/sockets
+
+secrets:
+  ca_etcd:
+    file: provision/Certificates/ca/ca_certificate.pem
+  etcd_FactoryControlApp_cert:
+    file: provision/Certificates/FactoryControlApp/FactoryControlApp_client_certificate.pem
+  etcd_FactoryControlApp_key:
+    file: provision/Certificates/FactoryControlApp/FactoryControlApp_client_key.pem
+  etcd_ImageStore_cert:
+    file: provision/Certificates/ImageStore/ImageStore_client_certificate.pem
+  etcd_ImageStore_key:
+    file: provision/Certificates/ImageStore/ImageStore_client_key.pem
+  etcd_InfluxDBConnector_cert:
+    file: provision/Certificates/InfluxDBConnector/InfluxDBConnector_client_certificate.pem
+  etcd_InfluxDBConnector_key:
+    file: provision/Certificates/InfluxDBConnector/InfluxDBConnector_client_key.pem
+  etcd_Kapacitor_cert:
+    file: provision/Certificates/Kapacitor/Kapacitor_client_certificate.pem
+  etcd_Kapacitor_key:
+    file: provision/Certificates/Kapacitor/Kapacitor_client_key.pem
+  etcd_OpcuaExport_cert:
+    file: provision/Certificates/OpcuaExport/OpcuaExport_client_certificate.pem
+  etcd_OpcuaExport_key:
+    file: provision/Certificates/OpcuaExport/OpcuaExport_client_key.pem
+  etcd_RestDataExport_cert:
+    file: provision/Certificates/RestDataExport/RestDataExport_client_certificate.pem
+  etcd_RestDataExport_key:
+    file: provision/Certificates/RestDataExport/RestDataExport_client_key.pem
+  etcd_VideoAnalytics_cert:
+    file: provision/Certificates/VideoAnalytics/VideoAnalytics_client_certificate.pem
+  etcd_VideoAnalytics_key:
+    file: provision/Certificates/VideoAnalytics/VideoAnalytics_client_key.pem
+  
+  etcd_VideoIngestion1_cert:
+    file: provision/Certificates/VideoIngestion1/VideoIngestion1_client_certificate.pem
+  etcd_VideoIngestion1_key:
+    file: provision/Certificates/VideoIngestion1/VideoIngestion1_client_key.pem
+
+  etcd_VideoIngestion2_cert:
+    file: provision/Certificates/VideoIngestion2/VideoIngestion2_client_certificate.pem
+  etcd_VideoIngestion2_key:
+    file: provision/Certificates/VideoIngestion2/VideoIngestion2_client_key.pem
+
+  etcd_VideoIngestion3_cert:
+    file: provision/Certificates/VideoIngestion3/VideoIngestion3_client_certificate.pem
+  etcd_VideoIngestion3_key:
+    file: provision/Certificates/VideoIngestion3/VideoIngestion3_client_key.pem
+
+  etcd_VideoIngestion4_cert:
+    file: provision/Certificates/VideoIngestion4/VideoIngestion4_client_certificate.pem
+  etcd_VideoIngestion4_key:
+    file: provision/Certificates/VideoIngestion4/VideoIngestion4_client_key.pem  
+
+  etcd_VideoIngestion5_cert:
+    file: provision/Certificates/VideoIngestion5/VideoIngestion5_client_certificate.pem
+  etcd_VideoIngestion5_key:
+    file: provision/Certificates/VideoIngestion5/VideoIngestion5_client_key.pem
+
+  etcd_VideoIngestion6_cert:
+    file: provision/Certificates/VideoIngestion6/VideoIngestion6_client_certificate.pem
+  etcd_VideoIngestion6_key:
+    file: provision/Certificates/VideoIngestion6/VideoIngestion6_client_key.pem
+
+  etcd_VideoIngestion7_cert:
+    file: provision/Certificates/VideoIngestion7/VideoIngestion7_client_certificate.pem
+  etcd_VideoIngestion7_key:
+    file: provision/Certificates/VideoIngestion7/VideoIngestion7_client_key.pem
+
+  etcd_VideoIngestion8_cert:
+    file: provision/Certificates/VideoIngestion8/VideoIngestion8_client_certificate.pem
+  etcd_VideoIngestion8_key:
+    file: provision/Certificates/VideoIngestion8/VideoIngestion8_client_key.pem  
+
+  etcd_VideoIngestion9_cert:
+    file: provision/Certificates/VideoIngestion9/VideoIngestion9_client_certificate.pem
+  etcd_VideoIngestion9_key:
+    file: provision/Certificates/VideoIngestion9/VideoIngestion9_client_key.pem
+
+  etcd_VideoIngestion10_cert:
+    file: provision/Certificates/VideoIngestion10/VideoIngestion10_client_certificate.pem
+  etcd_VideoIngestion10_key:
+    file: provision/Certificates/VideoIngestion10/VideoIngestion10_client_key.pem
+
+  etcd_VideoIngestion11_cert:
+    file: provision/Certificates/VideoIngestion11/VideoIngestion11_client_certificate.pem
+  etcd_VideoIngestion11_key:
+    file: provision/Certificates/VideoIngestion11/VideoIngestion11_client_key.pem
+
+  etcd_VideoIngestion12_cert:
+    file: provision/Certificates/VideoIngestion12/VideoIngestion12_client_certificate.pem
+  etcd_VideoIngestion12_key:
+    file: provision/Certificates/VideoIngestion12/VideoIngestion12_client_key.pem  
+
+  etcd_VideoIngestion13_cert:
+    file: provision/Certificates/VideoIngestion13/VideoIngestion13_client_certificate.pem
+  etcd_VideoIngestion13_key:
+    file: provision/Certificates/VideoIngestion13/VideoIngestion13_client_key.pem
+
+  etcd_VideoIngestion14_cert:
+    file: provision/Certificates/VideoIngestion14/VideoIngestion14_client_certificate.pem
+  etcd_VideoIngestion14_key:
+    file: provision/Certificates/VideoIngestion14/VideoIngestion14_client_key.pem
+
+  etcd_VideoIngestion15_cert:
+    file: provision/Certificates/VideoIngestion15/VideoIngestion15_client_certificate.pem
+  etcd_VideoIngestion15_key:
+    file: provision/Certificates/VideoIngestion15/VideoIngestion15_client_key.pem
+
+  etcd_VideoIngestion16_cert:
+    file: provision/Certificates/VideoIngestion16/VideoIngestion16_client_certificate.pem
+  etcd_VideoIngestion16_key:
+    file: provision/Certificates/VideoIngestion16/VideoIngestion16_client_key.pem
+
+  etcd_VideoIngestion17_cert:
+    file: provision/Certificates/VideoIngestion17/VideoIngestion17_client_certificate.pem
+  etcd_VideoIngestion17_key:
+    file: provision/Certificates/VideoIngestion17/VideoIngestion17_client_key.pem
+
+  etcd_VideoIngestion18_cert:
+    file: provision/Certificates/VideoIngestion18/VideoIngestion18_client_certificate.pem
+  etcd_VideoIngestion18_key:
+    file: provision/Certificates/VideoIngestion18/VideoIngestion18_client_key.pem
+
+  
+  etcd_Visualizer_cert:
+    file: provision/Certificates/Visualizer/Visualizer_client_certificate.pem
+  etcd_Visualizer_key:
+    file: provision/Certificates/Visualizer/Visualizer_client_key.pem
+  etcd_DiscoveryCreek_cert:
+    file: provision/Certificates/DiscoveryCreek/DiscoveryCreek_client_certificate.pem
+  etcd_DiscoveryCreek_key:
+    file: provision/Certificates/DiscoveryCreek/DiscoveryCreek_client_key.pem
+  etcd_root_cert:
+    file: provision/Certificates/root/root_client_certificate.pem
+  etcd_root_key:
+    file: provision/Certificates/root/root_client_key.pem
+  etcd_Grafana_cert:
+    file: provision/Certificates/Grafana/Grafana_client_certificate.pem
+  etcd_Grafana_key:
+    file: provision/Certificates/Grafana/Grafana_client_key.pem
+  etcd_WebVisualizer_cert:
+    file: provision/Certificates/WebVisualizer/WebVisualizer_client_certificate.pem
+  etcd_WebVisualizer_key:
+    file: provision/Certificates/WebVisualizer/WebVisualizer_client_key.pem
+  etcd_TLS_RemoteAgent_cert:
+    file: provision/Certificates/TLS_RemoteAgent/TLS_RemoteAgent_client_certificate.pem
+  etcd_TLS_RemoteAgent_key:
+    file: provision/Certificates/TLS_RemoteAgent/TLS_RemoteAgent_client_key.pem
