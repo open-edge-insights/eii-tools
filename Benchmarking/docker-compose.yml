@@ -107,6 +107,7 @@ services:
       PubTopics: "camera1_stream"
       camera1_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
     volumes:
+      - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"  
     privileged: true
@@ -158,6 +159,7 @@ services:
       PubTopics: "camera2_stream"
       camera2_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
     volumes:
+      - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"  
     privileged: true
@@ -209,6 +211,7 @@ services:
       PubTopics: "camera3_stream"
       camera3_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
     volumes:
+      - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"  
     privileged: true
@@ -260,6 +263,7 @@ services:
       PubTopics: "camera4_stream"
       camera4_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
     volumes:
+      - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"  
     privileged: true
@@ -311,6 +315,7 @@ services:
       PubTopics: "camera5_stream"
       camera5_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
     volumes:
+      - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"  
     privileged: true
@@ -362,6 +367,7 @@ services:
       PubTopics: "camera6_stream"
       camera6_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
     volumes:
+      - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"  
     privileged: true
@@ -413,6 +419,7 @@ services:
       PubTopics: "camera7_stream"
       camera7_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
     volumes:
+      - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"  
     privileged: true
@@ -464,6 +471,7 @@ services:
       PubTopics: "camera8_stream"
       camera8_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
     volumes:
+      - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"  
     privileged: true
@@ -515,6 +523,7 @@ services:
       PubTopics: "camera9_stream"
       camera9_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
     volumes:
+      - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"  
     privileged: true
@@ -566,6 +575,7 @@ services:
       PubTopics: "camera10_stream"
       camera10_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
     volumes:
+      - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"  
     privileged: true
@@ -617,6 +627,7 @@ services:
       PubTopics: "camera11_stream"
       camera11_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
     volumes:
+      - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"  
     privileged: true
@@ -668,6 +679,7 @@ services:
       PubTopics: "camera12_stream"
       camera12_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
     volumes:
+      - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"  
     privileged: true
@@ -719,6 +731,7 @@ services:
       PubTopics: "camera13_stream"
       camera13_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
     volumes:
+      - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"  
     privileged: true
@@ -770,6 +783,7 @@ services:
       PubTopics: "camera14_stream"
       camera14_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
     volumes:
+      - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"  
     privileged: true
@@ -821,6 +835,7 @@ services:
       PubTopics: "camera15_stream"
       camera15_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
     volumes:
+      - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"  
     privileged: true
@@ -872,6 +887,7 @@ services:
       PubTopics: "camera16_stream"
       camera16_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
     volumes:
+      - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"  
     privileged: true
@@ -923,6 +939,7 @@ services:
       PubTopics: "camera17_stream"
       camera17_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
     volumes:
+      - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"  
     privileged: true
@@ -974,6 +991,7 @@ services:
       PubTopics: "camera18_stream"
       camera18_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
     volumes:
+      - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"  
     privileged: true
