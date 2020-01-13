@@ -80,7 +80,6 @@ services:
         # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
         CMAKE_BUILD_TYPE: "Release"
         WITH_PROFILE: "ON"
-    read_only: true
     image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
     container_name: ia_video_ingestion1
     hostname: ia_video_ingestion1
@@ -132,7 +131,6 @@ services:
         # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
         CMAKE_BUILD_TYPE: "Release"
         WITH_PROFILE: "ON"
-    read_only: true
     image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
     container_name: ia_video_ingestion2
     hostname: ia_video_ingestion2
@@ -184,7 +182,6 @@ services:
         # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
         CMAKE_BUILD_TYPE: "Release"
         WITH_PROFILE: "ON"
-    read_only: true
     image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
     container_name: ia_video_ingestion3
     hostname: ia_video_ingestion3
@@ -236,7 +233,6 @@ services:
         # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
         CMAKE_BUILD_TYPE: "Release"
         WITH_PROFILE: "ON"
-    read_only: true
     image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
     container_name: ia_video_ingestion4
     hostname: ia_video_ingestion4
@@ -288,7 +284,6 @@ services:
         # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
         CMAKE_BUILD_TYPE: "Release"
         WITH_PROFILE: "ON"
-    read_only: true
     image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
     container_name: ia_video_ingestion5
     hostname: ia_video_ingestion5
@@ -340,7 +335,6 @@ services:
         # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
         CMAKE_BUILD_TYPE: "Release"
         WITH_PROFILE: "ON"
-    read_only: true
     image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
     container_name: ia_video_ingestion6
     hostname: ia_video_ingestion6
@@ -392,7 +386,6 @@ services:
         # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
         CMAKE_BUILD_TYPE: "Release"
         WITH_PROFILE: "ON"
-    read_only: true
     image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
     container_name: ia_video_ingestion7
     hostname: ia_video_ingestion7
@@ -444,7 +437,6 @@ services:
         # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
         CMAKE_BUILD_TYPE: "Release"
         WITH_PROFILE: "ON"
-    read_only: true
     image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
     container_name: ia_video_ingestion8
     hostname: ia_video_ingestion8
@@ -496,7 +488,6 @@ services:
         # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
         CMAKE_BUILD_TYPE: "Release"
         WITH_PROFILE: "ON"
-    read_only: true
     image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
     container_name: ia_video_ingestion9
     hostname: ia_video_ingestion9
@@ -548,7 +539,6 @@ services:
         # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
         CMAKE_BUILD_TYPE: "Release"
         WITH_PROFILE: "ON"
-    read_only: true
     image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
     container_name: ia_video_ingestion10
     hostname: ia_video_ingestion10
@@ -600,7 +590,6 @@ services:
         # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
         CMAKE_BUILD_TYPE: "Release"
         WITH_PROFILE: "ON"
-    read_only: true
     image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
     container_name: ia_video_ingestion11
     hostname: ia_video_ingestion11
@@ -652,7 +641,6 @@ services:
         # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
         CMAKE_BUILD_TYPE: "Release"
         WITH_PROFILE: "ON"
-    read_only: true
     image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
     container_name: ia_video_ingestion12
     hostname: ia_video_ingestion12
@@ -704,7 +692,6 @@ services:
         # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
         CMAKE_BUILD_TYPE: "Release"
         WITH_PROFILE: "ON"
-    read_only: true
     image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
     container_name: ia_video_ingestion13
     hostname: ia_video_ingestion13
@@ -756,7 +743,6 @@ services:
         # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
         CMAKE_BUILD_TYPE: "Release"
         WITH_PROFILE: "ON"
-    read_only: true
     image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
     container_name: ia_video_ingestion14
     hostname: ia_video_ingestion14
@@ -808,7 +794,6 @@ services:
         # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
         CMAKE_BUILD_TYPE: "Release"
         WITH_PROFILE: "ON"
-    read_only: true
     image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
     container_name: ia_video_ingestion15
     hostname: ia_video_ingestion15
@@ -860,7 +845,6 @@ services:
         # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
         CMAKE_BUILD_TYPE: "Release"
         WITH_PROFILE: "ON"
-    read_only: true
     image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
     container_name: ia_video_ingestion16
     hostname: ia_video_ingestion16
@@ -912,7 +896,6 @@ services:
         # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
         CMAKE_BUILD_TYPE: "Release"
         WITH_PROFILE: "ON"
-    read_only: true
     image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
     container_name: ia_video_ingestion17
     hostname: ia_video_ingestion17
@@ -964,7 +947,6 @@ services:
         # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
         CMAKE_BUILD_TYPE: "Release"
         WITH_PROFILE: "ON"
-    read_only: true
     image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
     container_name: ia_video_ingestion18
     hostname: ia_video_ingestion18
