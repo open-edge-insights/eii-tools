@@ -1056,9 +1056,6 @@ services:
   #   network_mode: host
   #   ipc: host
   #   restart: unless-stopped
-  #   # For safety gear demo, use "safety_demo_label.json"
-  #   # For pcb demo, use "pcb_demo_label.json"
-  #   command: ["pcb_demo_label.json"]
   #   environment:
   #     AppName: "Visualizer"
   #     DISPLAY: ":0"
