@@ -33,7 +33,7 @@ README FOR DISCOVER HISTORY TOOL
     (Note: if img_handle is part of select statement , then only frames
     directory will be created)
  9. If the user changes the query in "query_config.json" then no need to run build command, just execute the up command.
-10. In case of PROD mode, please make sure to uncomment the below line, for a section ia_imagestore  in file [docker_setup/docker-compose.yml](../../docker_setup/docker-compose.yml).
+10. In case of PROD mode, please make sure to uncomment the below line, for a section ia_imagestore  in file [build/docker-compose.yml](../../build/docker-compose.yml).
     '# Clients: "Visualizer"'
 
  ## ADDITIONAL STEP TO RUN DISCOVERY TOOL IN DEV MODE

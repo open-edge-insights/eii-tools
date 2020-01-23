@@ -5,7 +5,7 @@
     "profiling_mode" : false,
     "total_number_of_frames" : 1000,
     "export_to_csv" : false,
-    "certFile" : "../../docker_setup/provision/Certificates/root/root_client_certificate.pem",
-    "keyFile"  : "../../docker_setup/provision/Certificates/root/root_client_key.pem",
-    "trustFile": "../../docker_setup/provision/Certificates/ca/ca_certificate.pem"
+    "certFile" : "../../build/provision/Certificates/root/root_client_certificate.pem",
+    "keyFile"  : "../../build/provision/Certificates/root/root_client_key.pem",
+    "trustFile": "../../build/provision/Certificates/ca/ca_certificate.pem"
 }

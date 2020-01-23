@@ -14,19 +14,19 @@ The Following are the steps required for benchmarking:
 
 3. EIS needs to be built as a prerequesite following [../../README.md](../../README.md)
 
-4. Replace the docker-compose.yml file in [repo]/docker_setup and etcd_pre_load.json file in [repo]/docker_setup/provision/config with the sample files added in the current directory.
+4. Replace the docker-compose.yml file in [repo]/build and etcd_pre_load.json file in [repo]/build/provision/config with the sample files added in the current directory.
 
 **Note**:
-* `WITH_PROFILE` build argument is set to `ON` in [../../docker_setup/docker-compose.yml](../../docker_setup/docker-compose.yml) to enable the profiling mode  with the gstreamer ingestor.
-* The `PROFILING_MODE` environment variable mentioned in [../../docker_setup/.env](../../docker_setup/.env) file is for a different purpose and should not be used along with the `WITH_PROFILE` build argument in the docker compose file as it will affect the benchmarking performance.
+* `WITH_PROFILE` build argument is set to `ON` in [../../build/docker-compose.yml](../../build/docker-compose.yml) to enable the profiling mode  with the gstreamer ingestor.
+* The `PROFILING_MODE` environment variable mentioned in [../../build/.env](../../build/.env) file is for a different purpose and should not be used along with the `WITH_PROFILE` build argument in the docker compose file as it will affect the benchmarking performance.
 
-5. Provision EIS by running the below script from [repo]/docker_setup/provision
+5. Provision EIS by running the below script from [repo]/build/provision
 
     ```sh
     $ sudo ./provision_eis.sh ../docker-compose.yml
     ```
 
-6. Execute the following script in [repo]/docker_setup to launch multuiple VI containers in detached mode
+6. Execute the following script in [repo]/build to launch multuiple VI containers in detached mode
 
     ```sh
     $ docker-compose build

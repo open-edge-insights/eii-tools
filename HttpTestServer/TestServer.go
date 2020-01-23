@@ -30,7 +30,7 @@ const (
 	testServerCaPath   = "./cert.pem"
 	testServerCertPath = "./cert.pem"
 	testServerKeyPath  = "./key.pem"
-	clientCaPath       = "../../docker_setup/provision/Certificates/ca/ca_certificate.pem"
+	clientCaPath       = "../../build/provision/Certificates/ca/ca_certificate.pem"
 )
 
 // init is used to initialize and fetch required config

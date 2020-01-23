@@ -17,7 +17,7 @@ This module calculates the FPS of any EIS modules based on the stream published 
 
 2. Set the required output stream/streams and appropriate stream config in [config.json](config.json) file.
 
-3. If using FpsCalculator in IPC mode, make sure to set required permissions to socket file created in `EIS_INSTALL_PATH`
+5. If using FpsCalculator in IPC mode, make sure to set required permissions to socket file created in SOCKET_DIR in [build/.env](../../build/.env).
 
     ```sh
         sudo chmod -R 777 /opt/intel/eis/sockets
@@ -28,10 +28,10 @@ This module calculates the FPS of any EIS modules based on the stream published 
 4. If using FpsCalculator in PROD mode, make sure to set required permissions to certificates.
 
     ```sh
-        sudo chmod -R 755 ../../docker_setup/provision/Certificates/ca
-        sudo chmod -R 755 ../../docker_setup/provision/Certificates/root
+        sudo chmod -R 755 ../../build/provision/Certificates/ca
+        sudo chmod -R 755 ../../build/provision/Certificates/root
     ```
-    Note : This step is required everytime provisioning is done. 
+    Note : This step is required everytime provisioning is done.
     Caution: This step will make the certs insecure. Please do not do it on a production machine.
 
 5. Run the below command to start the FPS Calculator.

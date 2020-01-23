@@ -31,8 +31,8 @@ services:
 
 secrets:
   ca_etcd:
-    file: ../../docker_setup/provision/Certificates/ca/ca_certificate.pem
+    file: ../../build/provision/Certificates/ca/ca_certificate.pem
   etcd_root_cert:
-    file: ../../docker_setup/provision/Certificates/root/root_client_certificate.pem
+    file: ../../build/provision/Certificates/root/root_client_certificate.pem
   etcd_root_key:
-    file: ../../docker_setup/provision/Certificates/root/root_client_key.pem
+    file: ../../build/provision/Certificates/root/root_client_key.pem
