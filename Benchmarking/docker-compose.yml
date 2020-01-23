@@ -1107,7 +1107,6 @@ services:
   #   network_mode: host
   #   ipc: host
   #   restart: unless-stopped
-  #   command: ["pcb_demo_label.json"]
   #   environment:
   #     AppName: "WebVisualizer"
   #     IMAGE_DIR: ${EIS_INSTALL_PATH}/saved_images
