@@ -16,7 +16,9 @@ services:
     environment:
       PY_LOG_LEVEL: ${LOG_LEVEL}
       dev_Mode: ${DEV_MODE}
-      no_proxy: ${NO_PROXY}
+      no_proxy: ${NO_PROXY},${ETCD_HOST}
+      ETCD_HOST: ${ETCD_HOST}
+
     volumes:
       - "${SAVE_PATH}:/output/"
       - "./config:/EIS/DiscoverHistory/config"
