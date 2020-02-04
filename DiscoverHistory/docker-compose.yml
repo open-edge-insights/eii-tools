@@ -16,7 +16,7 @@ services:
     environment:
       PY_LOG_LEVEL: ${LOG_LEVEL}
       dev_Mode: ${DEV_MODE}
-      no_proxy: ${NO_PROXY},${ETCD_HOST}
+      no_proxy: ${NO_PROXY},${eis_no_proxy},${ETCD_HOST}
       ETCD_HOST: ${ETCD_HOST}
 
     volumes:
