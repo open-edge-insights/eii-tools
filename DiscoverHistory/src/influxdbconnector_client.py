@@ -49,7 +49,7 @@ def query_influxdb(eis_config,query_config,img_handle_queue):
         logger.info(f'Sending request {request}')
         service.request(request)
         logger.info('Waiting for response')
-        response = service.recv()
+        response, _ = service.recv()
         if len(response['Data']) > 0:
             loaded_json = json.loads(response['Data'])
             index = -1
