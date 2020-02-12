@@ -43,6 +43,8 @@ services:
 
   ## Define ETCD UI service - must be included to view ETCD data over web UI
   ia_etcd_ui:
+    depends_on:
+      - ia_common
     build:
       context: $PWD/../EtcdUI
       dockerfile: $PWD/../EtcdUI/Dockerfile
