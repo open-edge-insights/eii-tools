@@ -36,15 +36,17 @@ import os
 msgbus = None
 service = None
 
-logger=logging.getLogger()
+logger = logging.getLogger()
 
-def query_influxdb(eis_config,query_config,img_handle_queue):
+
+def query_influxdb(eis_config, query_config, img_handle_queue):
     try:
         logger.info(f'Initializing message bus context')
         msgbus = mb.MsgbusContext(eis_config)
-        logger.info('Initializing service for topic \'{"influxconnector_service"}\'')
+        logger.info(
+            'Initializing service for topic \'{"influxconnector_service"}\'')
         service = msgbus.get_service("InfluxDBConnector")
-        request = {'command':query_config["query"]}
+        request = {'command': query_config["query"]}
         logger.info(f'Running...')
         logger.info(f'Sending request {request}')
         service.request(request)
@@ -53,7 +55,12 @@ def query_influxdb(eis_config,query_config,img_handle_queue):
         if len(response['Data']) > 0:
             loaded_json = json.loads(response['Data'])
             index = -1
-            valid_input=['channels','defects','encoding_level','encoding_type','height','width']
+            valid_input = ['channels',
+                           'defects',
+                           'encoding_level',
+                           'encoding_type',
+                           'height',
+                           'width']
             check = all(item in loaded_json['columns'] for item in valid_input)
             if check is True:
                 for key in loaded_json['columns']:
@@ -66,16 +73,17 @@ def query_influxdb(eis_config,query_config,img_handle_queue):
                     for key in loaded_json['columns']:
                         temp_dict[key] = elm[count]
                         count = count + 1
-                        
+
                     img_handle_queue.put(temp_dict)
-                    
 
             output_dir = "/output" + "/" + "data"
             now = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
             filename = str(now) + ".dat"
-            common.write_to_file(filename, str.encode(response['Data']), output_dir)
+            common.write_to_file(filename,
+                                 str.encode(response['Data']),
+                                 output_dir)
 
-        service.close()     
+        service.close()
 
     except KeyboardInterrupt:
         logger.info(f' Quitting...')

@@ -28,25 +28,27 @@ import eis.msgbus as mb
 import os
 import logging
 import cv2
-import numpy as np 
+import numpy as np
 import influxdbconnector_client
 
-bad_color=(0, 0, 255)
-good_color=(0, 255, 0)
-logger=logging.getLogger()
+bad_color = (0, 0, 255)
+good_color = (0, 255, 0)
+logger = logging.getLogger()
 
-def save_images(elm, frame, dir,tag):
+
+def save_images(elm, frame, dir, tag):
     img_handle = elm['img_handle']
     now = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
     imgname = str(now) + "_" + tag + img_handle + ".png"
     if not os.path.exists(dir):
         os.makedirs(dir)
     cv2.imwrite(os.path.join(dir, imgname),
-                    frame,
-                    [cv2.IMWRITE_PNG_COMPRESSION, 3])
+                frame,
+                [cv2.IMWRITE_PNG_COMPRESSION, 3])
 
-def draw_defects(elm, frame, dir_name) :
-    
+
+def draw_defects(elm, frame, dir_name):
+
     if 'defects' in elm.keys():
         defect_json = json.loads(elm['defects'])
         if elm['encoding_type'] and elm['encoding_level']:
@@ -66,9 +68,9 @@ def draw_defects(elm, frame, dir_name) :
             logger.info("Encoding not enabled...")
             frame = np.reshape(frame, (height, width, channels))
 
-         # Display information about frame
+        # Display information about frame
         (dx, dy) = (20, 10)
-        if  'display_info' in elm.keys():
+        if 'display_info' in elm.keys():
             display_info = json.loads(elm['display_info'])
             for d_i in display_info:
                 # Get priority
@@ -86,10 +88,10 @@ def draw_defects(elm, frame, dir_name) :
                                 0.5, (0, 150, 170), 1, cv2.LINE_AA)
                 #  HIGH
                 if priority == 2:
-                    cv2.putText(frame, info, (dx, dy), cv2.FONT_HERSHEY_DUPLEX,                                     
+                    cv2.putText(frame, info, (dx, dy), cv2.FONT_HERSHEY_DUPLEX,
                                 0.5, (0, 0, 255), 1, cv2.LINE_AA)
-        #PROCESS IF THE FRAME HAS DEFECTS        
-        if len(defect_json)>0:
+        # PROCESS IF THE FRAME HAS DEFECTS
+        if len(defect_json) > 0:
             for d in defect_json:
                 # Get tuples for top-left and bottom-right coordinates
                 tl = tuple(d['tl'])
@@ -112,24 +114,25 @@ def draw_defects(elm, frame, dir_name) :
             # Draw border around frame if has defects
             outline_color = bad_color
             frame = cv2.copyMakeBorder(frame, 5, 5, 5, 5, cv2.BORDER_CONSTANT,
-                                        value=outline_color)
+                                       value=outline_color)
             tag = 'bad_'
-            dir=dir_name +"/bad_frames"
-            save_images(elm, frame, dir,tag)
-        #PROCESS IF THE FRAME DOES NOT HAVE DEFECTS
+            dir = dir_name + "/bad_frames"
+            save_images(elm, frame, dir, tag)
+        # PROCESS IF THE FRAME DOES NOT HAVE DEFECTS
         else:
             outline_color = good_color
-            frame = cv2.copyMakeBorder(frame, 5, 5, 5, 5, cv2.BORDER_CONSTANT, value=outline_color)
-            dir=dir_name +"/good_frames"
+            frame = cv2.copyMakeBorder(frame, 5, 5, 5, 5, cv2.BORDER_CONSTANT,
+                                       value=outline_color)
+            dir = dir_name + "/good_frames"
             tag = 'good_'
-            save_images(elm, frame, dir,tag)
-            
-        
+            save_images(elm, frame, dir, tag)
+
+
 # Argument parsing
-def retrieve_image_frames(eis_config,query_config,img_handle_queue):
+def retrieve_image_frames(eis_config, query_config, img_handle_queue):
     msgbus = None
     service = None
-    dir_name="/output/"
+    dir_name = "/output/"
     try:
         msgbus = mb.MsgbusContext(eis_config)
 
@@ -146,7 +149,7 @@ def retrieve_image_frames(eis_config,query_config,img_handle_queue):
             logger.info(f'Waiting for response')
             response = service.recv()
             output_dir = dir_name + "frames"
-            draw_defects(elm, response[1],output_dir)
+            draw_defects(elm, response[1], output_dir)
 
     except KeyboardInterrupt:
         logger.info(f'Quitting...')
