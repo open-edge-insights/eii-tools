@@ -1262,9 +1262,6 @@ services:
   #     DEV_MODE: ${DEV_MODE}
   #     no_proxy: ${eis_no_proxy},${ETCD_HOST}
   #     ETCD_HOST: ${ETCD_HOST}
-  #   volumes:
-  #     - "./config/telegraf.conf:/etc/Telegraf/telegraf.conf"
-  #     - "./config/telegraf_devmode.conf:/etc/Telegraf/telegraf_devmode.conf"
   #   user: ${EIS_UID}
   #   secrets:
   #     - ca_etcd
@@ -1315,9 +1312,6 @@ services:
   #     point_classifier_results_cfg: "zmq_tcp,127.0.0.1:65016"
   #   volumes:
   #     - "vol_influxdb_data:/influxdata"
-  #     - "./config/influxdb.conf:/etc/influxdb/influxdb.conf"
-  #     - "./config/ignore_attributes.cfg:/EIS/go/src/IEdgeInsights/InfluxDBConnector/ignore_attributes.cfg"
-  #     - "./config/influxdb_devmode.conf:/etc/influxdb/influxdb_devmode.conf"
   #     - "vol_eis_socket:${SOCKET_DIR}"
   #   user: ${EIS_UID}
   #   secrets:
@@ -1395,9 +1389,6 @@ services:
   #     ETCD_HOST: ${ETCD_HOST}
 
   #     CertType: "pem"
-  #   volumes:
-  #     - "./config/kapacitor.conf:/etc/kapacitor/kapacitor.conf"
-  #     - "./config/kapacitor_devmode.conf:/etc/kapacitor/kapacitor_devmode.conf"
   #   devices:
   #     - "/dev/dri"
   #   user: ${EIS_UID}
