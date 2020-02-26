@@ -28,7 +28,7 @@ import common
 import sys
 import os
 import logging
-from libs.ConfigManager import ConfigManager
+from eis.config_manager import ConfigManager
 
 logger = logging.getLogger()
 logger.setLevel(logging.os.environ['PY_LOG_LEVEL'].upper())

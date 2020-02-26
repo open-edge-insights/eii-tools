@@ -34,7 +34,7 @@ from distutils.util import strtobool
 # IMPORT the library to read from IES
 from util.util import Util
 from util.msgbusutil import MsgBusUtil
-from common.libs.ConfigManager import ConfigManager
+from eis.config_manager import ConfigManager
 import eis.msgbus as mb
 
 avg_fps_per_topic = {}
