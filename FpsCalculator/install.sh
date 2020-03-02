@@ -6,9 +6,6 @@ EISMessageBus="$PWD/../../common/libs/EISMessageBus"
 wget -O- https://cmake.org/files/v3.15/cmake-3.15.0-Linux-x86_64.tar.gz | \
     tar --strip-components=1 -xz -C /usr/local
 
-# Installing requirements
-python3.6 -m pip install -r requirements.txt
-
 apt-get install -y python3-distutils
 
 export PY_ETCD3_VERSION=cdc4c48bde88a795230a02aa574df84ed9ccfa52 && \

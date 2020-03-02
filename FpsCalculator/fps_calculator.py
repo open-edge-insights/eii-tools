@@ -29,9 +29,7 @@ import time
 import datetime
 import threading
 import gc
-import xlwt
-from xlwt import Workbook
-
+import csv
 from distutils.util import strtobool
 # IMPORT the library to read from IES
 from util.util import Util
@@ -55,9 +53,10 @@ class FpsCalculator:
     """ A sample app to check FPS of
     individual modules. """
 
-    def __init__(self, devMode, topics,
+    def __init__(self, dev_mode, profiling_mode, topics,
                  total_number_of_frames, config_dict):
-        self.devMode = devMode
+        self.dev_mode = dev_mode
+        self.profiling_mode = profiling_mode
         self.publisher, self.topic = topic.split("/")
         os.environ[self.topic+'_cfg'] = config_dict[self.topic+'_cfg']
         self.total_number_of_frames = total_number_of_frames
@@ -65,12 +64,13 @@ class FpsCalculator:
         self.start_time = 0.0
         self.done_receiving = False
         self.start_subscribing = True
+        self.total_records = dict()
         conf = {
             "certFile": "",
             "keyFile": "",
             "trustFile": ""
         }
-        if not self.devMode:
+        if not self.dev_mode:
             conf = {
                 "certFile": config_dict["certFile"],
                 "keyFile": config_dict["keyFile"],
@@ -88,12 +88,12 @@ class FpsCalculator:
         config = MsgBusUtil.get_messagebus_config(self.topic, "sub",
                                                   self.publisher,
                                                   self.config_client,
-                                                  self.devMode)
+                                                  self.dev_mode)
 
         self.topic = self.topic.strip()
         mode_address = os.environ[self.topic + "_cfg"].split(",")
         mode = mode_address[0].strip()
-        if (not self.devMode and mode == "zmq_tcp"):
+        if (not self.dev_mode and mode == "zmq_tcp"):
             for key in config[self.topic]:
                 if config[self.topic][key] is None:
                     raise ValueError("Invalid Config")
@@ -103,11 +103,79 @@ class FpsCalculator:
         while not self.done_receiving:
             # Discarding both the meta-data & frame
             md, fr = subscriber.recv()
-            del md
-            del fr
-            self.calculate_fps()
+            if self.profiling_mode:
+                # Calculate time stats for each frame
+                # if profiling mode is enabled
+                ts_fps_sub = int(round(time.time() * 1000))
+                md['ts_fps_sub'] = ts_fps_sub
+                diff = self.calculate_fr(md)
+                self.calculate_total(diff)
+            else:
+                self.calculate_fps()
+                del md
+                del fr
+        if self.profiling_mode:
+            avg_records = self.calculate_avg()
+            logger.info('Average stats : {0}'.format(avg_records))
         subscriber.close()
         return
+
+    def calculate_total(self, diff):
+        """ To calculate total time
+        spent by each frame.
+        :param diff: Dict containing time diff b/w entry & exit by
+                     frame in each module
+        :type: dict
+        """
+        if self.start_subscribing:
+            for key in diff:
+                temp = key.split("_diff")[0]
+                self.total_records[temp + '_total'] = 0
+            self.total_records['e2e_total'] = 0
+            self.start_subscribing = False
+        self.total_records['e2e_total'] = self.total_records['e2e_total']
+        + diff['e2e']
+        for key in diff:
+            if '_diff' in key:
+                temp = key.split("_diff")[0]
+                self.total_records[temp + '_total'] =\
+                    self.total_records[temp + '_total'] + diff[temp + '_diff']
+
+    def calculate_avg(self):
+        """ To calculate average time
+        spent by each frame. """
+        avg_records = dict()
+        avg_records['e2e' + '_avg'] =\
+            int(self.total_records['e2e_total']) / self.frame_count
+        for key in self.total_records:
+            if '_total' in key:
+                temp = key.split("_total")[0]
+                avg_records[temp + '_avg'] =\
+                    int(self.total_records[temp + '_total']) / self.frame_count
+        return avg_records
+
+    def calculate_fr(self, md):
+        """ Calculates the time spent by each frame in every module
+        :param md: Metadata of each frame
+        :type: dict
+        """
+        # Iterating through keys and printing the time spent
+        # in each module udf
+        self.frame_count += 1
+        if self.frame_count == int(self.total_number_of_frames):
+            self.done_receiving = True
+        diff = dict()
+        # Trimming the decimals post 13th digit since python timestamps
+        # contain only 13 digits and diff gives a negative value
+        md['ts_Ingestor_entry'] = int(str(md['ts_Ingestor_entry'])[0:13])
+        diff['e2e'] = md['ts_fps_sub'] - md['ts_Ingestor_entry']
+        for key in md:
+            if 'entry' in key and 'Ingestor' not in key:
+                temp = key.split("_entry")[0]
+                diff[temp + "_diff"] = md[temp+"_exit"] - md[temp+"_entry"]
+                logger.info("Time spent by frame in\
+                     {} : {}".format(temp, diff[temp + "_diff"]))
+        return diff
 
     def calculate_fps(self):
         """ Calculates the FPS of required module"""
@@ -148,6 +216,7 @@ def invokeGC():
 def threadRunner(topic, config_dict):
     """To run FpsCalculator for each topic"""
     fps_app = FpsCalculator(dev_mode,
+                            profiling_mode,
                             topic,
                             total_number_of_frames,
                             config_dict)
@@ -158,19 +227,22 @@ if __name__ == "__main__":
 
     config_dict = get_config()
 
-    dev_mode = bool(strtobool(config_dict['dev_mode']))
+    dev_mode = config_dict['dev_mode']
+    profiling_mode = config_dict['profiling_mode']
 
     if dev_mode:
-        fmt_str = ('%(asctime)s : %(levelname)s  : {} : %(name)s : [%(filename)s] :' .format("Insecure Mode")+
-               '%(funcName)s : in line : [%(lineno)d] : %(message)s')
+        fmt_str = ('%(asctime)s : %(levelname)s  : {}\
+             : %(name)s : [%(filename)s] :' .format("Insecure Mode") +
+                   '%(funcName)s : in line : [%(lineno)d] : %(message)s')
     else:
-        fmt_str = ('%(asctime)s : %(levelname)s : %(name)s : [%(filename)s] :' +
-               '%(funcName)s : in line : [%(lineno)d] : %(message)s')
+        fmt_str = ('%(asctime)s : %(levelname)s : %(name)s\
+             : [%(filename)s] :' + '%(funcName)s : in line\
+                  : [%(lineno)d] : %(message)s')
 
-    logging.basicConfig(level=logging.DEBUG,format=fmt_str)
+    logging.basicConfig(level=logging.DEBUG, format=fmt_str)
 
     topics = config_dict['SubTopics']
-    export_to_csv = bool(strtobool(config_dict['export_to_csv']))
+    export_to_csv = config_dict['export_to_csv']
     total_number_of_frames = int(config_dict['total_number_of_frames'])
 
     gc_thread = threading.Thread(target=invokeGC)
@@ -179,32 +251,37 @@ if __name__ == "__main__":
     # Calculating FPS for each topic
     threads = []
     for topic in topics:
-        thread = threading.Thread(target=threadRunner, args=(topic,config_dict,))
+        thread = threading.Thread(target=threadRunner,
+                                  args=(topic, config_dict, ))
         threads.append(thread)
         thread.start()
     for thread in threads:
         thread.join()
 
-    # Calculating overall fps for all topics
-    final_fps = 0.0
-    for topic in avg_fps_per_topic.keys():
-        final_fps += avg_fps_per_topic[topic]
+    if not profiling_mode:
+        # Calculating overall fps for all topics
+        final_fps = 0.0
+        for topic in avg_fps_per_topic.keys():
+            final_fps += avg_fps_per_topic[topic]
 
-    if export_to_csv:
-        wb = Workbook()
-        sheet1 = wb.add_sheet('FPS Results')
-        sheet1.write(1, 0, 'Average FPS for each topic {0}'
-                     .format(avg_fps_per_topic))
-        sheet1.write(2, 0, 'Total FPS for {0} frames {1}'
-                     .format(total_number_of_frames, final_fps))
-        wb.save('FPS_results.xls')
-        logger.info('Check FPS_results.xls file for total FPS...')
-    else:
-        logger.info('Average FPS for each topic {0}'
-                    .format(avg_fps_per_topic))
-        logger.info('Total FPS for {0} frames {1}'
-                    .format(total_number_of_frames,
-                            final_fps))
+        if export_to_csv:
+            csv_columns = ['Stream Name', 'Average FPS']
+            avg_fps_per_topic['Total Fps'] = final_fps
+            try:
+                with open('FPS_Results.csv', 'w') as csv_file:
+                    writer = csv.writer(csv_file)
+                    writer.writerow(csv_columns)
+                    for key, value in avg_fps_per_topic.items():
+                        writer.writerow([key, value])
+            except IOError:
+                logger.error("I/O error")
+            logger.info('Check FPS_Results.csv file for total FPS...')
+        else:
+            logger.info('Average FPS for each topic {0}'
+                        .format(avg_fps_per_topic))
+            logger.info('Total FPS for {0} frames {1}'
+                        .format(total_number_of_frames,
+                                final_fps))
 
     # Exiting after Fps is calculated
     os._exit(-1)
