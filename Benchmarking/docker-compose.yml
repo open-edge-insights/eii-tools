@@ -1326,6 +1326,7 @@ services:
   #     args:
   #       EIS_VERSION: ${EIS_VERSION}
   #       EIS_UID: ${EIS_UID}
+  #       TELEGRAF_VERSION: ${TELEGRAF_VERSION}
   #   container_name: ia_telegraf
   #   hostname: ia_telegraf
   #   network_mode: host
@@ -1453,9 +1454,11 @@ services:
   #     args:
   #       EIS_VERSION: ${EIS_VERSION}
   #       EIS_UID: ${EIS_UID}
+  #       KAPACITOR_VERSION: ${KAPACITOR_VERSION}
   #   image: ${DOCKER_REGISTRY}ia_data_analytics:${EIS_VERSION}
   #   container_name: ia_data_analytics
   #   hostname: ia_data_analytics
+  #   read_only: true
   #   network_mode: host
   #   restart: unless-stopped
   #   environment:
@@ -1465,6 +1468,8 @@ services:
   #     ETCD_HOST: ${ETCD_HOST}
   #     CertType: "pem"
   #   user: ${EIS_UID}
+  #   volumes:
+  #     - "vol_temp_kapacitor:/tmp/"
   #   secrets:
   #     - ca_etcd
   #     - etcd_Kapacitor_cert
@@ -1676,6 +1681,11 @@ volumes:
       o: bind
       device: ${EIS_INSTALL_PATH}/sockets
   vol_etcd_keeper:
+    driver: local
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
+  vol_temp_kapacitor:
     driver: local
     driver_opts:
       type: tmpfs
