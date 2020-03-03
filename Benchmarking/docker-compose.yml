@@ -1470,39 +1470,46 @@ services:
   #     - etcd_DiscoveryCreek_cert
   #     - etcd_DiscoveryCreek_key
 
-  # ## Define DataAnalytics service
-  # ia_data_analytics:
+  # ## Define Kapacitor service
+  # ia_kapacitor:
   #   depends_on:
   #     - ia_common
   #   build:
-  #     context: $PWD/../TimeSeriesAnalytics/
-  #     dockerfile: $PWD/../TimeSeriesAnalytics/Dockerfile
+  #     context: $PWD/../Kapacitor/
+  #     dockerfile: $PWD/../Kapacitor/Dockerfile
   #     args:
   #       EIS_VERSION: ${EIS_VERSION}
   #       EIS_UID: ${EIS_UID}
   #       KAPACITOR_VERSION: ${KAPACITOR_VERSION}
-  #   image: ${DOCKER_REGISTRY}ia_data_analytics:${EIS_VERSION}
-  #   container_name: ia_data_analytics
-  #   hostname: ia_data_analytics
-  #   read_only: true
+  #   image: ${DOCKER_REGISTRY}ia_kapacitor:${EIS_VERSION}
+  #   container_name: ia_kapacitor
+  #   hostname: ia_kapacitor
   #   network_mode: host
+  #   read_only: true
   #   restart: unless-stopped
   #   environment:
   #     AppName: "Kapacitor"
   #     DEV_MODE: ${DEV_MODE}
   #     no_proxy: ${eis_no_proxy},${ETCD_HOST}
+  #     NO_PROXY: ${eis_no_proxy},${ETCD_HOST}
   #     ETCD_HOST: ${ETCD_HOST}
   #     ETCD_PREFIX: ${ETCD_PREFIX}
-
   #     CertType: "pem"
+  #     KAPACITOR_URL: http://127.0.0.1:$KAPACITOR_PORT/
+  #     KAPACITOR_UNSAFE_SSL: "true"
+  #     KAPACITOR_INFLUXDB_0_URLS_0: http://127.0.0.1:$INFLUXDB_PORT/
+  #     INFLUX_SERVER: '127.0.0.1'
+  #     KAPACITOR_SERVER: '127.0.0.1'
+  #     KAPACITOR_PORT: $KAPACITOR_PORT
   #   user: ${EIS_UID}
   #   volumes:
   #     - "vol_temp_kapacitor:/tmp/"
+  #   ports:
+  #     - "$KAPACITOR_PORT:$KAPACITOR_PORT"
   #   secrets:
   #     - ca_etcd
   #     - etcd_Kapacitor_cert
   #     - etcd_Kapacitor_key
-
 
   # ## Define Imagestore service which hosts minio dbs
   # ia_imagestore:
