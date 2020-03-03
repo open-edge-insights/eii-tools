@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Intel Corporation.
+# Copyright (c) 2020 Intel Corporation.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -19,13 +19,12 @@
 # SOFTWARE.
 
 
-
-
 import os
+
+
 # Writing frame to file
 def write_to_file(image_handle_name, content, path):
     if not os.path.exists(path):
-          os.makedirs(path)
+        os.makedirs(path)
     with open(os.path.join(path, image_handle_name), 'bw') as f:
         f.write(content)
-
