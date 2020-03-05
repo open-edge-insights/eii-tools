@@ -18,7 +18,7 @@ services:
       dev_Mode: ${DEV_MODE}
       no_proxy: ${NO_PROXY},${eis_no_proxy},${ETCD_HOST}
       ETCD_HOST: ${ETCD_HOST}
-
+      ETCD_PREFIX: ${ETCD_PREFIX}
     volumes:
       - "${SAVE_PATH}:/output/"
       - "./config:/EIS/DiscoverHistory/config"
