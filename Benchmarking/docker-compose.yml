@@ -60,7 +60,7 @@ services:
     environment:
       AppName: "EtcdUi"
       DEV_MODE: ${DEV_MODE}
-      NGINX_PORT: 8080
+      NGINX_PORT: 9090
       CertType: "pem"
       no_proxy: ${eis_no_proxy},${ETCD_HOST}
       ETCD_HOST: ${ETCD_HOST}
