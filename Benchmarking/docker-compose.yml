@@ -1463,10 +1463,7 @@ services:
   #     DEV_MODE: ${DEV_MODE}
   #     no_proxy: ${eis_no_proxy},${ETCD_HOST}
   #     ETCD_HOST: ${ETCD_HOST}
-
   #     CertType: "pem"
-  #   devices:
-  #     - "/dev/dri"
   #   user: ${EIS_UID}
   #   secrets:
   #     - ca_etcd
