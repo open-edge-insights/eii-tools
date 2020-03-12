@@ -13,12 +13,16 @@ The Following are the steps required for benchmarking:
  [../../README.md](../../README.md)
 
 3. EIS needs to be built as a prerequesite following [../../README.md](../../README.md)
- 
+
 4. Replace the docker-compose.yml file in [repo]/docker_setup and etcd_pre_load.json file in [repo]/docker_setup/provision/config with the sample files added in the current directory.
 
-5. Provision EIS by running the below script from [repo]/docker_setup/provision 
+**Note**:
+* `WITH_PROFILE` build argument is set to `ON` in [../../docker_setup/docker-compose.yml](../../docker_setup/docker-compose.yml) to enable the profiling mode  with the gstreamer ingestor.
+* The `PROFILING_MODE` environment variable mentioned in [../../docker_setup/.env](../../docker_setup/.env) file is for a different purpose and should not be used along with the `WITH_PROFILE` build argument in the docker compose file as it will affect the benchmarking performance.
 
-    ```sh 
+5. Provision EIS by running the below script from [repo]/docker_setup/provision
+
+    ```sh
     $ sudo ./provision_eis.sh ../docker-compose.yml
     ```
 
@@ -30,7 +34,7 @@ The Following are the steps required for benchmarking:
     ```
 
 * This will start multiple VI containers based on the number of VI services given in docker compose file.
-* Once the VI services are launched the the timer will be started before the gstreamer loop starts. 
+* Once the VI services are launched the the timer will be started before the gstreamer loop starts.
 * In order to get the FPS results stop the RTSP server started using cvlc command.
 * When the VI applicaiton stops receiving data form the RTSP server, the gstreamer loop will stop and FPS will be calculated.
 * The FPS of each VI service along with it's AppName will be written to `/var/tmp/fps.txt`.
@@ -44,7 +48,7 @@ with the following configuration:
 
 * Intel(R) Core(TM) i7-8700 CPU @ 3.20GHz
 * 16GB RAM
-* GT2 Graphics 
+* GT2 Graphics
 * 2 Mustang-V100 HDDL card (8VPU)*
 
 **NOTE**: Refer the following link to download openvino models:
