@@ -7,8 +7,8 @@ This module calculates the FPS of any EIS modules based on the stream published 
 1. To install the requirements to start FPS Calculator run the below commands.
 
     ```sh
-        sudo ./install.sh
         source ./env.sh
+        sudo -E ./install.sh
     ```
 
 ## Running FPS calculator
