@@ -1,6 +1,7 @@
 #!/bin/bash
 
 EISMessageBus="$PWD/../../common/libs/EISMessageBus"
+ConfigManager="$PWD/../../common/libs/ConfigManager/python"
 
 # Installing cmake 3.15
 wget -O- https://cmake.org/files/v3.15/cmake-3.15.0-Linux-x86_64.tar.gz | \
@@ -18,7 +19,7 @@ export PY_ETCD3_VERSION=cdc4c48bde88a795230a02aa574df84ed9ccfa52 && \
 
 # Install EISMessageBus
 cd $EISMessageBus &&
-   ./install.sh --cython 
+   ./install.sh --cython
 
 cd $EISMessageBus/../IntelSafeString/ &&
    rm -rf build && \
@@ -34,7 +35,7 @@ cd $EISMessageBus/../EISMsgEnv/ &&
    cmake .. && \
    make install
 
-cd $EISMessageBus/../../util/c/ && 
+cd $EISMessageBus/../../util/c/ &&
    rm -rf build && \
    mkdir build && \
    cd build && \
@@ -48,3 +49,7 @@ cd $EISMessageBus &&
    cmake -DWITH_PYTHON=ON .. && \
    make && \
    make install
+
+cd $ConfigManager &&
+   rm -rf build && \
+   python3.6 setup.py install
