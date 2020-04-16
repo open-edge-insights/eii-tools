@@ -58,7 +58,7 @@ services:
     network_mode: host
     restart: unless-stopped
     environment:
-      AppName: "EtcdUi"
+      AppName: "EtcdUI"
       DEV_MODE: ${DEV_MODE}
       NGINX_PORT: 7071
       CertType: "pem"
