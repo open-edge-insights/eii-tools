@@ -32,8 +32,8 @@ services:
     depends_on:
       - ia_common
     build:
-      context: $PWD/../common/openvino
-      dockerfile: $PWD/../common/openvino/Dockerfile.openvino
+      context: $PWD/../common/video
+      dockerfile: $PWD/../common/video/Dockerfile.openvino
       args:
           EIS_VERSION: ${EIS_VERSION}
     read_only: true
