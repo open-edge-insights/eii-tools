@@ -6,7 +6,7 @@ HttpTestServer runs a simple HTTP Test server with security being optional.
 
     1. To run the HttpTestServer
     ```
-    $ cd [repo]/tools/HttpTestServer
+    $ cd IEdgeInsights/tools/HttpTestServer
     $ go run TestServer.go --dev_mode <true/false> --host <address of server> --port <port of server>
     ```
 

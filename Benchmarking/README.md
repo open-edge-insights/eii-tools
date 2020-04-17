@@ -7,26 +7,26 @@ The Following are the steps required for benchmarking:
 1. Start RTSP server using cvlc server using the below command on the host m/c.
 
     ```
-    cvlc -vvv file:///[repo]/VideoIngestion/test_videos/Safety_Full_Hat_and_Vest.mp4 --sout '#gather:rtp{sdp=rtsp://localhost:8554/}' --loop --sout-keep
+    cvlc -vvv file:///IEdgeInsights/VideoIngestion/test_videos/Safety_Full_Hat_and_Vest.mp4 --sout '#gather:rtp{sdp=rtsp://localhost:8554/}' --loop --sout-keep
     ```
 2. [Optional] Start the HDDL Dameon on host m/c following the steps given in `Using video accelerators` section in
  [../../README.md](../../README.md)
 
 3. EIS needs to be built as a prerequesite following [../../README.md](../../README.md)
 
-4. Replace the docker-compose.yml file in [repo]/build and etcd_pre_load.json file in [repo]/build/provision/config with the sample files added in the current directory.
+4. Replace the docker-compose.yml file in IEdgeInsights/build and eis_config.json file in IEdgeInsights/build/provision/config with the sample files added in the current directory.
 
 **Note**:
 * `WITH_PROFILE` build argument is set to `ON` in [../../build/docker-compose.yml](../../build/docker-compose.yml) to enable the profiling mode  with the gstreamer ingestor.
 * The `PROFILING_MODE` environment variable mentioned in [../../build/.env](../../build/.env) file is for a different purpose and should not be used along with the `WITH_PROFILE` build argument in the docker compose file as it will affect the benchmarking performance.
 
-5. Provision EIS by running the below script from [repo]/build/provision
+5. Provision EIS by running the below script from IEdgeInsights/build/provision
 
     ```sh
     $ sudo ./provision_eis.sh ../docker-compose.yml
     ```
 
-6. Execute the following script in [repo]/build to launch multuiple VI containers in detached mode
+6. Execute the following script in IEdgeInsights/build to launch multuiple VI containers in detached mode
 
     ```sh
     $ docker-compose build
@@ -54,5 +54,5 @@ with the following configuration:
 **NOTE**: Refer the following link to download openvino models:
 https://docs.openvinotoolkit.org/latest/_tools_downloader_README.html
 
-The downloaded model needs to be moved to [repo]/VideoIngestion/models and VI services needs to be built to volume mount the xml and bin files
+The downloaded model needs to be moved to IEdgeInsights/VideoIngestion/models and VI services needs to be built to volume mount the xml and bin files
 of the models using `docker-compose build`.
