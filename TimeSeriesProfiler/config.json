@@ -1,0 +1,10 @@
+{
+    "SubTopics": ["InfluxDBConnector/point_classifier_results"],
+    "point_classifier_results_cfg": "zmq_tcp,127.0.0.1:65016",
+    "dev_mode" : "False",
+    "total_number_of_samples" : 10,
+    "export_to_csv" : "False",
+    "certFile" : "/run/secrets/etcd_root_cert",
+    "keyFile"  : "/run/secrets/etcd_root_key",
+    "trustFile": "/run/secrets/ca_etcd"
+}

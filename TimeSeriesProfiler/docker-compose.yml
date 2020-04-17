@@ -1,0 +1,35 @@
+version: '3.6'
+
+services:
+  ia_timeseries_profiler:
+    build:
+      context: .
+      dockerfile: $PWD/Dockerfile
+      args:
+          EIS_VERSION: ${EIS_VERSION} 
+    image: ia_timeseries_profiler:${EIS_VERSION}
+    container_name: ia_timeseries_profiler
+    hostname: ia_timeseries_profiler
+    network_mode: host
+    environment:
+      PY_LOG_LEVEL: ${LOG_LEVEL}
+      dev_Mode: ${DEV_MODE}
+      no_proxy: ${NO_PROXY},${eis_no_proxy},${ETCD_HOST}
+      ETCD_HOST: ${ETCD_HOST}
+      AppName: ${AppName}
+    volumes:
+      - "./config.json:/EIS/config.json"
+      - ".:/EIS/out"
+    #comment secrets while running in DEV mode (DEV_MODE=true).
+    secrets:
+      - ca_etcd
+      - etcd_root_cert
+      - etcd_root_key
+
+secrets:
+  ca_etcd:
+    file: ../../build/provision/Certificates/ca/ca_certificate.pem
+  etcd_root_cert:
+    file: ../../build/provision/Certificates/root/root_client_certificate.pem
+  etcd_root_key:
+    file: ../../build/provision/Certificates/root/root_client_key.pem
