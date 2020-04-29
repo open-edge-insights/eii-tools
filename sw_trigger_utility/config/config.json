@@ -1,0 +1,12 @@
+{
+    "log_level" : 3, 
+    "num_of_cycles" : 2,
+    "server_client": "VideoIngestion/sw_trigger_utility",
+    "client" : "sw_trigger_utility",
+    "sw_trigger_utility_cfg": "zmq_tcp,127.0.0.1:66013",
+    "dev_mode" : false,
+    "app_name" : "VideoAnalytics",
+    "certFile" : "../../../build/provision/Certificates/root/root_client_certificate.pem",
+    "keyFile"  : "../../../build/provision/Certificates/root/root_client_key.pem",
+    "trustFile": "../../../build/provision/Certificates/ca/ca_certificate.pem"
+}
