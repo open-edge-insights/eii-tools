@@ -36,6 +36,7 @@ cd $EISMessageBus/../EISMsgEnv/ &&
    make install
 
 cd $EISMessageBus/../../util/c/ &&
+   ./install.sh && \
    rm -rf build && \
    mkdir build && \
    cd build && \
@@ -52,4 +53,5 @@ cd $EISMessageBus &&
 
 cd $ConfigManager &&
    rm -rf build && \
-   python3.6 setup.py install
+   cmake -DWITH_PYTHON=ON -DWITH_GO_ENV_CONFIG=ON -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} .. && \
+   make install
