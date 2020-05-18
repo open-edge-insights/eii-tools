@@ -8,7 +8,8 @@ services:
       context: .
       dockerfile: $PWD/Dockerfile
       args:
-          EIS_VERSION: ${EIS_VERSION} 
+          EIS_VERSION: ${EIS_VERSION}
+          DOCKER_REGISTRY: ${DOCKER_REGISTRY}
     image: ia_discover_history:${EIS_VERSION}
     container_name: ia_discover_history
     hostname: ia_discover_history
