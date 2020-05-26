@@ -135,11 +135,12 @@ class SwTriggerUtility {
 
             //num_of_cycles
             config_value_t* num_of_cyles_cvt = config_file_cfg->get_config_value(config_file_cfg->cfg,
-                                                              "num_of_cyles");
+                                                              "num_of_cycles");
+
             if ( num_of_cyles_cvt == NULL ) {
-                const char* err = "\"num_of_cyles\" key is missing, setting to default (2 cycles)";
+                const char* err = "\"num_of_cyles\" key is missing, setting to default (1 cycle)";
                 LOG_WARN("%s", err);
-                m_num_of_cycles = 2;
+                m_num_of_cycles = 1;
             } else {
                 m_num_of_cycles = num_of_cyles_cvt->body.integer;
             }
@@ -441,7 +442,7 @@ class SwTriggerUtility {
         * */
         void perform_full_cycle() {
             size_t count = m_num_of_cycles;
-            while ( count >= 0 ) {
+            while ( count > 0 ) {
                 send_sw_trigger(START_INGESTION);
                 recv_ack();
                 sleep(m_duration);
