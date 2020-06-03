@@ -37,7 +37,6 @@ COPY --from=common /usr/local/lib/python3.6/dist-packages/ /usr/local/lib/python
 
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
-RUN apt-get install -y python3.6-tk
 
 ENV PYTHONPATH ${PYTHONPATH}:.:../../
 COPY ./ ./DiscoverHistory
