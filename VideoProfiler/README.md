@@ -31,11 +31,12 @@ module.
 
 ## Installing Video Profiler requirements
 
-1. To install the requirements to start Video Profiler run the below commands.
+1. To install EIS libs on bare-metal, follow the [README](../../common/README.md) of eis_libs_installer.
+
+2. Set the required env by running the below command.
 
     ```sh
         source ./env.sh
-        sudo -E ./install.sh
     ```
 
 ## Running Video Profiler

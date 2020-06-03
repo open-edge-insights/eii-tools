@@ -4,6 +4,10 @@ This utility is used for invoking various software trigger features of VideoInge
 1. START INGESTION - to start the ingestor
 2. STOP_INGESTION -  to stop the ingestor
 
+## Installing Software Trigger Utility requirements
+
+1. To install EIS libs on bare-metal, follow the [README](../../common/README.md) of eis_libs_installer.
+
 ## Usage of Software Trigger Utility:
 
 Software trigger utility can be used in following ways:
