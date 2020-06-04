@@ -38,18 +38,17 @@
 #include <eis/config_manager/env_config.h>
 
 
-#define SERVICE_NAME "sw_trigger_utility"
 #define CONFIG_FILE_PATH "../config/config.json"
 
 #define SLEEP_DURATION_SECONDS 120
 #define START_INGESTION_STR "START_INGESTION"
 #define STOP_INGESTION_STR "STOP_INGESTION"
-#define SUB "sub"
+#define CLIENT "client"
 #define REPLY_PAYLOAD "reply_payload"
 #define STATUS "status_code"
 
 #define FREE_MEMORY(msg_env) { \
-    if(msg_env != NULL) { \
+    if (msg_env != NULL) { \
         msgbus_msg_envelope_destroy(msg_env); \
         msg_env = NULL; \
     } \
@@ -81,7 +80,7 @@ void usage(const char* name) {
         << std::endl;
     }
 
- // utility function
+// utility function
 bool is_number(std::string s) {
     for (int i = 0; i < s.length(); i++) {
         if (isdigit(s[i]) == false) {
@@ -101,10 +100,11 @@ class SwTriggerUtility {
         env_config_t* m_env_config_client;
 
         // config file values
+        std::string m_client_cfg;
         int m_log_level;
         size_t m_num_of_cycles;
-        char* m_server_client;
-        char* m_sw_trigger_utility_cfg;
+        char* m_request_ep;
+        char* m_request_ep_cfg;
         bool m_dev_mode;
         char* m_app_name;
         char* m_cert_file;
@@ -116,7 +116,7 @@ class SwTriggerUtility {
         void read_config() {
             // parse config file
             config_t* config_file_cfg = json_config_new(CONFIG_FILE_PATH);
-            if ( config_file_cfg == NULL ) {
+            if (config_file_cfg == NULL) {
                 const char* err = "Failed to load JSON configuration of sw trigger utility";
                 LOG_ERROR("%s", err);
                 throw err;
@@ -125,7 +125,7 @@ class SwTriggerUtility {
             // log_level
             config_value_t* log_level_cvt = config_file_cfg->get_config_value(config_file_cfg->cfg,
                                                               "log_level");
-            if ( log_level_cvt == NULL ) {
+            if (log_level_cvt == NULL) {
                 const char* err = "\"log_level\" key is missing, setting to default log level as debug";
                 LOG_WARN("%s", err);
                 m_log_level = 3; // Since, we are not exiting, setting default to continue
@@ -137,7 +137,7 @@ class SwTriggerUtility {
             config_value_t* num_of_cyles_cvt = config_file_cfg->get_config_value(config_file_cfg->cfg,
                                                               "num_of_cycles");
 
-            if ( num_of_cyles_cvt == NULL ) {
+            if (num_of_cyles_cvt == NULL) {
                 const char* err = "\"num_of_cyles\" key is missing, setting to default (1 cycle)";
                 LOG_WARN("%s", err);
                 m_num_of_cycles = 1;
@@ -146,24 +146,26 @@ class SwTriggerUtility {
             }
 
 
-            config_value_t* server_client_cvt = config_file_cfg->get_config_value(config_file_cfg->cfg,
-                                                              "server_client");
-            if ( server_client_cvt == NULL ) {
-                const char* err = "\"server_client\" key is missing, setting to default";
+            config_value_t* request_ep_cvt = config_file_cfg->get_config_value(config_file_cfg->cfg,
+                                                              "RequestEP");
+            if (request_ep_cvt == NULL) {
+                const char* err = "\"RequestEP\" key is missing, setting to default";
                 LOG_WARN("%s", err);
-                m_server_client = "VideoIngestion/sw_trigger_utility";
+                m_request_ep = "VideoIngestion";
             } else {
-                m_server_client = server_client_cvt->body.string;
+                m_request_ep = request_ep_cvt->body.string;
             }
 
-            config_value_t* sw_trigger_utility_cfg_cvt = config_file_cfg->get_config_value(config_file_cfg->cfg,
-                                                              "sw_trigger_utility_cfg");
-            if ( sw_trigger_utility_cfg_cvt == NULL ) {
-                const char* err = "\"sw_trigger_utility_cfg\" key is missing, resetting to default connection IP as localhost & default port";
+            m_client_cfg = std::string(m_request_ep) + "_cfg";
+
+            config_value_t* request_ep_cfg_cvt = config_file_cfg->get_config_value(config_file_cfg->cfg,
+                                                              m_client_cfg.c_str());
+            if (request_ep_cfg_cvt == NULL) {
+                const char* err = "Request_EP's _cfg key is missing, resetting to default connection IP as localhost & default port";
                 LOG_ERROR("%s", err);
-                m_sw_trigger_utility_cfg = "zmq_tcp,127.0.0.1:66013";
+                m_request_ep_cfg = "zmq_tcp,127.0.0.1:66013";
             } else {
-                m_sw_trigger_utility_cfg = sw_trigger_utility_cfg_cvt->body.string;
+                m_request_ep_cfg = request_ep_cfg_cvt->body.string;
             }
 
             config_value_t* dev_mode_cvt = config_file_cfg->get_config_value(config_file_cfg->cfg,
@@ -179,7 +181,7 @@ class SwTriggerUtility {
 
             config_value_t* app_name_cvt = config_file_cfg->get_config_value(config_file_cfg->cfg,
                                                               "app_name");
-            if ( app_name_cvt == NULL ) {
+            if (app_name_cvt == NULL) {
                 const char* err = "\"app_name\" key is missing, setting to default";
                 LOG_WARN("%s", err);
                 m_app_name = "VideoAnalytics";
@@ -188,11 +190,11 @@ class SwTriggerUtility {
             }
 
             // Only if prod mode then read etcd secrets
-            if(!m_dev_mode) {
+            if (!m_dev_mode) {
                 // read CerFile value from config.json
                 config_value_t* cert_file_cvt = config_file_cfg->get_config_value(config_file_cfg->cfg,
                                                               "certFile");
-                if ( cert_file_cvt == NULL ) {
+                if (cert_file_cvt == NULL) {
                     const char* err = "\"certFile\" key is missing";
                     LOG_WARN("%s", err);
                     throw(err);
@@ -203,7 +205,7 @@ class SwTriggerUtility {
                 // read keyFile value from config.json
                 config_value_t* key_file_cvt = config_file_cfg->get_config_value(config_file_cfg->cfg,
                                                               "keyFile");
-                if ( key_file_cvt == NULL ) {
+                if (key_file_cvt == NULL) {
                     const char* err = "\"keyFile\" key is missing";
                     LOG_WARN("%s", err);
                     throw(err);
@@ -214,7 +216,7 @@ class SwTriggerUtility {
                 // read Trust File value from config.json
                 config_value_t* trust_file_cvt = config_file_cfg->get_config_value(config_file_cfg->cfg,
                                                               "trustFile");
-                if ( trust_file_cvt == NULL ) {
+                if (trust_file_cvt == NULL) {
                     const char* err = "\"trustFile\" key is missing";
                     LOG_WARN("%s", err);
                     throw(err);
@@ -226,15 +228,6 @@ class SwTriggerUtility {
                  m_cert_file ="";
                  m_key_file = "";
                  m_trust_file = "";
-            }
-
-            config_value_t* client_cvt = config_file_cfg->get_config_value(config_file_cfg->cfg,
-                                                              "client");
-            if ( client_cvt == NULL ) {
-                const char* err = "\"client\" key is missing";
-                LOG_WARN("%s", err);
-            } else {
-                m_client = client_cvt->body.string;
             }
         }
 
@@ -266,40 +259,41 @@ class SwTriggerUtility {
 
                 // Set env variables for env_config API
                 const char* dev_mode = (m_dev_mode == true) ? "true" : "false";
+                setenv("RequestEP", m_request_ep, 1);
                 setenv("DEV_MODE", dev_mode, 1);
-                std::string client_cfg = std::string(m_client) + "_cfg";
-                setenv(client_cfg.c_str(), m_sw_trigger_utility_cfg, 1);
+
+                setenv(m_client_cfg.c_str(), m_request_ep_cfg, 1);
                 setenv("AppName", m_app_name, 1);
-                char* server_client[] = {m_server_client};
+                char* request_ep[] = {m_request_ep};
 
                 // Since VI is the server & sw_trigger_utility is the client, it is impersonating as VideoAnalytics to
                 // get access to the allowed_clients list in VI.
-                config_t* config = m_env_config_client->get_messagebus_config(m_config_mgr, server_client, 1, SUB);
+                config_t* config = m_env_config_client->get_messagebus_config(m_config_mgr, request_ep, 1, CLIENT);
 
                 m_msgbus_ctx = msgbus_initialize(config);
-                if ( m_msgbus_ctx == NULL ) {
+                if (m_msgbus_ctx == NULL) {
                     const char* err = "Failed to initialize message bus";
                     LOG_ERROR("%s", err);
                     throw err;
                 }
 
                 msgbus_ret_t ret = msgbus_service_get(
-                m_msgbus_ctx, SERVICE_NAME, NULL, &m_service_ctx);
-                if ( ret != MSG_SUCCESS ) {
+                m_msgbus_ctx, m_request_ep, NULL, &m_service_ctx);
+                if (ret != MSG_SUCCESS) {
                     const char* err = "Failed to initialize service, msgbus_service_get failed";
                     LOG_ERROR("%s", err);
                     throw err;
                 }
             }
-            catch( std::exception& ex ) {
-                LOG_ERROR("Exception = %s occurred in construction of SW_trigger_utility object ",ex.what());
+            catch (std::exception& ex) {
+                LOG_ERROR("Exception = %s occurred in construction of SW_trigger_utility object ", ex.what());
             }
         }
 
         ~SwTriggerUtility() {
-            if(m_service_ctx != NULL)
+            if (m_service_ctx != NULL)
                 msgbus_recv_ctx_destroy(m_msgbus_ctx, m_service_ctx);
-            if(m_msgbus_ctx != NULL)
+            if (m_msgbus_ctx != NULL)
                 msgbus_destroy(m_msgbus_ctx);
         }
 
@@ -312,29 +306,28 @@ class SwTriggerUtility {
             try {
                 LOG_INFO_0("Waiting for ack");
                 msgbus_ret_t ret = msgbus_recv_wait(m_msgbus_ctx, m_service_ctx, &msg);
-                if(ret != MSG_SUCCESS) {
+                if (ret != MSG_SUCCESS) {
                     // Interrupt is an acceptable error
                     const char* err = "";
-                    if(ret != MSG_ERR_EINTR)
+                    if (ret != MSG_ERR_EINTR)
                         err = "Interrupt received. Failed to receive SW trigger ACK";
                     else
                     err = "Failed to receive SW trigger ACK";
                     throw err;
-                    LOG_ERROR("%s",err);
-
+                    LOG_ERROR("%s", err);
                 }
                 LOG_INFO_0("received ack");
                 msg_envelope_elem_body_t* ack_env;
                 ret = msgbus_msg_envelope_get(msg, REPLY_PAYLOAD, &ack_env);
-                if(ret != MSG_SUCCESS) {
+                if (ret != MSG_SUCCESS) {
                     const char* err = "Failed to receive ACK from server for the sw_trigger";
-                    LOG_ERROR("%s",err);
+                    LOG_ERROR("%s", err);
                     throw(err);
                 }
 
-                if(MSG_ENV_DT_OBJECT != ack_env->type) {
+                if (MSG_ENV_DT_OBJECT != ack_env->type) {
                     const char* err = "ACK received from server for the sw_trigger has a wrong data type";
-                    LOG_ERROR("%s",err);
+                    LOG_ERROR("%s", err);
                     throw(err);
                 }
                 LOG_INFO_0("After reading the reply_payload");
@@ -345,16 +338,15 @@ class SwTriggerUtility {
                 }
                 int status = env_status->body.integer;
                 LOG_INFO_0("After reading the REPLY STATUS");
-                if(status == REQUEST_HONORED) {
+                if (status == REQUEST_HONORED) {
                     LOG_INFO_0("REQUEST HONORED ");
-                } else if(status == REQUEST_NOT_HONORED) {
+                } else if (status == REQUEST_NOT_HONORED) {
                     LOG_INFO_0("REQUEST NOT HONORED ");
-                } else if(status == REQUEST_ALREADY_RUNNING) {
+                } else if (status == REQUEST_ALREADY_RUNNING) {
                     LOG_INFO_0("DUPLICATE REQUEST SENT BY CLIENT, AS INGESTION IS ALREADY RUNNING");
-                } else if(status == REQUEST_ALREADY_STOPPED) {
+                } else if (status == REQUEST_ALREADY_STOPPED) {
                     LOG_INFO_0("DUPLICATE REQUEST SENT BY CLIENT AS INGESTION IS ALREADY STOPPED");
-                }
-                else {
+                } else {
                     LOG_ERROR_0("Received improper ack message. Exiting..");
                 }
                 FREE_MEMORY(msg);
@@ -374,7 +366,7 @@ class SwTriggerUtility {
             msgbus_ret_t ret;
             msg_envelope_t* msg = NULL;
             try {
-                switch(trig) {
+                switch (trig) {
                     case START_INGESTION: {
                         LOG_INFO_0("Sending START_INGESTION SW trigger..");
                         // form the JSON payload to be sent over the msgbus in a msg-envelope
@@ -390,9 +382,9 @@ class SwTriggerUtility {
                         LOG_INFO_0("Success putting poalod into env");
                         LOG_INFO_0("Sending START_INGESTION sw trigger");
                         ret = msgbus_request(m_msgbus_ctx, m_service_ctx, msg);
-                        if(ret != MSG_SUCCESS) {
+                        if (ret != MSG_SUCCESS) {
                             const char* err = "FAILED TO SEND SW TRIGGER -- START_INGESTION";
-                            LOG_ERROR("%s",err);
+                            LOG_ERROR("%s", err);
                             throw err;
                         }
 
@@ -400,7 +392,7 @@ class SwTriggerUtility {
                     break;
                     case STOP_INGESTION: {
                         LOG_INFO_0("Sending STOP_INGESTION SW trigger..");
-                        //Form the JSON payload to be sent over the msgbus in a msg-envelope
+                        // Form the JSON payload to be sent over the msgbus in a msg-envelope
                         msg_envelope_elem_body_t* sw_trigger = msgbus_msg_envelope_new_string(STOP_INGESTION_STR);
                         msg = msgbus_msg_envelope_new(CT_JSON);
                         ret = msgbus_msg_envelope_put(msg, "command", sw_trigger);
@@ -413,9 +405,9 @@ class SwTriggerUtility {
                         LOG_INFO_0("Success putting paylod into env");
                         LOG_INFO_0("Sending STOP_INGESTION sw trigger");
                         ret = msgbus_request(m_msgbus_ctx, m_service_ctx, msg);
-                        if(ret != MSG_SUCCESS) {
+                        if (ret != MSG_SUCCESS) {
                             const char* err = "FAILED TO SEND SW TRIGGER -- STOP_INGESTION";
-                            LOG_ERROR("%s",err);
+                            LOG_ERROR("%s", err);
                             throw err;
                         }
                     }
@@ -427,7 +419,7 @@ class SwTriggerUtility {
                     FREE_MEMORY(msg);
                 };
             } catch(std::exception& ex) {
-                LOG_ERROR("Exception: %s occured while sending software trigger ",ex.what());
+                LOG_ERROR("Exception: %s occured while sending software trigger ", ex.what());
                 FREE_MEMORY(msg);
             }
         }
@@ -465,25 +457,25 @@ class SwTriggerUtility {
 int main(int argc, char **argv) {
     try {
         SwTriggerUtility* sw_trigger_obj = NULL;
-        if(argc > 2) {
+        if (argc > 2) {
             usage(argv[0]);
             return -1;
         }
         sw_trigger_obj = new SwTriggerUtility();
 
-        switch(argc) {
+        switch (argc) {
             case 1: {
                 sw_trigger_obj->perform_full_cycle();
             }
             break;
             case 2: {
-                if(!strcmp(argv[1],"START_INGESTION")) {
+                if (!strcmp(argv[1], "START_INGESTION")) {
                     sw_trigger_obj->send_sw_trigger(START_INGESTION);
                     sw_trigger_obj->recv_ack();
-                } else if(!strcmp(argv[1],"STOP_INGESTION")) {
+                } else if (!strcmp(argv[1], "STOP_INGESTION")) {
                     sw_trigger_obj->send_sw_trigger(STOP_INGESTION);
                     sw_trigger_obj->recv_ack();
-                } else if(is_number(std::string(argv[1]))) {
+                } else if (is_number(std::string(argv[1]))) {
                     sw_trigger_obj->set_duration(std::stoi(std::string(argv[1])));
                     sw_trigger_obj->perform_full_cycle();
                 } else {
@@ -498,7 +490,7 @@ int main(int argc, char **argv) {
             }
         };
     } catch(std::exception &ex) {
-        LOG_ERROR("exception in main of sw-trigger--utility: %s",ex.what());
+        LOG_ERROR("exception in main of sw-trigger--utility: %s", ex.what());
     }
     return 0;
 }
