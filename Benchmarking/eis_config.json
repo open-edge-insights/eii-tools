@@ -1,0 +1,225 @@
+{
+    "/VideoIngestion1/config": {
+        "ingestor": {
+            "pipeline": "rtspsrc location=\"rtsp://localhost:8554/\" latency=100 ! rtph264depay ! h264parse ! vaapih264dec ! vaapipostproc format=bgrx ! video/x-raw,format=BGRx ! gvadetect device=HDDL model=models/frozen_inference_graph.xml ! vaapipostproc format=bgrx height=300 width=300 ! videoconvert ! video/x-raw,format=BGR ! appsink",
+            "queue_size": 10,
+            "type": "gstreamer"
+        },
+        "max_jobs": 20,
+        "max_workers": 4,
+        "sw_trigger": {
+            "init_state": "running"
+        }
+    },
+    "/VideoIngestion2/config": {
+        "ingestor": {
+            "pipeline": "rtspsrc location=\"rtsp://localhost:8554/\" latency=100 ! rtph264depay ! h264parse ! vaapih264dec ! vaapipostproc format=bgrx ! video/x-raw,format=BGRx ! gvadetect device=HDDL model=models/frozen_inference_graph.xml ! vaapipostproc format=bgrx height=300 width=300 ! videoconvert ! video/x-raw,format=BGR ! appsink",
+            "queue_size": 10,
+            "type": "gstreamer"
+        },
+        "max_jobs": 20,
+        "max_workers": 4,
+        "sw_trigger": {
+            "init_state": "running"
+        }
+    },
+    "/VideoIngestion3/config": {
+        "ingestor": {
+            "pipeline": "rtspsrc location=\"rtsp://localhost:8554/\" latency=100 ! rtph264depay ! h264parse ! vaapih264dec ! vaapipostproc format=bgrx ! video/x-raw,format=BGRx ! gvadetect device=HDDL model=models/frozen_inference_graph.xml ! vaapipostproc format=bgrx height=300 width=300 ! videoconvert ! video/x-raw,format=BGR ! appsink",
+            "queue_size": 10,
+            "type": "gstreamer"
+        },
+        "max_jobs": 20,
+        "max_workers": 4,
+        "sw_trigger": {
+            "init_state": "running"
+        }
+    },
+    "/VideoIngestion4/config": {
+        "ingestor": {
+            "pipeline": "rtspsrc location=\"rtsp://localhost:8554/\" latency=100 ! rtph264depay ! h264parse ! vaapih264dec ! vaapipostproc format=bgrx ! video/x-raw,format=BGRx ! gvadetect device=HDDL model=models/frozen_inference_graph.xml ! vaapipostproc format=bgrx height=300 width=300 ! videoconvert ! video/x-raw,format=BGR ! appsink",
+            "queue_size": 10,
+            "type": "gstreamer"
+        },
+        "max_jobs": 20,
+        "max_workers": 4,
+        "sw_trigger": {
+            "init_state": "running"
+        }
+    },
+    "/VideoIngestion5/config": {
+        "ingestor": {
+            "pipeline": "rtspsrc location=\"rtsp://localhost:8554/\" latency=100 ! rtph264depay ! h264parse ! vaapih264dec ! vaapipostproc format=bgrx ! video/x-raw,format=BGRx ! gvadetect device=HDDL model=models/frozen_inference_graph.xml ! vaapipostproc format=bgrx height=300 width=300 ! videoconvert ! video/x-raw,format=BGR ! appsink",
+            "queue_size": 10,
+            "type": "gstreamer"
+        },
+        "max_jobs": 20,
+        "max_workers": 4,
+        "sw_trigger": {
+            "init_state": "running"
+        }
+    },
+    "/VideoIngestion6/config": {
+        "ingestor": {
+            "pipeline": "rtspsrc location=\"rtsp://localhost:8554/\" latency=100 ! rtph264depay ! h264parse ! vaapih264dec ! vaapipostproc format=bgrx ! video/x-raw,format=BGRx ! gvadetect device=HDDL model=models/frozen_inference_graph.xml ! vaapipostproc format=bgrx height=300 width=300 ! videoconvert ! video/x-raw,format=BGR ! appsink",
+            "queue_size": 10,
+            "type": "gstreamer"
+        },
+        "max_jobs": 20,
+        "max_workers": 4,
+        "sw_trigger": {
+            "init_state": "running"
+        }
+    },
+    "/VideoIngestion7/config": {
+        "ingestor": {
+            "pipeline": "rtspsrc location=\"rtsp://localhost:8554/\" latency=100 ! rtph264depay ! h264parse ! vaapih264dec ! vaapipostproc format=bgrx ! video/x-raw,format=BGRx ! gvadetect device=HDDL model=models/frozen_inference_graph.xml ! vaapipostproc format=bgrx height=300 width=300 ! videoconvert ! video/x-raw,format=BGR ! appsink",
+            "queue_size": 10,
+            "type": "gstreamer"
+        },
+        "max_jobs": 20,
+        "max_workers": 4,
+        "sw_trigger": {
+            "init_state": "running"
+        }
+    },
+    "/VideoIngestion8/config": {
+        "ingestor": {
+            "pipeline": "rtspsrc location=\"rtsp://localhost:8554/\" latency=100 ! rtph264depay ! h264parse ! vaapih264dec ! vaapipostproc format=bgrx ! video/x-raw,format=BGRx ! gvadetect device=HDDL model=models/frozen_inference_graph.xml ! vaapipostproc format=bgrx height=300 width=300 ! videoconvert ! video/x-raw,format=BGR ! appsink",
+            "queue_size": 10,
+            "type": "gstreamer"
+        },
+        "max_jobs": 20,
+        "max_workers": 4,
+        "sw_trigger": {
+            "init_state": "running"
+        }
+    },
+    "/VideoIngestion9/config": {
+        "ingestor": {
+            "pipeline": "rtspsrc location=\"rtsp://localhost:8554/\" latency=100 ! rtph264depay ! h264parse ! vaapih264dec ! vaapipostproc format=bgrx ! video/x-raw,format=BGRx ! gvadetect device=HDDL model=models/frozen_inference_graph.xml ! vaapipostproc format=bgrx height=300 width=300 ! videoconvert ! video/x-raw,format=BGR ! appsink",
+            "queue_size": 10,
+            "type": "gstreamer"
+        },
+        "max_jobs": 20,
+        "max_workers": 4,
+        "sw_trigger": {
+            "init_state": "running"
+        }
+    },
+    "/VideoIngestion10/config": {
+        "ingestor": {
+            "pipeline": "rtspsrc location=\"rtsp://localhost:8554/\" latency=100 ! rtph264depay ! h264parse ! vaapih264dec ! vaapipostproc format=bgrx ! video/x-raw,format=BGRx ! gvadetect device=HDDL model=models/frozen_inference_graph.xml ! vaapipostproc format=bgrx height=300 width=300 ! videoconvert ! video/x-raw,format=BGR ! appsink",
+            "queue_size": 10,
+            "type": "gstreamer"
+        },
+        "max_jobs": 20,
+        "max_workers": 4,
+        "sw_trigger": {
+            "init_state": "running"
+        }
+    },
+    "/VideoIngestion11/config": {
+        "ingestor": {
+            "pipeline": "rtspsrc location=\"rtsp://localhost:8554/\" latency=100 ! rtph264depay ! h264parse ! vaapih264dec ! vaapipostproc format=bgrx ! video/x-raw,format=BGRx ! gvadetect device=HDDL model=models/frozen_inference_graph.xml ! vaapipostproc format=bgrx height=300 width=300 ! videoconvert ! video/x-raw,format=BGR ! appsink",
+            "queue_size": 10,
+            "type": "gstreamer"
+        },
+        "max_jobs": 20,
+        "max_workers": 4,
+        "sw_trigger": {
+            "init_state": "running"
+        }
+    },
+    "/VideoIngestion12/config": {
+        "ingestor": {
+            "pipeline": "rtspsrc location=\"rtsp://localhost:8554/\" latency=100 ! rtph264depay ! h264parse ! vaapih264dec ! vaapipostproc format=bgrx ! video/x-raw,format=BGRx ! gvadetect device=HDDL model=models/frozen_inference_graph.xml ! vaapipostproc format=bgrx height=300 width=300 ! videoconvert ! video/x-raw,format=BGR ! appsink",
+            "queue_size": 10,
+            "type": "gstreamer"
+        },
+        "max_jobs": 20,
+        "max_workers": 4,
+        "sw_trigger": {
+            "init_state": "running"
+        }
+    },
+    "/VideoIngestion13/config": {
+        "ingestor": {
+            "pipeline": "rtspsrc location=\"rtsp://localhost:8554/\" latency=100 ! rtph264depay ! h264parse ! vaapih264dec ! vaapipostproc format=bgrx ! video/x-raw,format=BGRx ! gvadetect device=HDDL model=models/frozen_inference_graph.xml ! vaapipostproc format=bgrx height=300 width=300 ! videoconvert ! video/x-raw,format=BGR ! appsink",
+            "queue_size": 10,
+            "type": "gstreamer"
+        },
+        "max_jobs": 20,
+        "max_workers": 4,
+        "sw_trigger": {
+            "init_state": "running"
+        }
+    },
+    "/VideoIngestion14/config": {
+        "ingestor": {
+            "pipeline": "rtspsrc location=\"rtsp://localhost:8554/\" latency=100 ! rtph264depay ! h264parse ! vaapih264dec ! vaapipostproc format=bgrx ! video/x-raw,format=BGRx ! gvadetect device=HDDL model=models/frozen_inference_graph.xml ! vaapipostproc format=bgrx height=300 width=300 ! videoconvert ! video/x-raw,format=BGR ! appsink",
+            "queue_size": 10,
+            "type": "gstreamer"
+        },
+        "max_jobs": 20,
+        "max_workers": 4,
+        "sw_trigger": {
+            "init_state": "running"
+        }
+    },
+    "/VideoIngestion15/config": {
+        "ingestor": {
+            "pipeline": "rtspsrc location=\"rtsp://localhost:8554/\" latency=100 ! rtph264depay ! h264parse ! vaapih264dec ! vaapipostproc format=bgrx ! video/x-raw,format=BGRx ! gvadetect device=HDDL model=models/frozen_inference_graph.xml ! vaapipostproc format=bgrx height=300 width=300 ! videoconvert ! video/x-raw,format=BGR ! appsink",
+            "queue_size": 10,
+            "type": "gstreamer"
+        },
+        "max_jobs": 20,
+        "max_workers": 4,
+        "sw_trigger": {
+            "init_state": "running"
+        }
+    },
+    "/VideoIngestion16/config": {
+        "ingestor": {
+            "pipeline": "rtspsrc location=\"rtsp://localhost:8554/\" latency=100 ! rtph264depay ! h264parse ! vaapih264dec ! vaapipostproc format=bgrx ! video/x-raw,format=BGRx ! gvadetect device=HDDL model=models/frozen_inference_graph.xml ! vaapipostproc format=bgrx height=300 width=300 ! videoconvert ! video/x-raw,format=BGR ! appsink",
+            "queue_size": 10,
+            "type": "gstreamer"
+        },
+        "max_jobs": 20,
+        "max_workers": 4,
+        "sw_trigger": {
+            "init_state": "running"
+        }
+    },
+    "/VideoIngestion17/config": {
+        "ingestor": {
+            "pipeline": "rtspsrc location=\"rtsp://localhost:8554/\" latency=100 ! rtph264depay ! h264parse ! vaapih264dec ! vaapipostproc format=bgrx ! video/x-raw,format=BGRx ! gvadetect device=HDDL model=models/frozen_inference_graph.xml ! vaapipostproc format=bgrx height=300 width=300 ! videoconvert ! video/x-raw,format=BGR ! appsink",
+            "queue_size": 10,
+            "type": "gstreamer"
+        },
+        "max_jobs": 20,
+        "max_workers": 4,
+        "sw_trigger": {
+            "init_state": "running"
+        }
+    },
+    "/VideoIngestion18/config": {
+        "ingestor": {
+            "pipeline": "rtspsrc location=\"rtsp://localhost:8554/\" latency=100 ! rtph264depay ! h264parse ! vaapih264dec ! vaapipostproc format=bgrx ! video/x-raw,format=BGRx ! gvadetect device=HDDL model=models/frozen_inference_graph.xml ! vaapipostproc format=bgrx height=300 width=300 ! videoconvert ! video/x-raw,format=BGR ! appsink",
+            "queue_size": 10,
+            "type": "gstreamer"
+        },
+        "max_jobs": 20,
+        "max_workers": 4,
+        "sw_trigger": {
+            "init_state": "running"
+        }
+    },
+    "/GlobalEnv/": {
+        "PY_LOG_LEVEL": "INFO",
+        "GO_LOG_LEVEL": "INFO",
+        "C_LOG_LEVEL" : "INFO",
+        "GO_VERBOSE": "0",
+        "ETCD_KEEPER_PORT": "7070"
+    }
+}
