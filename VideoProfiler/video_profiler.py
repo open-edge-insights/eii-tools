@@ -36,12 +36,13 @@ from util.util import Util
 from eis.env_config import EnvConfig
 from eis.config_manager import ConfigManager
 import eis.msgbus as mb
-import coloredlogs, logging
+import coloredlogs
 
 coloredlogs.install()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 logging.basicConfig(level=logging.DEBUG)
+
 
 # Dict to store Fps mode results
 avg_fps_per_topic = {}
@@ -49,10 +50,22 @@ avg_fps_per_topic = {}
 monitor_mode_results = {}
 # Keys related to monitor mode settings
 dict_of_keys = {
-                "frame_blocked_ingestor_ts":"VI ingestor/UDF input queue is blocked, consider reducing ingestion rate",
-                "VideoAnalytics_subscriber_blocked_ts":"VA subs/UDF input queue is blocked, consider reducing ZMQ_RECV_HWM value or reducing ingestion rate",
-                "VideoIngestion_UDF_output_queue_blocked_ts":"UDF VI output queue blocked, check VideoIngestion UDF process times",
-                "VideoAnalytics_UDF_output_queue_blocked_ts":"UDF VA output queue blocked, check VideoAnalytics UDF process times"
+                "VideoIngestion_ingestor_blocked_ts":
+                "VI ingestor/UDF input queue is blocked,"
+                "consider reducing ingestion rate",
+
+                "VideoAnalytics_subscriber_blocked_ts":
+                "VA subs/UDF input queue is blocked, "
+                "consider reducing ZMQ_RECV_HWM value "
+                "or reducing ingestion rate",
+
+                "VideoIngestion_UDF_output_queue_blocked_ts":
+                "UDF VI output queue blocked, "
+                "check VideoIngestion UDF process times",
+
+                "VideoAnalytics_UDF_output_queue_blocked_ts":
+                "UDF VA output queue blocked, "
+                "check VideoAnalytics UDF process times"
                }
 
 
@@ -87,7 +100,9 @@ class VideoProfiler:
         if self.monitor_mode:
             self.monitor_mode_settings = config_dict['monitor_mode_settings']
             if self.profiling_mode is not True or self.fps_mode is not True:
-                logger.error('Both FPS & Profiling should be true for monitor mode')
+                logger.error('Both FPS & Profiling should be true')
+                sys.exit(1)
+        self.export_to_csv = config_dict['export_to_csv']
         self.publisher, self.topic = topic.split("/")
         os.environ[self.topic+'_cfg'] = config_dict[self.topic+'_cfg']
         self.total_number_of_frames = total_number_of_frames
@@ -122,9 +137,9 @@ class VideoProfiler:
         """ To subscribe over
         EISMessagebus. """
         config = EnvConfig.get_messagebus_config(self.topic, "sub",
-                                                  self.publisher,
-                                                  self.config_client,
-                                                  self.dev_mode)
+                                                 self.publisher,
+                                                 self.config_client,
+                                                 self.dev_mode)
 
         self.topic = self.topic.strip()
         mode_address = os.environ[self.topic + "_cfg"].split(",")
@@ -183,18 +198,27 @@ class VideoProfiler:
             VI_time_to_push_to_queue
         per_frame_stats["e2e"] = e2e
         for key in metadata:
-            if 'entry' in key and 'Ingestor' not in key and 'filter' not in key and 'e2e' not in key:
+            if 'entry' in key and 'Ingestor' not in key and\
+               'filter' not in key and 'e2e' not in key:
                 temp = key.split("_entry")[0]
-                per_frame_stats[temp + "_diff"] = metadata[temp+"_exit"] - metadata[temp+"_entry"]
+                per_frame_stats[temp + "_diff"] = metadata[temp+"_exit"] -\
+                    metadata[temp+"_entry"]
 
         if 'VideoAnalytics_subscriber_ts' in metadata:
             # VI-VA enabled scenario
-            per_frame_stats['VI_to_VA_and_zmq_wait'+'_diff'] = metadata['VideoAnalytics_subscriber_ts'] - metadata['VideoIngestion_publisher_ts']
-            per_frame_stats['VA_to_profiler_and_zmq_wait'+'_diff'] = metadata['ts_vp_sub'] - metadata['VideoAnalytics_publisher_ts']
+            per_frame_stats['VI_to_VA_and_zmq_wait_diff'] = \
+                metadata['VideoAnalytics_subscriber_ts'] -\
+                metadata['VideoIngestion_publisher_ts']
+            per_frame_stats['VA_to_profiler_and_zmq_wait_diff'] = \
+                metadata['ts_vp_sub'] -\
+                metadata['VideoAnalytics_publisher_ts']
         else:
             # Only VI scenario
-            per_frame_stats['VI_profiler_transfer_time'+'_diff'] = metadata['ts_vp_sub'] - metadata['VideoIngestion_publisher_ts']
-        if ('VideoAnalytics_first' in key for key in metadata) and ('VideoIngestion_first' in key for key in metadata):
+            per_frame_stats['VI_profiler_transfer_time_diff'] = \
+                metadata['ts_vp_sub'] -\
+                metadata['VideoIngestion_publisher_ts']
+        if ('VideoAnalytics_first' in key for key in metadata) and\
+           ('VideoIngestion_first' in key for key in metadata):
             va_temp = None
             vi_temp = None
             for key in metadata:
@@ -205,19 +229,20 @@ class VideoProfiler:
                 if va_temp is not None and vi_temp is not None:
                     break
             if vi_temp is not None:
-                per_frame_stats['VI_UDF_input_queue_time_spent'+'_diff'] = metadata[vi_temp+'VideoIngestion_first'+'_entry'] - metadata['ts_filterQ_exit']
-            if 'VideoAnalytics_subscriber_blocked_ts' in metadata and va_temp is not None:
-                per_frame_stats['VA_UDF_input_queue_time_spent'+'_diff'] = metadata[va_temp+'VideoAnalytics_first'+'_entry'] - metadata['VideoAnalytics_subscriber_blocked_ts']
-            elif 'VideoAnalytics_subscriber_ts' in metadata and va_temp is not None:
-                per_frame_stats['VA_UDF_input_queue_time_spent'+'_diff'] = metadata[va_temp+'VideoAnalytics_first'+'_entry'] - metadata['VideoAnalytics_subscriber_ts']
+                per_frame_stats['VI_UDF_input_queue_time_spent_diff'] =\
+                    metadata[vi_temp+'VideoIngestion_first_entry'] -\
+                    metadata['ts_filterQ_exit']
+            if 'VideoAnalytics_subscriber_blocked_ts' in metadata and\
+               va_temp is not None:
+                per_frame_stats['VA_UDF_input_queue_time_spent_diff'] =\
+                    metadata[va_temp+'VideoAnalytics_first_entry'] -\
+                    metadata['VideoAnalytics_subscriber_blocked_ts']
+            elif 'VideoAnalytics_subscriber_ts' in metadata and\
+                 va_temp is not None:
+                per_frame_stats['VA_UDF_input_queue_time_spent_diff'] =\
+                    metadata[va_temp+'VideoAnalytics_first_entry'] -\
+                    metadata['VideoAnalytics_subscriber_ts']
 
-        # Calculating VideoAnalytics serialization time if applicable
-        if 'VideoAnalytics_serialization_diff' in metadata:
-            per_frame_stats['VideoAnalytics_serialization_diff'] = metadata['VideoAnalytics_serialization_diff']
-
-        # Calculating VideoIngestion serialization time if applicable
-        if 'VideoIngestion_serialization_diff' in metadata:
-            per_frame_stats['VideoIngestion_serialization_diff'] = metadata['VideoIngestion_serialization_diff']
         return per_frame_stats
 
     def prepare_avg_stats(self, per_frame_stats):
@@ -232,12 +257,13 @@ class VideoProfiler:
                 temp = key.split("_diff")[0]
                 self.total_records[temp + '_total'] = 0
             self.start_subscribing = False
-        
+
         for key in per_frame_stats:
             if '_diff' in key:
                 temp = key.split("_diff")[0]
                 self.total_records[temp + '_total'] =\
-                    self.total_records[temp + '_total'] + per_frame_stats[temp + '_diff']
+                    self.total_records[temp + '_total'] +\
+                    per_frame_stats[temp + '_diff']
 
         self.VI_time_to_push_to_queue += \
             per_frame_stats['VI_time_to_push_to_queue']
@@ -272,18 +298,39 @@ class VideoProfiler:
             self.done_receiving = True
         per_frame_stats = self.prepare_per_frame_stats(metadata)
         avg_value = self.prepare_avg_stats(per_frame_stats)
-
-        if self.monitor_mode_settings['display_metadata']:
+        
+        csv_writer = None
+        if self.start_subscribing:
+            # File to write meta-data at runtime
+            csv_file = open('video_profiler_runtime_stats.csv', 'w')
+            csv_writer = csv.writer(csv_file)
+        else:
+            csv_file = open('video_profiler_runtime_stats.csv', 'a')
+            csv_writer = csv.writer(csv_file)
+        
+        if self.export_to_csv and self.monitor_mode_settings['display_metadata']:
+            csv_writer.writerow(metadata.keys())
+            csv_writer.writerow(metadata.values())
+        elif self.monitor_mode_settings['display_metadata']:
             logger.info(f'Meta data is: {metadata}')
-        if self.monitor_mode_settings['per_frame_stats']:
-            logger.info(f'Per frame stats in miliseconds: {per_frame_stats}')
-        if self.monitor_mode_settings['avg_stats']:
-            logger.info(f'Frame avg stats in miliseconds: {avg_value}')
 
+        if self.export_to_csv and self.monitor_mode_settings['per_frame_stats']:
+            csv_writer.writerow(per_frame_stats.keys())
+            csv_writer.writerow(per_frame_stats.values())
+        elif self.monitor_mode_settings['per_frame_stats']:
+            logger.info(f'Per frame stats in miliseconds: {per_frame_stats}')
+
+        if self.export_to_csv and self.monitor_mode_settings['avg_stats']:
+            csv_writer.writerow(avg_value.keys())
+            csv_writer.writerow(avg_value.values())
+        elif self.monitor_mode_settings['avg_stats']:
+            logger.info(f'Frame avg stats in miliseconds: {avg_value}')
+        
+        if self.export_to_csv:
+            csv_file.close()
         if self.done_receiving:
             global monitor_mode_results
             monitor_mode_results = avg_value
-
 
     def calculate_fps(self):
         """ Method to calculate FPS of provided stream """
@@ -315,7 +362,7 @@ class VideoProfiler:
 
 
 def invoke_gc():
-    """Method to invoke gc manually 
+    """Method to invoke gc manually
         to avoid memory bloats
     """
     while True:
@@ -345,13 +392,13 @@ if __name__ == "__main__":
     config_dict = get_config()
 
     if config_dict['dev_mode']:
-        fmt_str = ('%(asctime)s : %(levelname)s  : {}\
-             : %(name)s : [%(filename)s] :' .format("Insecure Mode") +
+        fmt_str = ('%(asctime)s : %(levelname)s  : {}'
+                   ': %(name)s : [%(filename)s] :' .format("Insecure Mode") +
                    '%(funcName)s : in line : [%(lineno)d] : %(message)s')
     else:
-        fmt_str = ('%(asctime)s : %(levelname)s : %(name)s\
-             : [%(filename)s] :' + '%(funcName)s : in line\
-                  : [%(lineno)d] : %(message)s')
+        fmt_str = ('%(asctime)s : %(levelname)s : %(name)s'
+                   ': [%(filename)s] :' + '%(funcName)s : in line'
+                   ': [%(lineno)d] : %(message)s')
 
     logging.basicConfig(level=logging.DEBUG, format=fmt_str)
 
@@ -409,7 +456,7 @@ if __name__ == "__main__":
             logger.info('Total FPS for {0} frames {1}'
                         .format(total_number_of_frames,
                                 final_fps))
-            logger.info('Monitor mode results'
+            logger.info('Monitor mode results {}'
                         .format(monitor_mode_results))
 
     # Exiting after metrics are calculated

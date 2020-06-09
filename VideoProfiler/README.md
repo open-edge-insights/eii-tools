@@ -68,6 +68,8 @@ module.
         python3.6 video_profiler.py
     ```
 
+6. The runtime stats of Video Profiler if enabled with export_to_csv switch can be found at [video_profiler_runtime_stats](video_profiler_runtime_stats.csv)
+
   > **Note:**
   > * `poll_interval` option in the VideoIngestion [config](../../VideoIngestion/config.json) sets the delay(in seconds)
       to be induced after every consecutive frame is read by the opencv ingestor.
