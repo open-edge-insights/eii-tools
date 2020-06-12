@@ -59,6 +59,7 @@ find_package(EISConfigMgr REQUIRED)
 find_package(EISMessageBus REQUIRED)
 find_package(PkgConfig REQUIRED)
 find_package(IntelSafeString REQUIRED)
+find_package(WJE REQUIRED)
 
 # Include header directories
 include_directories(
@@ -67,7 +68,8 @@ include_directories(
     ${EISUtils_INCLUDE}
     ${EISConfigMgr_INCLUDE}
     ${EISMessageBus_INCLUDE}
-    ${IntelSafeString_INCLUDE})
+    ${IntelSafeString_INCLUDE}
+    ${WJE_INCLUDE_DIRS})
 
 set(SOURCES src/sw_trigger_vi.cpp)
 
@@ -81,5 +83,6 @@ target_link_libraries(sw_trigger_utility
         ${EISMessageBus_LIBRARIES}
         ${ZMQ_LIBRARIES}
         ${CJSON_LIBRARIEES}
-        ${IntelSafeString_LIBRARIES})
+        ${IntelSafeString_LIBRARIES}
+        ${WJE_LIBRARIES})
 
