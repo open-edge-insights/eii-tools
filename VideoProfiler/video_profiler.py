@@ -101,7 +101,7 @@ class VideoProfiler:
             self.monitor_mode_settings = config_dict['monitor_mode_settings']
             if self.profiling_mode is not True or self.fps_mode is not True:
                 logger.error('Both FPS & Profiling should be true')
-                sys.exit(1)
+                os._exit(-1)
         self.export_to_csv = config_dict['export_to_csv']
         self.publisher, self.topic = topic.split("/")
         os.environ[self.topic+'_cfg'] = config_dict[self.topic+'_cfg']
@@ -298,23 +298,25 @@ class VideoProfiler:
             self.done_receiving = True
         per_frame_stats = self.prepare_per_frame_stats(metadata)
         avg_value = self.prepare_avg_stats(per_frame_stats)
-        
+
         csv_writer = None
-        if self.start_subscribing:
+        if self.start_subscribing and self.export_to_csv:
             # File to write meta-data at runtime
             csv_file = open('video_profiler_runtime_stats.csv', 'w')
             csv_writer = csv.writer(csv_file)
-        else:
+        elif self.export_to_csv:
             csv_file = open('video_profiler_runtime_stats.csv', 'a')
             csv_writer = csv.writer(csv_file)
-        
-        if self.export_to_csv and self.monitor_mode_settings['display_metadata']:
+
+        if self.export_to_csv and\
+           self.monitor_mode_settings['display_metadata']:
             csv_writer.writerow(metadata.keys())
             csv_writer.writerow(metadata.values())
         elif self.monitor_mode_settings['display_metadata']:
             logger.info(f'Meta data is: {metadata}')
 
-        if self.export_to_csv and self.monitor_mode_settings['per_frame_stats']:
+        if self.export_to_csv and\
+           self.monitor_mode_settings['per_frame_stats']:
             csv_writer.writerow(per_frame_stats.keys())
             csv_writer.writerow(per_frame_stats.values())
         elif self.monitor_mode_settings['per_frame_stats']:
@@ -325,7 +327,7 @@ class VideoProfiler:
             csv_writer.writerow(avg_value.values())
         elif self.monitor_mode_settings['avg_stats']:
             logger.info(f'Frame avg stats in miliseconds: {avg_value}')
-        
+
         if self.export_to_csv:
             csv_file.close()
         if self.done_receiving:
@@ -460,4 +462,4 @@ if __name__ == "__main__":
                         .format(monitor_mode_results))
 
     # Exiting after metrics are calculated
-    sys.exit(1)
+    os._exit(-1)
