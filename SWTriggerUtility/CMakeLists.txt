@@ -27,13 +27,6 @@ set(EIS_COMMON_CMAKE "${CMAKE_CURRENT_SOURCE_DIR}/../../common/cmake")
 # Set C++ version
 set(CMAKE_CXX_STANDARD 14)
 
-file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/config")
-file(GLOB CONFIGS "config/*.json")
-
-foreach(CONFIG ${CONFIGS})
-    file(COPY "${CONFIG}" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/config")
-endforeach()
-
 # Set CFLAGS for C/C++
 set(CMAKE_C_FLAGS "-fPIE -fPIC -O2 -Wall -pedantic -fstack-protector-strong -D_FORTIFY_SOURCE=2")
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")

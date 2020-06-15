@@ -67,16 +67,19 @@ enum ReqStatusCode {
 };
 
 void usage(const char* name) {
-        std::cout <<name<<" usage: ./sw_trigger_vi [Duration to ingest in seconds] [<START_INGESTION | STOP_INGESTION>] \n \
+        std::cout <<name<<" usage: \n\n \
+                    ./sw_trigger_vi [Duration to ingest in seconds] [<START_INGESTION | STOP_INGESTION>] [Config file path] \n\n \
                     -> Optional argument: START_INGESTION | STOP_INGESTION - Action to send to Video Ingestion service  \n \
-                    -> Optional argument: Duration to ingest in seconds (default=120 seconds). \
-                    NOTE: As a prerequisite update the config.json file for sw_trigger_utility based on the config need.  \
-                    Refer READMe.md for more details on each options" << std::endl;
+                    -> Optional argument: Duration to ingest in seconds (default=120 seconds). \n \
+                    -> Optional argument: ../config/config.json - Configuration file used for sw_trigger_vi utility. \n\n\
+                    NOTE: As a prerequisite update the config.json file for sw_trigger_utility based on the config need. \n \
+                    Refer READMe.md for more details on each options\n" << std::endl;
 
-        std::cout <<" Examples: 1. sw_trigger_utility \n \
-                                2. sw_trigger_utility 300 \
-                                3. sw_trigger_utility START_INGESTION \
-                                4. sw_trigger_utility STOP_INGESTION " \
+        std::cout <<" Examples:\n \
+                                1. ./sw_trigger_utility or ./sw_trigger_utility ../config/config.json\n \
+                                2. ./sw_trigger_utility 300 or ./sw_trigger_utility 300 ../config/config.json\n \
+                                3. ./sw_trigger_utility START_INGESTION or ./sw_trigger_utility START_INGESTION ../config/config.json\n \
+                                4. ./sw_trigger_utility STOP_INGESTION or ./sw_trigger_utility STOP_INGESTION ../config/config.json" \
         << std::endl;
     }
 
@@ -113,9 +116,9 @@ class SwTriggerUtility {
         char* m_client;
 
     public:
-        void read_config() {
+        void read_config(char* config_file_path) {
             // parse config file
-            config_t* config_file_cfg = json_config_new(CONFIG_FILE_PATH);
+            config_t* config_file_cfg = json_config_new(config_file_path);
             if (config_file_cfg == NULL) {
                 const char* err = "Failed to load JSON configuration of sw trigger utility";
                 LOG_ERROR("%s", err);
@@ -236,7 +239,7 @@ class SwTriggerUtility {
         * Constructor of SwTriggerUtility class
         */
 
-        SwTriggerUtility() {
+        SwTriggerUtility(char* config_file_path) {
             try {
                 // Initialize default values
                 m_msgbus_ctx = NULL;
@@ -245,7 +248,7 @@ class SwTriggerUtility {
                 m_env_config_client = NULL;
 
                 // parse config file
-                read_config();
+                read_config(config_file_path);
 
                 // get config mgr
                 get_config_mgr();
@@ -457,18 +460,28 @@ class SwTriggerUtility {
 int main(int argc, char **argv) {
     try {
         SwTriggerUtility* sw_trigger_obj = NULL;
-        if (argc > 2) {
+        if (argc > 3 ) {
             usage(argv[0]);
             return -1;
         }
-        sw_trigger_obj = new SwTriggerUtility();
+
+        if (argc < 3) {
+            argv[2] = CONFIG_FILE_PATH;
+            if(argc == 2){
+                // checking if 2nd argument is config json file, if yes then pass that as the configuration file path
+                if((std::string(argv[1]).find("json", 0)) != std::string::npos) {
+                    argv[2] = argv[1];
+                } 
+            } 
+        }
+        sw_trigger_obj = new SwTriggerUtility(argv[2]);
 
         switch (argc) {
-            case 1: {
-                sw_trigger_obj->perform_full_cycle();
-            }
-            break;
-            case 2: {
+            case 2: case 3: {
+                // checking if the second arguement is the config json file, if yes then go to case 1
+                if((std::string(argv[1]).find("json", 0)) != std::string::npos){
+                    goto case_one;
+                }
                 if (!strcmp(argv[1], "START_INGESTION")) {
                     sw_trigger_obj->send_sw_trigger(START_INGESTION);
                     sw_trigger_obj->recv_ack();
@@ -482,6 +495,11 @@ int main(int argc, char **argv) {
                     LOG_ERROR_0("ERROR: Provide proper commandline args");
                     usage(argv[0]);
                 }
+            }
+            break;
+            case 1: {
+                case_one:
+                sw_trigger_obj->perform_full_cycle();
             }
             break;
             default: {

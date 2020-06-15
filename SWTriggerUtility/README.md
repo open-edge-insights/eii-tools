@@ -12,47 +12,34 @@ This utility is used for invoking various software trigger features of VideoInge
 
 Software trigger utility can be used in following ways:
 
+**NOTE**: Passing config file as a command line argument is optional.
+
 USAGE 1: "START INGESTION" -> "ALLOW INGESTION FOR DEFAULT TIME (120 seconds being default)" -> "STOP INGESTION"
 ```sh
-    ./sw_trigger_utility 
+    "./sw_trigger_utility" or "./sw_trigger_utility ../config/config.json"
 ```
 Note: The num_of_cycles is configurable through config.json file.
 
 USAGE 2: "START INGESTION" -> "ALLOW INGESTION FOR USER DEFINED TIME (configurable time in seconds)" -> "STOP INGESTION"
 ```sh
-    ./sw_trigger_utility 300
+    "./sw_trigger_utility 300" or "./sw_trigger_utility 300 ../config/config.json"
 ```
 Note: In the above example, VideoIngestion starts then does ingestion for 300 seconds then stops ingestion after 300 seconds & cycle repeqats for number of cycles configured in the config.json.
 
 
 USAGE 3: Selectively send START_INGESTION software trigger:
 ```sh
-    ./sw_trigger_utility START_INGESTION
+    "./sw_trigger_utility START_INGESTION" or "./sw_trigger_utility START_INGESTION ../config/config.json"
 
 ```
 
 USAGE 4: Selectively send STOP_INGESTION software trigger:
 ```sh
-    ./sw_trigger_utility STOP_INGESTION
+    "./sw_trigger_utility STOP_INGESTION" or "./sw_trigger_utility STOP_INGESTION ../config/config.json"
 
 ```
 
 > **Note**:  If duplicate START_INGESTION or STOP_INGESTION sw_triggers are sent by client by mistake then the VI is capable  of catching these duplicates & responds back to client conveying that duplicate triggers were sent & requets to send proper sw_triggers. 
-
-## Build steps for sw_trigger_utility:
-
-Install the required EIS baremetal libraries by referring [../EISLibsInstaller/README.md/](../EISLibsInstaller/README.md)
-
-### To generate the "sw_trigger_vi"  binary.
-
-```sh
-   cd <multi_repo>/IEdgeInsights/tools/SWTriggerUtility && \
-   sudo rm -rf build && \
-   mkdir build && \
-   cd build && \
-   cmake .. && \
-   make
-```
 
 ## Configuration file:
 
@@ -73,6 +60,20 @@ Install the required EIS baremetal libraries by referring [../EISLibsInstaller/R
 | `trustFile`     | `CA cert`   | `string`  |
 | `log_level`     | `Log level to view the logs accordingly`   |  `integer [DEBUG=3 (default), ERROR=0, WARN=1, INFO=2]`  |
 
+## Build steps for sw_trigger_utility:
+
+Install the required EIS baremetal libraries by referring [EISLibsInstaller_README.md](../../common/README.md)
+
+### To generate the "sw_trigger_vi"  binary.
+
+```sh
+   cd <multi_repo>/IEdgeInsights/tools/SWTriggerUtility && \
+   sudo rm -rf build && \
+   mkdir build && \
+   cd build && \
+   cmake .. && \
+   make
+```
 
 **This utility works in both dev & prod mode.**  As a pre-requisite make sure to turn ON the flag corresponding to "dev_mode" to true/false in the config.json file.
 
