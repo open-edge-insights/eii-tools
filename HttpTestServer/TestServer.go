@@ -11,7 +11,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/golang/glog"
@@ -24,12 +23,14 @@ type testServer struct {
 	host          string
 	port          string
 	devMode       bool
+	restExportPort string
+	restExportHost string
 }
 
 const (
-	testServerCaPath   = "./cert.pem"
-	testServerCertPath = "./cert.pem"
-	testServerKeyPath  = "./key.pem"
+	testServerCaPath   = "./certificates/ca_cert.pem"
+	testServerCertPath = "./certificates/server_cert.pem"
+	testServerKeyPath  = "./certificates/server_key.pem"
 	clientCaPath       = "../../build/provision/Certificates/ca/ca_certificate.pem"
 )
 
@@ -39,9 +40,13 @@ func (t *testServer) init() {
 	var devmode string
 	var port string
 	var host string
+	var restExportHost string
+	var restExportPort string
 	flag.StringVar(&devmode, "dev_mode", "false", "devMode of external server")
 	flag.StringVar(&port, "port", "8082", "port of external server")
-	flag.StringVar(&host, "host", "localhost", "port of external server")
+	flag.StringVar(&host, "host", "localhost", "host of external server")
+	flag.StringVar(&restExportPort, "rdeport", "8087", "port of Rest Data Export server")
+	flag.StringVar(&restExportHost, "rdehost", "localhost", "host of Rest Data Export server")
 
 	flag.Parse()
 	flag.Set("logtostderr", "true")
@@ -49,6 +54,8 @@ func (t *testServer) init() {
 	// Setting host and port of Test Server
 	t.host = host
 	t.port = port
+	t.restExportPort = restExportPort
+	t.restExportHost = restExportHost
 
 	// Setting devMode
 	devMode, err := strconv.ParseBool(devmode)
@@ -132,69 +139,59 @@ func (t *testServer) startTestServer() {
 }
 
 // requestImage is used to send GET requests
-func (t *testServer) requestImage(metadata []byte) {
+func (t *testServer) requestImage(imgHandle string) {
 
 	// Timeout for every request
 	timeout := time.Duration(60 * time.Second)
 
-	// Fetching topic from metadata
-	var metadataJSON map[string]interface{}
-	json.Unmarshal(metadata, &metadataJSON)
-	topic := fmt.Sprintf("%v", metadataJSON["topic"])
+	if t.devMode {
 
-	// Request images only for streams containing results
-	if strings.Contains(topic, "stream_results") {
+		client := &http.Client{
+		Timeout: timeout,
+	}
 
-		imgHandle := fmt.Sprintf("%v", metadataJSON["img_handle"])
+	restExportDest := "http://" + t.restExportHost + ":" + t.restExportPort
+	// Making a get request to rest server
+	r, err := client.Get(restExportDest + "/image?imgHandle=" + imgHandle)
+	if err != nil {
+		glog.Errorf("Remote HTTP server is not responding : %s", err)
+	}
 
-		if t.devMode {
+	// Read the response body
+	defer r.Body.Close()
+	response, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		glog.Errorf("Failed to receive response from server : %s", err)
+	}
+	glog.Infof("imgHandle %v and md5sum %v", imgHandle, md5.Sum(response))
+	} else {
 
-			client := &http.Client{
-				Timeout: timeout,
-			}
-
-			// Making a get request to rest server
-			r, err := client.Get("http://localhost:8087" + "/image?imgHandle=" + imgHandle)
-			if err != nil {
-				glog.Errorf("Remote HTTP server is not responding : %s", err)
-			}
-
-			// Read the response body
-			defer r.Body.Close()
-			response, err := ioutil.ReadAll(r.Body)
-			if err != nil {
-				glog.Errorf("Failed to receive response from server : %s", err)
-			}
-			glog.Infof("imgHandle %v and md5sum %v", imgHandle, md5.Sum(response))
-
-		} else {
-
-			// Create a HTTPS client and supply the created CA pool and certificate
-			client := &http.Client{
-				Transport: &http.Transport{
-					TLSClientConfig: &tls.Config{
-						RootCAs:      t.extCaCertPool,
-						Certificates: []tls.Certificate{t.clientCert},
-					},
+	        // Create a HTTPS client and supply the created CA pool and certificate
+		client := &http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{
+					RootCAs:      t.extCaCertPool,
+					Certificates: []tls.Certificate{t.clientCert},
 				},
-				Timeout: timeout,
-			}
-
-			// Making a get request to rest server
-			r, err := client.Get("https://localhost:8087" + "/image?imgHandle=" + imgHandle)
-			if err != nil {
-				glog.Errorf("Remote HTTP server is not responding : %s", err)
-			}
-
-			// Read the response body
-			defer r.Body.Close()
-			response, err := ioutil.ReadAll(r.Body)
-			if err != nil {
-				glog.Errorf("Failed to receive response from server : %s", err)
-			}
-			// Print md5sum & imgHandle of received image
-			glog.Infof("imgHandle %v and md5sum %v", imgHandle, md5.Sum(response))
+			},
+			Timeout: timeout,
 		}
+
+		restExportDest := "https://" + t.restExportHost + ":" + t.restExportPort
+		// Making a get request to rest server
+		r, err := client.Get(restExportDest + "/image?imgHandle=" + imgHandle)
+		if err != nil {
+			glog.Errorf("Remote HTTP server is not responding : %s", err)
+		}
+
+		// Read the response body
+		defer r.Body.Close()
+		response, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			glog.Errorf("Failed to receive response from server : %s", err)
+		}
+		// Print md5sum & imgHandle of received image
+		glog.Infof("imgHandle %v and md5sum %v", imgHandle, md5.Sum(response))
 	}
 }
 
@@ -211,19 +208,24 @@ func (t *testServer) responseServer(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			glog.Errorf("Error reading request : %v", err)
 		}
-		metadata := string(metadataBytes)
-		glog.Infof("Received metadata : %s", metadata)
+	        // Fetching topic from metadata
+	        var metadataJSON map[string]interface{}
+	        json.Unmarshal(metadataBytes, &metadataJSON)
+
+	        imgHandle := fmt.Sprintf("%v", metadataJSON["img_handle"])
+		glog.Infof("Received metadata : %v", metadataJSON)
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("Received a POST request\n"))
-		// requesting image based on metadata obtained
-		t.requestImage(metadataBytes)
+	        if metadataJSON["img_handle"] != nil {
+		    // requesting image based on metadata obtained
+		    t.requestImage(imgHandle)
+	        }
 	default:
 		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
 	}
 }
 
 func main() {
-
 	t := new(testServer)
 	t.init()
 	t.startTestServer()
