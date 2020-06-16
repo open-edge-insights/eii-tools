@@ -33,7 +33,13 @@ module.
 
 1. To install EIS libs on bare-metal, follow the [README](../../common/README.md) of eis_libs_installer.
 
-2. Set the required env by running the below command.
+2. Run this command to install the requirements of Video Profiler
+
+    ```sh
+        pip3 install -r reuirements.txt
+    ```
+
+3. Set the required env by running the below command.
 
     ```sh
         source ./env.sh
