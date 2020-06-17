@@ -29,6 +29,10 @@ module.
     2. 'per_frame_stats': Continously displays the per frame metrics of every frame.
     3. 'avg_stats': Continously displays the average metrics of every frame.
 
+  > **Note:**
+  > * Pre-requisite for running in profiling or monitor mode : VI/VA should be running with PROFILING_MODE set to true in [.env](../../build/.env)
+  > * For running Video Profiler in FPS mode, it is recommended to keep PROFILING_MODE set to false in [.env](../../build/.env) for better performance.
+
 ## Installing Video Profiler requirements
 
 1. To install EIS libs on bare-metal, follow the [README](../../common/README.md) of eis_libs_installer.
