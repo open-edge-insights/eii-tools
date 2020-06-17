@@ -18,6 +18,31 @@
 
 1. Pre-requisite : EIS time-series recipe/stack should be running prior to start of this tool
 
+   Kapacitor service should run profiler_udf.go, configuration required to run the profiler udf
+
+   In [Kapacitor config.json](../../Kapacitor/config.json):
+   ```
+      "udfs": {
+        "type": "go",
+        "name": "profiling_udf",
+        "tick_script": "profiling_udf.tick",
+        "task_name": "profiling_udf"
+    }
+   ```
+   In [kapacitor.conf](../../Kapacitor/config/kapacitor.conf) under udf section:
+
+   ```
+      [udf.functions]
+         [udf.functions.profiling_udf]
+           socket = "/tmp/profiling_udf"
+           timeout = "20s"
+
+   ```
+
+   In [.env](../../build/.env):
+
+   Set the profiling mode as true.
+
 2. Set environment variables accordingly in [config.json](config.json)
 
 3. Set the required output stream/streams and appropriate stream config in [config.json](config.json) file.

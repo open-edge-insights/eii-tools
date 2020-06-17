@@ -32,8 +32,8 @@ import time
 from distutils.util import strtobool
 # IMPORT the library to read from EIS
 from util.util import Util
-from util.msgbusutil import MsgBusUtil
-from libs.ConfigManager.python.eis.config_manager import ConfigManager
+from eis.env_config import EnvConfig
+from eis.config_manager import ConfigManager
 import eis.msgbus as mb
 
 avg_sps_per_topic = {}
@@ -92,7 +92,7 @@ class TimeSeriesCalculator:
     def eisSubscriber(self):
         """ To subscribe over
         EISMessagebus. """
-        config = MsgBusUtil.get_messagebus_config(self.topic, "sub",
+        config = EnvConfig.get_messagebus_config(self.topic, "sub",
                                                   self.publisher,
                                                   self.config_client,
                                                   self.devMode)
