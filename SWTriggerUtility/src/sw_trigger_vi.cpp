@@ -63,7 +63,8 @@ enum ReqStatusCode {
     REQUEST_HONORED = 0,
     REQUEST_NOT_HONORED,
     REQUEST_ALREADY_RUNNING,
-    REQUEST_ALREADY_STOPPED
+    REQUEST_ALREADY_STOPPED,
+    REQUEST_COMMAND_NOT_REGISTERED
 };
 
 void usage(const char* name) {
@@ -347,8 +348,10 @@ class SwTriggerUtility {
                     LOG_INFO_0("REQUEST NOT HONORED ");
                 } else if (status == REQUEST_ALREADY_RUNNING) {
                     LOG_INFO_0("DUPLICATE REQUEST SENT BY CLIENT, AS INGESTION IS ALREADY RUNNING");
-                } else if (status == REQUEST_ALREADY_STOPPED) {
-                    LOG_INFO_0("DUPLICATE REQUEST SENT BY CLIENT AS INGESTION IS ALREADY STOPPED");
+                } else if(status == REQUEST_ALREADY_STOPPED) {
+                    LOG_INFO_0("DUPLICATE REQUEST SENT BY CLIENT, AS INGESTION IS ALREADY STOPPED");
+                } else if (status == REQUEST_COMMAND_NOT_REGISTERED) {
+                    LOG_INFO_0("COMMAND IS NOT REGISTERED WITH COMMAND HANDLER, (Check if the command for example \"SW_Trigger\") is enabled in the config or not");
                 } else {
                     LOG_ERROR_0("Received improper ack message. Exiting..");
                 }
