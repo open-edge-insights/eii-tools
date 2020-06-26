@@ -90,7 +90,7 @@ Install the required EIS baremetal libraries by referring [EISLibsInstaller_READ
 
 ```sh
     sudo chmod -R 755 <EIS-working-directory>/IEdgeInsights/build/provision/Certificates/ca
-    sudo chmod -R 755 <EIS-working-directory>/IEdgeInsights/build/provision/Certificates/root
+    sudo chmod -R 755 <EIS-working-directory>/IEdgeInsights/build/provision/Certificates/VideoAnalytics
 ```
 
 # 3. Make the field "dev_mode= false" in config.json of tools/sw_trigger_utility.

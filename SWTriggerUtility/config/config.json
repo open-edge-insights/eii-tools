@@ -5,7 +5,7 @@
     "VideoIngestion_cfg": "zmq_tcp,127.0.0.1:66013",
     "dev_mode" : false,
     "app_name" : "VideoAnalytics",
-    "certFile" : "../../../build/provision/Certificates/root/root_client_certificate.pem",
-    "keyFile"  : "../../../build/provision/Certificates/root/root_client_key.pem",
+    "certFile" : "../../../build/provision/Certificates/VideoAnalytics/VideoAnalytics_client_certificate.pem",
+    "keyFile"  : "../../../build/provision/Certificates/VideoAnalytics/VideoAnalytics_client_key.pem",
     "trustFile": "../../../build/provision/Certificates/ca/ca_certificate.pem"
 }

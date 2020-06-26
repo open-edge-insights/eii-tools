@@ -149,35 +149,37 @@ class SwTriggerUtility {
                 m_num_of_cycles = num_of_cyles_cvt->body.integer;
             }
 
-
+            // RequestEP
             config_value_t* request_ep_cvt = config_file_cfg->get_config_value(config_file_cfg->cfg,
                                                               "RequestEP");
             if (request_ep_cvt == NULL) {
-                const char* err = "\"RequestEP\" key is missing, setting to default";
-                LOG_WARN("%s", err);
-                m_request_ep = "VideoIngestion";
+                const char* err = "\"RequestEP\" key is missing. Improper Configuration. ";
+                LOG_ERROR("%s", err);
+                throw err;
             } else {
                 m_request_ep = request_ep_cvt->body.string;
             }
 
             m_client_cfg = std::string(m_request_ep) + "_cfg";
 
+            // RequestEP's configuration (_cfg)
             config_value_t* request_ep_cfg_cvt = config_file_cfg->get_config_value(config_file_cfg->cfg,
                                                               m_client_cfg.c_str());
             if (request_ep_cfg_cvt == NULL) {
-                const char* err = "Request_EP's _cfg key is missing, resetting to default connection IP as localhost & default port";
+                const char* err = "Request_EP's _cfg key is missing, Improper Configuration.";
                 LOG_ERROR("%s", err);
-                m_request_ep_cfg = "zmq_tcp,127.0.0.1:66013";
+                throw err;
             } else {
                 m_request_ep_cfg = request_ep_cfg_cvt->body.string;
             }
 
+            // dev_mode
             config_value_t* dev_mode_cvt = config_file_cfg->get_config_value(config_file_cfg->cfg,
                                                               "dev_mode");
             if ( dev_mode_cvt == NULL ) {
-                const char* err = "\"dev_mode\" key is missing, resetting to default dev mode";
-                LOG_WARN("%s", err);
-                m_dev_mode = true;
+                const char* err = "dev_mode key is missing, Improper Configuration.";
+                LOG_ERROR("%s", err);
+                throw err;
 
             } else {
                 m_dev_mode = dev_mode_cvt->body.boolean;
@@ -291,6 +293,10 @@ class SwTriggerUtility {
             }
             catch (std::exception& ex) {
                 LOG_ERROR("Exception = %s occurred in construction of SW_trigger_utility object ", ex.what());
+                exit(1);
+            } catch(const char *err) {
+                LOG_ERROR("Exception occurred: %s", err);
+                exit(1);
             }
         }
 
@@ -359,6 +365,11 @@ class SwTriggerUtility {
             } catch(std::exception& ex) {
                 LOG_ERROR("Exeption : %s occured during receving ACK from VI ", ex.what());
                 FREE_MEMORY(msg);
+                exit(1);
+            } catch(const char *err) {
+                LOG_ERROR("Exception occurred: %s", err);
+                FREE_MEMORY(msg);
+                exit(1);
             }
         }
 
@@ -427,6 +438,11 @@ class SwTriggerUtility {
             } catch(std::exception& ex) {
                 LOG_ERROR("Exception: %s occured while sending software trigger ", ex.what());
                 FREE_MEMORY(msg);
+                exit(1);
+            } catch(const char *err) {
+                LOG_ERROR("Exception occurred: %s", err);
+                FREE_MEMORY(msg);
+                exit(1);
             }
         }
 
