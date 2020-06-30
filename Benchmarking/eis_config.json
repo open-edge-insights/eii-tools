@@ -6,10 +6,7 @@
             "type": "gstreamer"
         },
         "max_jobs": 20,
-        "max_workers": 4,
-        "sw_trigger": {
-            "init_state": "running"
-        }
+        "max_workers": 4
     },
     "/VideoIngestion2/config": {
         "ingestor": {
@@ -18,10 +15,7 @@
             "type": "gstreamer"
         },
         "max_jobs": 20,
-        "max_workers": 4,
-        "sw_trigger": {
-            "init_state": "running"
-        }
+        "max_workers": 4
     },
     "/VideoIngestion3/config": {
         "ingestor": {
@@ -30,10 +24,7 @@
             "type": "gstreamer"
         },
         "max_jobs": 20,
-        "max_workers": 4,
-        "sw_trigger": {
-            "init_state": "running"
-        }
+        "max_workers": 4
     },
     "/VideoIngestion4/config": {
         "ingestor": {
@@ -42,10 +33,7 @@
             "type": "gstreamer"
         },
         "max_jobs": 20,
-        "max_workers": 4,
-        "sw_trigger": {
-            "init_state": "running"
-        }
+        "max_workers": 4
     },
     "/VideoIngestion5/config": {
         "ingestor": {
@@ -54,10 +42,7 @@
             "type": "gstreamer"
         },
         "max_jobs": 20,
-        "max_workers": 4,
-        "sw_trigger": {
-            "init_state": "running"
-        }
+        "max_workers": 4
     },
     "/VideoIngestion6/config": {
         "ingestor": {
@@ -66,10 +51,7 @@
             "type": "gstreamer"
         },
         "max_jobs": 20,
-        "max_workers": 4,
-        "sw_trigger": {
-            "init_state": "running"
-        }
+        "max_workers": 4
     },
     "/VideoIngestion7/config": {
         "ingestor": {
@@ -78,10 +60,7 @@
             "type": "gstreamer"
         },
         "max_jobs": 20,
-        "max_workers": 4,
-        "sw_trigger": {
-            "init_state": "running"
-        }
+        "max_workers": 4
     },
     "/VideoIngestion8/config": {
         "ingestor": {
@@ -90,10 +69,7 @@
             "type": "gstreamer"
         },
         "max_jobs": 20,
-        "max_workers": 4,
-        "sw_trigger": {
-            "init_state": "running"
-        }
+        "max_workers": 4
     },
     "/VideoIngestion9/config": {
         "ingestor": {
@@ -102,10 +78,7 @@
             "type": "gstreamer"
         },
         "max_jobs": 20,
-        "max_workers": 4,
-        "sw_trigger": {
-            "init_state": "running"
-        }
+        "max_workers": 4
     },
     "/VideoIngestion10/config": {
         "ingestor": {
@@ -114,10 +87,7 @@
             "type": "gstreamer"
         },
         "max_jobs": 20,
-        "max_workers": 4,
-        "sw_trigger": {
-            "init_state": "running"
-        }
+        "max_workers": 4
     },
     "/VideoIngestion11/config": {
         "ingestor": {
@@ -126,10 +96,7 @@
             "type": "gstreamer"
         },
         "max_jobs": 20,
-        "max_workers": 4,
-        "sw_trigger": {
-            "init_state": "running"
-        }
+        "max_workers": 4
     },
     "/VideoIngestion12/config": {
         "ingestor": {
@@ -138,10 +105,7 @@
             "type": "gstreamer"
         },
         "max_jobs": 20,
-        "max_workers": 4,
-        "sw_trigger": {
-            "init_state": "running"
-        }
+        "max_workers": 4
     },
     "/VideoIngestion13/config": {
         "ingestor": {
@@ -150,10 +114,7 @@
             "type": "gstreamer"
         },
         "max_jobs": 20,
-        "max_workers": 4,
-        "sw_trigger": {
-            "init_state": "running"
-        }
+        "max_workers": 4
     },
     "/VideoIngestion14/config": {
         "ingestor": {
@@ -162,10 +123,7 @@
             "type": "gstreamer"
         },
         "max_jobs": 20,
-        "max_workers": 4,
-        "sw_trigger": {
-            "init_state": "running"
-        }
+        "max_workers": 4
     },
     "/VideoIngestion15/config": {
         "ingestor": {
@@ -174,10 +132,7 @@
             "type": "gstreamer"
         },
         "max_jobs": 20,
-        "max_workers": 4,
-        "sw_trigger": {
-            "init_state": "running"
-        }
+        "max_workers": 4
     },
     "/VideoIngestion16/config": {
         "ingestor": {
@@ -186,10 +141,7 @@
             "type": "gstreamer"
         },
         "max_jobs": 20,
-        "max_workers": 4,
-        "sw_trigger": {
-            "init_state": "running"
-        }
+        "max_workers": 4
     },
     "/VideoIngestion17/config": {
         "ingestor": {
@@ -198,10 +150,7 @@
             "type": "gstreamer"
         },
         "max_jobs": 20,
-        "max_workers": 4,
-        "sw_trigger": {
-            "init_state": "running"
-        }
+        "max_workers": 4
     },
     "/VideoIngestion18/config": {
         "ingestor": {
@@ -210,10 +159,7 @@
             "type": "gstreamer"
         },
         "max_jobs": 20,
-        "max_workers": 4,
-        "sw_trigger": {
-            "init_state": "running"
-        }
+        "max_workers": 4
     },
     "/GlobalEnv/": {
         "PY_LOG_LEVEL": "INFO",
