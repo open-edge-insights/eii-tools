@@ -22,3 +22,12 @@
 
 export PYTHONPATH=$PYTHONPATH:../../:../../common/libs/EISMessageBus:../../common
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+
+# For running VideoProfiler on a separate node or with CSL, set these variables to
+# point to the etcd on different node
+ETCD_HOST=
+ETCD_CLIENT_PORT=2379
+# ETCD prefix for the key
+# Eg. ETCD_PREFIX=/csl/apps/EIS
+ETCD_PREFIX=
+no_proxy=localhost,127.0.0.1,$ETCD_HOST

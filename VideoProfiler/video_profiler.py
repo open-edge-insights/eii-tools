@@ -60,12 +60,10 @@ dict_of_keys = {
                 "or reducing ingestion rate",
 
                 "VideoIngestion_UDF_output_queue_blocked_ts":
-                "UDF VI output queue blocked, "
-                "check VideoIngestion UDF process times",
+                "UDF VI output queue blocked",
 
                 "VideoAnalytics_UDF_output_queue_blocked_ts":
-                "UDF VA output queue blocked, "
-                "check VideoAnalytics UDF process times"
+                "UDF VA output queue blocked"
                }
 
 
@@ -82,30 +80,48 @@ class VideoProfiler:
     """
 
     def __init__(self, topic,
-                 total_number_of_frames, config_dict):
+                 config_dict):
         """Constructor for VideoProfiler
 
         :param topic: name of the topic
         :type topic: str
-        :param total_number_of_frames: Total number of frames to
-                                       calculate metrics for
-        :type total_number_of_frames: int
         :param config_dict: VideoProfiler config
         :type config_dict: dict
         """
+        # Initializing dev_mode variable
         self.dev_mode = config_dict['dev_mode']
-        self.fps_mode = config_dict['fps_mode']
-        self.profiling_mode = config_dict['profiling_mode']
-        self.monitor_mode = config_dict['monitor_mode']
+
+        self.monitor_mode, self.fps_mode = False, False
+        if config_dict['mode'] == 'monitor':
+            self.monitor_mode = True
+        elif config_dict['mode'] == 'fps':
+            self.fps_mode = True
+        else:
+            logger.error('Only two modes supported.'
+                         ' Please select either fps or monitor mode')
+            os._exit(-1)
+
+        # Initializing monitor_mode related variables
         if self.monitor_mode:
             self.monitor_mode_settings = config_dict['monitor_mode_settings']
-            if self.profiling_mode is not True or self.fps_mode is not True:
-                logger.error('Both FPS & Profiling should be true')
-                os._exit(-1)
+            logger.info('Please ensure EIS containers are '
+                        'running with PROFILING_MODE set to true')
+        if config_dict['total_number_of_frames'] is (-1):
+            # Set total number of frames to infinity
+            self.total_frames = float('inf')
+            logger.warning('Total number of frames set to infinity. Please '
+                            'use Ctrl+C to exit.')
+        else:
+            self.total_frames = \
+                config_dict['total_number_of_frames']
+
+        # Enabling this switch publishes the results to an external csv file
         self.export_to_csv = config_dict['export_to_csv']
+
+        # Initializing msgbus related variables
         self.publisher, self.topic = topic.split("/")
         os.environ[self.topic+'_cfg'] = config_dict[self.topic+'_cfg']
-        self.total_number_of_frames = total_number_of_frames
+
         self.frame_count = 0
         self.start_time = 0.0
         self.done_receiving = False
@@ -152,16 +168,6 @@ class VideoProfiler:
         msgbus = mb.MsgbusContext(config)
         subscriber = msgbus.new_subscriber(self.topic)
         if self.monitor_mode:
-            logger.info('Calculating FPS for stream')
-            while not self.done_receiving:
-                md, fr = subscriber.recv()
-                self.calculate_fps()
-                # Discarding both the meta-data & frame
-                del md
-                del fr
-            self.done_receiving = False
-            self.frame_count = 0
-            self.start_subscribing = True
             while not self.done_receiving:
                 md, fr = subscriber.recv()
                 md['ts_vp_sub'] = int(round(time.time()*1000))
@@ -170,17 +176,13 @@ class VideoProfiler:
                     for di_keys in dict_of_keys.keys():
                         if(di_keys in keys):
                             logger.critical(dict_of_keys[di_keys])
-        else:
+        elif self.fps_mode:
             while not self.done_receiving:
                 md, fr = subscriber.recv()
-                if self.profiling_mode:
-                    md['ts_vp_sub'] = int(round(time.time()*1000))
-                    self.add_profile_data(md)
-                else:
-                    self.calculate_fps()
-                    # Discarding both the meta-data & frame
-                    del md
-                    del fr
+                self.calculate_fps()
+                # Discarding both the meta-data & frame
+                del md
+                del fr
         subscriber.close()
         return
 
@@ -256,7 +258,6 @@ class VideoProfiler:
             for key in per_frame_stats:
                 temp = key.split("_diff")[0]
                 self.total_records[temp + '_total'] = 0
-            self.start_subscribing = False
 
         for key in per_frame_stats:
             if '_diff' in key:
@@ -294,7 +295,7 @@ class VideoProfiler:
         :type metadata: dict
         """
         self.frame_count += 1
-        if self.frame_count == int(self.total_number_of_frames):
+        if self.frame_count == self.total_frames:
             self.done_receiving = True
         per_frame_stats = self.prepare_per_frame_stats(metadata)
         avg_value = self.prepare_avg_stats(per_frame_stats)
@@ -308,25 +309,43 @@ class VideoProfiler:
             csv_file = open('video_profiler_runtime_stats.csv', 'a')
             csv_writer = csv.writer(csv_file)
 
-        if self.export_to_csv and\
-           self.monitor_mode_settings['display_metadata']:
-            csv_writer.writerow(metadata.keys())
-            csv_writer.writerow(metadata.values())
-        elif self.monitor_mode_settings['display_metadata']:
-            logger.info(f'Meta data is: {metadata}')
-
-        if self.export_to_csv and\
-           self.monitor_mode_settings['per_frame_stats']:
-            csv_writer.writerow(per_frame_stats.keys())
-            csv_writer.writerow(per_frame_stats.values())
-        elif self.monitor_mode_settings['per_frame_stats']:
-            logger.info(f'Per frame stats in miliseconds: {per_frame_stats}')
-
-        if self.export_to_csv and self.monitor_mode_settings['avg_stats']:
-            csv_writer.writerow(avg_value.keys())
-            csv_writer.writerow(avg_value.values())
-        elif self.monitor_mode_settings['avg_stats']:
-            logger.info(f'Frame avg stats in miliseconds: {avg_value}')
+        if self.export_to_csv:
+            if self.monitor_mode_settings['avg_stats']:
+                # If only avg_stats is true, write avg_stats to csv
+                # and print per_frame_stats or metadata based on their
+                # respective keys set to true
+                if self.start_subscribing:
+                    csv_writer.writerow(avg_value.keys())
+                    self.start_subscribing = False
+                csv_writer.writerow(avg_value.values())
+                if self.monitor_mode_settings['per_frame_stats']:
+                    logger.info(f'Per frame stats'
+                                ' in miliseconds: {per_frame_stats}')
+                if self.monitor_mode_settings['display_metadata']:
+                    logger.info(f'Meta data is: {metadata}')
+            elif self.monitor_mode_settings['per_frame_stats']:
+                # If only per_frame_stats is true, write per_frame_stats to csv
+                # and print metadata if its key is set to true
+                if self.start_subscribing:
+                    csv_writer.writerow(per_frame_stats.keys())
+                    self.start_subscribing = False
+                csv_writer.writerow(per_frame_stats.values())
+                if self.monitor_mode_settings['display_metadata']:
+                    logger.info(f'Meta data is: {metadata}')
+            elif self.monitor_mode_settings['display_metadata']:
+                # If only display_metadata is true, write metadata to csv
+                if self.start_subscribing:
+                    csv_writer.writerow(metadata.keys())
+                    self.start_subscribing = False
+                csv_writer.writerow(metadata.values())
+        else:
+            if self.monitor_mode_settings['display_metadata']:
+                logger.info(f'Meta data is: {metadata}')
+            if self.monitor_mode_settings['per_frame_stats']:
+                logger.info(f'Per frame stats '
+                            'in miliseconds: {per_frame_stats}')
+            if self.monitor_mode_settings['avg_stats']:
+                logger.info(f'Frame avg stats in miliseconds: {avg_value}')
 
         if self.export_to_csv:
             csv_file.close()
@@ -345,7 +364,7 @@ class VideoProfiler:
         self.frame_count += 1
 
         # Check if all frames are received
-        if self.frame_count == int(self.total_number_of_frames):
+        if self.frame_count == self.total_frames:
             # Get time in milliseconds
             end_time = datetime.datetime.now()
             delta = end_time - self.start_time
@@ -382,7 +401,6 @@ def thread_runner(topic, config_dict):
     :type config_dict: dict
     """
     fps_app = VideoProfiler(topic,
-                            total_number_of_frames,
                             config_dict)
     fps_app.eisSubscriber()
 
@@ -406,7 +424,7 @@ if __name__ == "__main__":
 
     topics = config_dict['SubTopics']
     export_to_csv = config_dict['export_to_csv']
-    total_number_of_frames = int(config_dict['total_number_of_frames'])
+    total_frames = config_dict['total_number_of_frames']
 
     gc_thread = threading.Thread(target=invoke_gc)
     gc_thread.start()
@@ -421,43 +439,44 @@ if __name__ == "__main__":
     for thread in threads:
         thread.join()
 
-    if config_dict['monitor_mode'] or config_dict['fps_mode']:
-        # Calculating overall fps for all topics
-        final_fps = 0.0
-        for topic in avg_fps_per_topic.keys():
-            final_fps += avg_fps_per_topic[topic]
+    # Calculating overall fps for all topics
+    final_fps = 0.0
+    for topic in avg_fps_per_topic.keys():
+        final_fps += avg_fps_per_topic[topic]
 
-        if export_to_csv:
-            csv_columns = ['Stream Name', 'Average FPS']
-            avg_fps_per_topic['Total Fps'] = final_fps
-            try:
-                if config_dict['monitor_mode']:
-                    # Generating excel sheet for monitor_mode
-                    with open('VP_Results.csv', 'w') as csv_file:
-                        writer = csv.writer(csv_file)
-                        writer.writerow(csv_columns)
-                        for key, value in avg_fps_per_topic.items():
-                            writer.writerow([key, value])
-                        writer.writerow('\n')
-                        for key, value in monitor_mode_results.items():
-                            writer.writerow([key, value])
-                    logger.info('Check VP_Results.csv file for results...')
-                else:
-                    # Generating excel sheet for FPS mode
-                    with open('FPS_Results.csv', 'w') as csv_file:
-                        writer = csv.writer(csv_file)
-                        writer.writerow(csv_columns)
-                        for key, value in avg_fps_per_topic.items():
-                            writer.writerow([key, value])
-                    logger.info('Check FPS_Results.csv file for results...')
-            except IOError:
-                logger.error("I/O error")
-        else:
+    if export_to_csv:
+        csv_columns = ['Stream Name', 'Average FPS']
+        avg_fps_per_topic['Total Fps'] = final_fps
+        try:
+            if config_dict['mode'] == 'monitor':
+                # Generating excel sheet for monitor_mode
+                with open('VP_Results.csv', 'w') as csv_file:
+                    writer = csv.writer(csv_file)
+                    writer.writerow(csv_columns)
+                    for key, value in avg_fps_per_topic.items():
+                        writer.writerow([key, value])
+                    writer.writerow('\n')
+                    for key, value in monitor_mode_results.items():
+                        writer.writerow([key, value])
+                logger.info('Check VP_Results.csv file for results...')
+            if config_dict['mode'] == 'fps':
+                # Generating excel sheet for FPS mode
+                with open('FPS_Results.csv', 'w') as csv_file:
+                    writer = csv.writer(csv_file)
+                    writer.writerow(csv_columns)
+                    for key, value in avg_fps_per_topic.items():
+                        writer.writerow([key, value])
+                logger.info('Check FPS_Results.csv file for results...')
+        except IOError:
+            logger.error("I/O error")
+    else:
+        if config_dict['mode'] == 'fps':
             logger.info('Average FPS for each topic {0}'
                         .format(avg_fps_per_topic))
             logger.info('Total FPS for {0} frames {1}'
-                        .format(total_number_of_frames,
+                        .format(total_frames,
                                 final_fps))
+        if config_dict['mode'] == 'monitor':
             logger.info('Monitor mode results {}'
                         .format(monitor_mode_results))
 
