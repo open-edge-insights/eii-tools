@@ -33,18 +33,21 @@ The Following are the steps required for benchmarking:
     $ docker-compose up -d
     ```
 
-7. [Optional] To calculate FPS using VideoProfiler tool please copy the content of [./VideoProfiler_config.json](./VideoProfiler_config.json) to [../VideoProfiler/config.json](../VideoProfiler/config.json).
+7. [Optional] To calculate FPS using VideoProfiler tool refer the below steps,
+
+    * Please copy the content of [./VideoProfiler_config.json](./VideoProfiler_config.json) to [../VideoProfiler/config.json](../VideoProfiler/config.json).
+
+    * In order to run the VideoProfiler refer [../VideoProfiler/README.md](../VideoProfiler/README.md)
 
 **Note**:
-* To calculate FPS using VideoProfiler tool please make sure that VideoIngestion is running.
 
+* To calculate FPS using VideoProfiler tool please make sure that VideoIngestion is running.
 * This will start multiple VI containers based on the number of VI services given in docker compose file.
 * Once the VI services are launched the the timer will be started before the gstreamer loop starts.
 * In order to get the FPS results stop the RTSP server started using cvlc command.
 * When the VI applicaiton stops receiving data form the RTSP server, the gstreamer loop will stop and FPS will be calculated.
 * The FPS of each VI service along with it's AppName will be written to `/var/tmp/fps.txt`.
 * One can also check the log of each VI service to get the FPS.
-
 * `docker ps` command can be used to check the number of VI services launced.
 * `docker-compose logs -f` can be used to check the logs.
 
