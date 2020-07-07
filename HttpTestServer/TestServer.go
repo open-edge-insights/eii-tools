@@ -17,12 +17,12 @@ import (
 )
 
 type testServer struct {
-	tsCaCertPool  *x509.CertPool
-	extCaCertPool *x509.CertPool
-	clientCert    tls.Certificate
-	host          string
-	port          string
-	devMode       bool
+	tsCaCertPool   *x509.CertPool
+	extCaCertPool  *x509.CertPool
+	clientCert     tls.Certificate
+	host           string
+	port           string
+	devMode        bool
 	restExportPort string
 	restExportHost string
 }
@@ -147,26 +147,28 @@ func (t *testServer) requestImage(imgHandle string) {
 	if t.devMode {
 
 		client := &http.Client{
-		Timeout: timeout,
-	}
+			Timeout: timeout,
+		}
 
-	restExportDest := "http://" + t.restExportHost + ":" + t.restExportPort
-	// Making a get request to rest server
-	r, err := client.Get(restExportDest + "/image?imgHandle=" + imgHandle)
-	if err != nil {
-		glog.Errorf("Remote HTTP server is not responding : %s", err)
-	}
+		restExportDest := "http://" + t.restExportHost + ":" + t.restExportPort
+		// Making a get request to rest server
+		r, err := client.Get(restExportDest + "/image?imgHandle=" + imgHandle)
+		if err != nil {
+			glog.Errorf("Remote HTTP server is not responding : %s", err)
+		}
 
-	// Read the response body
-	defer r.Body.Close()
-	response, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		glog.Errorf("Failed to receive response from server : %s", err)
-	}
-	glog.Infof("imgHandle %v and md5sum %v", imgHandle, md5.Sum(response))
+		if r != nil {
+			// Read the response body
+			defer r.Body.Close()
+			response, err := ioutil.ReadAll(r.Body)
+			if err != nil {
+				glog.Errorf("Failed to receive response from server : %s", err)
+			}
+			glog.Infof("imgHandle %v and md5sum %v", imgHandle, md5.Sum(response))
+		}
 	} else {
 
-	        // Create a HTTPS client and supply the created CA pool and certificate
+		// Create a HTTPS client and supply the created CA pool and certificate
 		client := &http.Client{
 			Transport: &http.Transport{
 				TLSClientConfig: &tls.Config{
@@ -183,15 +185,16 @@ func (t *testServer) requestImage(imgHandle string) {
 		if err != nil {
 			glog.Errorf("Remote HTTP server is not responding : %s", err)
 		}
-
-		// Read the response body
-		defer r.Body.Close()
-		response, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			glog.Errorf("Failed to receive response from server : %s", err)
+		if r != nil {
+			// Read the response body
+			defer r.Body.Close()
+			response, err := ioutil.ReadAll(r.Body)
+			if err != nil {
+				glog.Errorf("Failed to receive response from server : %s", err)
+			}
+			// Print md5sum & imgHandle of received image
+			glog.Infof("imgHandle %v and md5sum %v", imgHandle, md5.Sum(response))
 		}
-		// Print md5sum & imgHandle of received image
-		glog.Infof("imgHandle %v and md5sum %v", imgHandle, md5.Sum(response))
 	}
 }
 
@@ -208,18 +211,18 @@ func (t *testServer) responseServer(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			glog.Errorf("Error reading request : %v", err)
 		}
-	        // Fetching topic from metadata
-	        var metadataJSON map[string]interface{}
-	        json.Unmarshal(metadataBytes, &metadataJSON)
+		// Fetching topic from metadata
+		var metadataJSON map[string]interface{}
+		json.Unmarshal(metadataBytes, &metadataJSON)
 
-	        imgHandle := fmt.Sprintf("%v", metadataJSON["img_handle"])
+		imgHandle := fmt.Sprintf("%v", metadataJSON["img_handle"])
 		glog.Infof("Received metadata : %v", metadataJSON)
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("Received a POST request\n"))
-	        if metadataJSON["img_handle"] != nil {
-		    // requesting image based on metadata obtained
-		    t.requestImage(imgHandle)
-	        }
+		if metadataJSON["img_handle"] != nil {
+			// requesting image based on metadata obtained
+			t.requestImage(imgHandle)
+		}
 	default:
 		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
 	}
