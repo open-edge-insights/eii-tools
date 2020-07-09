@@ -1,0 +1,443 @@
+{
+    "Name": "EIS",
+    "Version": "0.2",
+    "Description": "Edge Insights Software CSL Deployment",
+    "Type": "persistent",
+    "DataStore": {
+        "DataBucket": "EIS"
+    },
+    "Modules": [
+        {
+            "Name": "VideoIngestion1",
+            "Description": "Video Ingestion module manifest",
+            "SchemaVersion": "0.2",
+            "ManifestFile": "${idx:videoingestion:2.3}",
+            "Resources": {
+                "CPU": 100,
+                "MemoryMB": 100
+            },
+            "ExecutionEnv": {
+                "AppName": "VideoIngestion1",
+                "ETCD_ENDPOINT": "${datastore.endpoint}",
+                "CONFIGMGR_CACERT": "${databucket.cacert}",
+                "CONFIGMGR_CERT": "${databucket.cert}",
+                "CONFIGMGR_KEY": "${databucket.key}",
+                "ETCD_PREFIX": "/csl/apps/EIS",
+                "DEV_MODE": "false",
+                "Clients": "VideoAnalytics,WebVisualizer",
+                "PROFILING_MODE": "false",
+                "ZMQ_RECV_HWM": "50",
+                "PubTopics": "camera1_stream",
+                "camera1_stream_cfg": "zmq_ipc,/opt/eis/sockets"
+            }
+        },
+        {
+            "Name": "VideoIngestion2",
+            "Description": "Video Ingestion module manifest",
+            "SchemaVersion": "0.2",
+            "ManifestFile": "${idx:videoingestion:2.3}",
+            "Resources": {
+                "CPU": 100,
+                "MemoryMB": 100
+            },
+            "ExecutionEnv": {
+                "AppName": "VideoIngestion2",
+                "ETCD_ENDPOINT": "${datastore.endpoint}",
+                "CONFIGMGR_CACERT": "${databucket.cacert}",
+                "CONFIGMGR_CERT": "${databucket.cert}",
+                "CONFIGMGR_KEY": "${databucket.key}",
+                "ETCD_PREFIX": "/csl/apps/EIS",
+                "DEV_MODE": "false",
+                "Clients": "VideoAnalytics,WebVisualizer",
+                "PROFILING_MODE": "false",
+                "ZMQ_RECV_HWM": "50",
+                "PubTopics": "camera2_stream",
+                "camera2_stream_cfg": "zmq_ipc,/opt/eis/sockets"
+            }
+        },
+        {
+            "Name": "VideoIngestion3",
+            "Description": "Video Ingestion module manifest",
+            "SchemaVersion": "0.2",
+            "ManifestFile": "${idx:videoingestion:2.3}",
+            "Resources": {
+                "CPU": 100,
+                "MemoryMB": 100
+            },
+            "ExecutionEnv": {
+                "AppName": "VideoIngestion3",
+                "ETCD_ENDPOINT": "${datastore.endpoint}",
+                "CONFIGMGR_CACERT": "${databucket.cacert}",
+                "CONFIGMGR_CERT": "${databucket.cert}",
+                "CONFIGMGR_KEY": "${databucket.key}",
+                "ETCD_PREFIX": "/csl/apps/EIS",
+                "DEV_MODE": "false",
+                "Clients": "VideoAnalytics,WebVisualizer",
+                "PROFILING_MODE": "false",
+                "ZMQ_RECV_HWM": "50",
+                "PubTopics": "camera3_stream",
+                "camera3_stream_cfg": "zmq_ipc,/opt/eis/sockets"
+            }
+        },
+        {
+            "Name": "VideoIngestion4",
+            "Description": "Video Ingestion module manifest",
+            "SchemaVersion": "0.2",
+            "ManifestFile": "${idx:videoingestion:2.3}",
+            "Resources": {
+                "CPU": 100,
+                "MemoryMB": 100
+            },
+            "ExecutionEnv": {
+                "AppName": "VideoIngestion4",
+                "ETCD_ENDPOINT": "${datastore.endpoint}",
+                "CONFIGMGR_CACERT": "${databucket.cacert}",
+                "CONFIGMGR_CERT": "${databucket.cert}",
+                "CONFIGMGR_KEY": "${databucket.key}",
+                "ETCD_PREFIX": "/csl/apps/EIS",
+                "DEV_MODE": "false",
+                "Clients": "VideoAnalytics,WebVisualizer",
+                "PROFILING_MODE": "false",
+                "ZMQ_RECV_HWM": "50",
+                "PubTopics": "camera4_stream",
+                "camera4_stream_cfg": "zmq_ipc,/opt/eis/sockets"
+            }
+        },
+        {
+            "Name": "VideoIngestion5",
+            "Description": "Video Ingestion module manifest",
+            "SchemaVersion": "0.2",
+            "ManifestFile": "${idx:videoingestion:2.3}",
+            "Resources": {
+                "CPU": 100,
+                "MemoryMB": 100
+            },
+            "ExecutionEnv": {
+                "AppName": "VideoIngestion5",
+                "ETCD_ENDPOINT": "${datastore.endpoint}",
+                "CONFIGMGR_CACERT": "${databucket.cacert}",
+                "CONFIGMGR_CERT": "${databucket.cert}",
+                "CONFIGMGR_KEY": "${databucket.key}",
+                "ETCD_PREFIX": "/csl/apps/EIS",
+                "DEV_MODE": "false",
+                "Clients": "VideoAnalytics,WebVisualizer",
+                "PROFILING_MODE": "false",
+                "ZMQ_RECV_HWM": "50",
+                "PubTopics": "camera5_stream",
+                "camera5_stream_cfg": "zmq_ipc,/opt/eis/sockets"
+            }
+        },
+        {
+            "Name": "VideoIngestion6",
+            "Description": "Video Ingestion module manifest",
+            "SchemaVersion": "0.2",
+            "ManifestFile": "${idx:videoingestion:2.3}",
+            "Resources": {
+                "CPU": 100,
+                "MemoryMB": 100
+            },
+            "ExecutionEnv": {
+                "AppName": "VideoIngestion6",
+                "ETCD_ENDPOINT": "${datastore.endpoint}",
+                "CONFIGMGR_CACERT": "${databucket.cacert}",
+                "CONFIGMGR_CERT": "${databucket.cert}",
+                "CONFIGMGR_KEY": "${databucket.key}",
+                "ETCD_PREFIX": "/csl/apps/EIS",
+                "DEV_MODE": "false",
+                "Clients": "VideoAnalytics,WebVisualizer",
+                "PROFILING_MODE": "false",
+                "ZMQ_RECV_HWM": "50",
+                "PubTopics": "camera6_stream",
+                "camera6_stream_cfg": "zmq_ipc,/opt/eis/sockets"
+            }
+        },
+        {
+            "Name": "VideoIngestion7",
+            "Description": "Video Ingestion module manifest",
+            "SchemaVersion": "0.2",
+            "ManifestFile": "${idx:videoingestion:2.3}",
+            "Resources": {
+                "CPU": 100,
+                "MemoryMB": 100
+            },
+            "ExecutionEnv": {
+                "AppName": "VideoIngestion7",
+                "ETCD_ENDPOINT": "${datastore.endpoint}",
+                "CONFIGMGR_CACERT": "${databucket.cacert}",
+                "CONFIGMGR_CERT": "${databucket.cert}",
+                "CONFIGMGR_KEY": "${databucket.key}",
+                "ETCD_PREFIX": "/csl/apps/EIS",
+                "DEV_MODE": "false",
+                "Clients": "VideoAnalytics,WebVisualizer",
+                "PROFILING_MODE": "false",
+                "ZMQ_RECV_HWM": "50",
+                "PubTopics": "camera7_stream",
+                "camera7_stream_cfg": "zmq_ipc,/opt/eis/sockets"
+            }
+        },
+        {
+            "Name": "VideoIngestion8",
+            "Description": "Video Ingestion module manifest",
+            "SchemaVersion": "0.2",
+            "ManifestFile": "${idx:videoingestion:2.3}",
+            "Resources": {
+                "CPU": 100,
+                "MemoryMB": 100
+            },
+            "ExecutionEnv": {
+                "AppName": "VideoIngestion8",
+                "ETCD_ENDPOINT": "${datastore.endpoint}",
+                "CONFIGMGR_CACERT": "${databucket.cacert}",
+                "CONFIGMGR_CERT": "${databucket.cert}",
+                "CONFIGMGR_KEY": "${databucket.key}",
+                "ETCD_PREFIX": "/csl/apps/EIS",
+                "DEV_MODE": "false",
+                "Clients": "VideoAnalytics,WebVisualizer",
+                "PROFILING_MODE": "false",
+                "ZMQ_RECV_HWM": "50",
+                "PubTopics": "camera8_stream",
+                "camera8_stream_cfg": "zmq_ipc,/opt/eis/sockets"
+            }
+        },
+        {
+            "Name": "VideoIngestion9",
+            "Description": "Video Ingestion module manifest",
+            "SchemaVersion": "0.2",
+            "ManifestFile": "${idx:videoingestion:2.3}",
+            "Resources": {
+                "CPU": 100,
+                "MemoryMB": 100
+            },
+            "ExecutionEnv": {
+                "AppName": "VideoIngestion9",
+                "ETCD_ENDPOINT": "${datastore.endpoint}",
+                "CONFIGMGR_CACERT": "${databucket.cacert}",
+                "CONFIGMGR_CERT": "${databucket.cert}",
+                "CONFIGMGR_KEY": "${databucket.key}",
+                "ETCD_PREFIX": "/csl/apps/EIS",
+                "DEV_MODE": "false",
+                "Clients": "VideoAnalytics,WebVisualizer",
+                "PROFILING_MODE": "false",
+                "ZMQ_RECV_HWM": "50",
+                "PubTopics": "camera9_stream",
+                "camera9_stream_cfg": "zmq_ipc,/opt/eis/sockets"
+            }
+        },
+        {
+            "Name": "VideoIngestion10",
+            "Description": "Video Ingestion module manifest",
+            "SchemaVersion": "0.2",
+            "ManifestFile": "${idx:videoingestion:2.3}",
+            "Resources": {
+                "CPU": 100,
+                "MemoryMB": 100
+            },
+            "ExecutionEnv": {
+                "AppName": "VideoIngestion10",
+                "ETCD_ENDPOINT": "${datastore.endpoint}",
+                "CONFIGMGR_CACERT": "${databucket.cacert}",
+                "CONFIGMGR_CERT": "${databucket.cert}",
+                "CONFIGMGR_KEY": "${databucket.key}",
+                "ETCD_PREFIX": "/csl/apps/EIS",
+                "DEV_MODE": "false",
+                "Clients": "VideoAnalytics,WebVisualizer",
+                "PROFILING_MODE": "false",
+                "ZMQ_RECV_HWM": "50",
+                "PubTopics": "camera10_stream",
+                "camera10_stream_cfg": "zmq_ipc,/opt/eis/sockets"
+            }
+        },
+        {
+            "Name": "VideoIngestion11",
+            "Description": "Video Ingestion module manifest",
+            "SchemaVersion": "0.2",
+            "ManifestFile": "${idx:videoingestion:2.3}",
+            "Resources": {
+                "CPU": 100,
+                "MemoryMB": 100
+            },
+            "ExecutionEnv": {
+                "AppName": "VideoIngestion11",
+                "ETCD_ENDPOINT": "${datastore.endpoint}",
+                "CONFIGMGR_CACERT": "${databucket.cacert}",
+                "CONFIGMGR_CERT": "${databucket.cert}",
+                "CONFIGMGR_KEY": "${databucket.key}",
+                "ETCD_PREFIX": "/csl/apps/EIS",
+                "DEV_MODE": "false",
+                "Clients": "VideoAnalytics,WebVisualizer",
+                "PROFILING_MODE": "false",
+                "ZMQ_RECV_HWM": "50",
+                "PubTopics": "camera11_stream",
+                "camera11_stream_cfg": "zmq_ipc,/opt/eis/sockets"
+            }
+        },
+        {
+            "Name": "VideoIngestion12",
+            "Description": "Video Ingestion module manifest",
+            "SchemaVersion": "0.2",
+            "ManifestFile": "${idx:videoingestion:2.3}",
+            "Resources": {
+                "CPU": 100,
+                "MemoryMB": 100
+            },
+            "ExecutionEnv": {
+                "AppName": "VideoIngestion12",
+                "ETCD_ENDPOINT": "${datastore.endpoint}",
+                "CONFIGMGR_CACERT": "${databucket.cacert}",
+                "CONFIGMGR_CERT": "${databucket.cert}",
+                "CONFIGMGR_KEY": "${databucket.key}",
+                "ETCD_PREFIX": "/csl/apps/EIS",
+                "DEV_MODE": "false",
+                "Clients": "VideoAnalytics,WebVisualizer",
+                "PROFILING_MODE": "false",
+                "ZMQ_RECV_HWM": "50",
+                "PubTopics": "camera12_stream",
+                "camera12_stream_cfg": "zmq_ipc,/opt/eis/sockets"
+            }
+        },
+        {
+            "Name": "VideoIngestion13",
+            "Description": "Video Ingestion module manifest",
+            "SchemaVersion": "0.2",
+            "ManifestFile": "${idx:videoingestion:2.3}",
+            "Resources": {
+                "CPU": 100,
+                "MemoryMB": 100
+            },
+            "ExecutionEnv": {
+                "AppName": "VideoIngestion13",
+                "ETCD_ENDPOINT": "${datastore.endpoint}",
+                "CONFIGMGR_CACERT": "${databucket.cacert}",
+                "CONFIGMGR_CERT": "${databucket.cert}",
+                "CONFIGMGR_KEY": "${databucket.key}",
+                "ETCD_PREFIX": "/csl/apps/EIS",
+                "DEV_MODE": "false",
+                "Clients": "VideoAnalytics,WebVisualizer",
+                "PROFILING_MODE": "false",
+                "ZMQ_RECV_HWM": "50",
+                "PubTopics": "camera13_stream",
+                "camera13_stream_cfg": "zmq_ipc,/opt/eis/sockets"
+            }
+        },
+        {
+            "Name": "VideoIngestion14",
+            "Description": "Video Ingestion module manifest",
+            "SchemaVersion": "0.2",
+            "ManifestFile": "${idx:videoingestion:2.3}",
+            "Resources": {
+                "CPU": 100,
+                "MemoryMB": 100
+            },
+            "ExecutionEnv": {
+                "AppName": "VideoIngestion14",
+                "ETCD_ENDPOINT": "${datastore.endpoint}",
+                "CONFIGMGR_CACERT": "${databucket.cacert}",
+                "CONFIGMGR_CERT": "${databucket.cert}",
+                "CONFIGMGR_KEY": "${databucket.key}",
+                "ETCD_PREFIX": "/csl/apps/EIS",
+                "DEV_MODE": "false",
+                "Clients": "VideoAnalytics,WebVisualizer",
+                "PROFILING_MODE": "false",
+                "ZMQ_RECV_HWM": "50",
+                "PubTopics": "camera14_stream",
+                "camera14_stream_cfg": "zmq_ipc,/opt/eis/sockets"
+            }
+        },
+        {
+            "Name": "VideoIngestion15",
+            "Description": "Video Ingestion module manifest",
+            "SchemaVersion": "0.2",
+            "ManifestFile": "${idx:videoingestion:2.3}",
+            "Resources": {
+                "CPU": 100,
+                "MemoryMB": 100
+            },
+            "ExecutionEnv": {
+                "AppName": "VideoIngestion15",
+                "ETCD_ENDPOINT": "${datastore.endpoint}",
+                "CONFIGMGR_CACERT": "${databucket.cacert}",
+                "CONFIGMGR_CERT": "${databucket.cert}",
+                "CONFIGMGR_KEY": "${databucket.key}",
+                "ETCD_PREFIX": "/csl/apps/EIS",
+                "DEV_MODE": "false",
+                "Clients": "VideoAnalytics,WebVisualizer",
+                "PROFILING_MODE": "false",
+                "ZMQ_RECV_HWM": "50",
+                "PubTopics": "camera15_stream",
+                "camera15_stream_cfg": "zmq_ipc,/opt/eis/sockets"
+            }
+        },
+        {
+            "Name": "VideoIngestion16",
+            "Description": "Video Ingestion module manifest",
+            "SchemaVersion": "0.2",
+            "ManifestFile": "${idx:videoingestion:2.3}",
+            "Resources": {
+                "CPU": 100,
+                "MemoryMB": 100
+            },
+            "ExecutionEnv": {
+                "AppName": "VideoIngestion16",
+                "ETCD_ENDPOINT": "${datastore.endpoint}",
+                "CONFIGMGR_CACERT": "${databucket.cacert}",
+                "CONFIGMGR_CERT": "${databucket.cert}",
+                "CONFIGMGR_KEY": "${databucket.key}",
+                "ETCD_PREFIX": "/csl/apps/EIS",
+                "DEV_MODE": "false",
+                "Clients": "VideoAnalytics,WebVisualizer",
+                "PROFILING_MODE": "false",
+                "ZMQ_RECV_HWM": "50",
+                "PubTopics": "camera16_stream",
+                "camera16_stream_cfg": "zmq_ipc,/opt/eis/sockets"
+            }
+        },
+        {
+            "Name": "VideoIngestion17",
+            "Description": "Video Ingestion module manifest",
+            "SchemaVersion": "0.2",
+            "ManifestFile": "${idx:videoingestion:2.3}",
+            "Resources": {
+                "CPU": 100,
+                "MemoryMB": 100
+            },
+            "ExecutionEnv": {
+                "AppName": "VideoIngestion17",
+                "ETCD_ENDPOINT": "${datastore.endpoint}",
+                "CONFIGMGR_CACERT": "${databucket.cacert}",
+                "CONFIGMGR_CERT": "${databucket.cert}",
+                "CONFIGMGR_KEY": "${databucket.key}",
+                "ETCD_PREFIX": "/csl/apps/EIS",
+                "DEV_MODE": "false",
+                "Clients": "VideoAnalytics,WebVisualizer",
+                "PROFILING_MODE": "false",
+                "ZMQ_RECV_HWM": "50",
+                "PubTopics": "camera17_stream",
+                "camera17_stream_cfg": "zmq_ipc,/opt/eis/sockets"
+            }
+        },
+        {
+            "Name": "VideoIngestion18",
+            "Description": "Video Ingestion module manifest",
+            "SchemaVersion": "0.2",
+            "ManifestFile": "${idx:videoingestion:2.3}",
+            "Resources": {
+                "CPU": 100,
+                "MemoryMB": 100
+            },
+            "ExecutionEnv": {
+                "AppName": "VideoIngestion18",
+                "ETCD_ENDPOINT": "${datastore.endpoint}",
+                "CONFIGMGR_CACERT": "${databucket.cacert}",
+                "CONFIGMGR_CERT": "${databucket.cert}",
+                "CONFIGMGR_KEY": "${databucket.key}",
+                "ETCD_PREFIX": "/csl/apps/EIS",
+                "DEV_MODE": "false",
+                "Clients": "VideoAnalytics,WebVisualizer",
+                "PROFILING_MODE": "false",
+                "ZMQ_RECV_HWM": "50",
+                "PubTopics": "camera18_stream",
+                "camera18_stream_cfg": "zmq_ipc,/opt/eis/sockets"
+            }
+        }
+    ]
+}
