@@ -20,5 +20,29 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-echo "*****Running publisher container*****"
-docker run --rm -it --net host publisher --csv demo_datafile.csv --sampling_rate 10 --subsample 1
+
+if [ "$#" -eq 2 ]; then
+    ARGS=$@
+    if [[ "$ARGS" =~ "detached_mode" ]]; then
+        while [ $# -ne 0 ] ; do
+            case "$1" in
+                --detached_mode)
+                    detached_mode=$2 ; shift 2;;
+            esac
+        done
+    fi
+fi
+
+if [ $# -eq 0 ]; then
+    if [ ! -z "$detached_mode" ];then
+        ./common.sh --detached_mode true --csv demo_datafile.csv --sampling_rate 10 --subsample 1
+    else
+        ./common.sh --csv demo_datafile.csv --sampling_rate 10 --subsample 1
+    fi
+else
+    ./common.sh $@
+fi
+
+
+
+

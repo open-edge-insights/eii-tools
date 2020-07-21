@@ -20,9 +20,24 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-echo "*****Running publisher container*****"
-if [ "$1" = "detached_mode" ]; then
-docker run --rm -itd --net host --name publisher publisher
+if [ "$#" -eq 2 ]; then
+    ARGS=$@
+    if [[ "$ARGS" =~ "detached_mode" ]]; then
+        while [ $# -ne 0 ] ; do
+            case "$1" in
+                --detached_mode)
+                    detached_mode=$2 ; shift 2;;
+            esac
+        done
+        fi
+    fi
+
+if [ $# -eq 0 ]; then
+    if [ ! -z "$detached_mode" ];then
+        ./common.sh --detached_mode true --temperature 10:30
+    else
+        ./common.sh --temperature 10:30
+    fi
 else
-docker run --rm -it --net host --name publisher publisher
+    ./common.sh $@
 fi
