@@ -93,9 +93,9 @@ class TimeSeriesCalculator:
         """ To subscribe over
         EISMessagebus. """
         config = EnvConfig.get_messagebus_config(self.topic, "sub",
-                                                  self.publisher,
-                                                  self.config_client,
-                                                  self.devMode)
+                                                 self.publisher,
+                                                 self.config_client,
+                                                 self.devMode)
 
         mode = config["type"]
         if (not self.devMode and mode == "zmq_tcp"):
@@ -106,7 +106,7 @@ class TimeSeriesCalculator:
         msgbus = mb.MsgbusContext(config)
         subscriber = msgbus.new_subscriber(self.topic)
 
-        logger.info('Before for loop: {0}'.format(config))
+        logger.info('Ready to receive data from msgbus')
 
         while not self.done_receiving:
             records = dict()
