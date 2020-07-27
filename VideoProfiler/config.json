@@ -1,5 +1,6 @@
 {
-    "SubTopics": ["VideoAnalytics/camera1_stream_results"],
+    "SubTopics": ["VideoAnalytics1/camera1_stream_results"],
+    "AppName": "Visualizer",
     "camera1_stream_results_cfg": "zmq_tcp,127.0.0.1:65013",
     "dev_mode" : false,
     "mode": "fps",

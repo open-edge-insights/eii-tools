@@ -77,7 +77,9 @@ module.
 
 2. Set the required output stream/streams and appropriate stream config in [config.json](config.json) file.
 
-5. If using Video Profiler in IPC mode, make sure to set required permissions to socket file created in SOCKET_DIR in [build/.env](../../build/.env).
+3. VideoProfiler should be given an **AppName** which is present in the **Clients** list of the publisher services available in **SubTopics** of [config.json](config.json). This **AppName** has to be set in the [config.json](config.json). If VideoProfiler is subscribing to multiple streams, ensure the **AppName** of VideoProfiler is added in the Clients list of all the publishers.
+
+4. If using Video Profiler in IPC mode, make sure to set required permissions to socket file created in SOCKET_DIR in [build/.env](../../build/.env).
 
     ```sh
         sudo chmod -R 777 /opt/intel/eis/sockets
@@ -85,7 +87,7 @@ module.
     Note: This step is required everytime publisher is restarted in IPC mode.
     Caution: This step will make the streams insecure. Please do not do it on a production machine.
 
-4. If using Video Profiler in PROD mode, make sure to set required permissions to certificates.
+5. If using Video Profiler in PROD mode, make sure to set required permissions to certificates.
 
     ```sh
         sudo chmod -R 755 ../../build/provision/Certificates/ca
@@ -94,13 +96,13 @@ module.
     Note : This step is required everytime provisioning is done.
     Caution: This step will make the certs insecure. Please do not do it on a production machine.
 
-5. Run the below command to start the Video Profiler.
+6. Run the below command to start the Video Profiler.
 
     ```sh
         python3.6 video_profiler.py
     ```
 
-6. The runtime stats of Video Profiler if enabled with export_to_csv switch can be found at [video_profiler_runtime_stats](video_profiler_runtime_stats.csv)
+7. The runtime stats of Video Profiler if enabled with export_to_csv switch can be found at [video_profiler_runtime_stats](video_profiler_runtime_stats.csv)
 
   > **Note:**
   > * `poll_interval` option in the VideoIngestion [config](../../VideoIngestion/config.json) sets the delay(in seconds)

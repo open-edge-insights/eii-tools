@@ -80,11 +80,14 @@ class VideoProfiler:
     """
 
     def __init__(self, topic,
+                 appname,
                  config_dict):
         """Constructor for VideoProfiler
 
         :param topic: name of the topic
         :type topic: str
+        :param appname: subscriber appname
+        :type appname: str
         :param config_dict: VideoProfiler config
         :type config_dict: dict
         """
@@ -110,7 +113,7 @@ class VideoProfiler:
             # Set total number of frames to infinity
             self.total_frames = float('inf')
             logger.warning('Total number of frames set to infinity. Please '
-                            'use Ctrl+C to exit.')
+                           'use Ctrl+C to exit.')
         else:
             self.total_frames = \
                 config_dict['total_number_of_frames']
@@ -145,9 +148,8 @@ class VideoProfiler:
             }
         cfg_mgr = ConfigManager()
         self.config_client = cfg_mgr.get_config_client("etcd", conf)
-        # Setting default AppName as Visualizer to act as subscriber
-        # for both VideoIngestion and VideoAnalytics
-        os.environ["AppName"] = "Visualizer"
+        # Setting AppName of an existing subscriber
+        os.environ["AppName"] = appname
 
     def eisSubscriber(self):
         """ To subscribe over
@@ -401,6 +403,7 @@ def thread_runner(topic, config_dict):
     :type config_dict: dict
     """
     fps_app = VideoProfiler(topic,
+                            appname,
                             config_dict)
     fps_app.eisSubscriber()
 
@@ -432,6 +435,7 @@ if __name__ == "__main__":
     # Calculating FPS for each topic
     threads = []
     for topic in topics:
+        appname = config_dict['AppName']
         thread = threading.Thread(target=thread_runner,
                                   args=(topic, config_dict, ))
         threads.append(thread)
