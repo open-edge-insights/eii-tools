@@ -22,12 +22,14 @@
 
    In [Kapacitor config.json](../../Kapacitor/config.json):
    ```
-      "udfs": {
-        "type": "go",
-        "name": "profiling_udf",
-        "tick_script": "profiling_udf.tick",
-        "task_name": "profiling_udf"
-    }
+   "task": [{
+       "tick_script": "profiling_udf.tick",
+       "task_name": "profiling_udf",
+       "udfs": [{
+          "type": "go",
+          "name": "profiling_udf"
+       }]
+   }]
    ```
    In [kapacitor.conf](../../Kapacitor/config/kapacitor.conf) under udf section:
 

@@ -20,29 +20,22 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-
 if [ "$#" -eq 2 ]; then
-    ARGS=$@
-    if [[ "$ARGS" =~ "detached_mode" ]]; then
-        while [ $# -ne 0 ] ; do
-            case "$1" in
-                --detached_mode)
-                    detached_mode=$2 ; shift 2;;
-            esac
-        done
-    fi
+	ARGS=$@
+	if [[ "$ARGS" =~ "detached_mode" ]]; then
+	    while [ $# -ne 0 ] ; do
+	        case "$1" in
+		    --detached_mode)
+		        detached_mode=$2 ; shift 2;;
+		esac
+            done
+        fi
 fi
 
 if [ $# -eq 0 ]; then
-    if [ ! -z "$detached_mode" ];then
-        ./publisher.sh --detached_mode true --csv demo_datafile.csv --sampling_rate 10 --subsample 1
-    else
-        ./publisher.sh --csv demo_datafile.csv --sampling_rate 10 --subsample 1
-    fi
-else
-    ./publisher.sh $@
+	if [ ! -z "$detached_mode" ];then
+		./publisher.sh --detached_mode true --temperature 10:30 --humidity 10:30 --topic_humd 'temperature/simulated/0'
+	else
+		./publisher.sh --temperature 10:30 --humidity 10:30 --topic_humd 'temperature/simulated/0'
+        fi
 fi
-
-
-
-

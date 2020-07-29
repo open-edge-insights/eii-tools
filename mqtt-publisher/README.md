@@ -12,11 +12,20 @@ Simple Python temperature sensor simulator.
    * For EIS TimeSeries Analytics usecase, 
     To publish temperature data to default topic:
      ```sh
-     $./build.sh && ./publisher.sh 
+     $./build.sh && ./publisher_temp.sh
      ```
     To start publisher docker container in detached mode:
      ```sh
-     $./build.sh && ./publisher.sh --detached_mode true 
+     $./build.sh && ./publisher_temp.sh --detached_mode true
+     ```
+
+    To publish temperature and humidity data together:
+     ```sh
+     $./build.sh && ./publisher_temp_humidity.sh
+     ```
+    To start publisher docker container in detached mode:
+     ```sh
+     $./build.sh && ./publisher_temp_humidity.sh --detached_mode true
      ```
 
 **Note**: To publish multiple sensor data(temperature, pressure, humidity) to default topic(temperature/simulated/0,pressure/simulated/0,humidity/simulated/0),using following command:

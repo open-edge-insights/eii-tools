@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-
 if [ "$#" -eq 2 ]; then
     ARGS=$@
     if [[ "$ARGS" =~ "detached_mode" ]]; then
@@ -30,19 +29,15 @@ if [ "$#" -eq 2 ]; then
                     detached_mode=$2 ; shift 2;;
             esac
         done
+        fi
     fi
-fi
 
 if [ $# -eq 0 ]; then
     if [ ! -z "$detached_mode" ];then
-        ./publisher.sh --detached_mode true --csv demo_datafile.csv --sampling_rate 10 --subsample 1
+        ./publisher.sh --detached_mode true --temperature 10:30
     else
-        ./publisher.sh --csv demo_datafile.csv --sampling_rate 10 --subsample 1
+        ./publisher.sh --temperature 10:30
     fi
 else
     ./publisher.sh $@
 fi
-
-
-
-
