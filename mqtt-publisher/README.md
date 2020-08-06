@@ -43,7 +43,14 @@ Simple Python temperature sensor simulator.
      ```sh
      $ ./build.sh && ./publisher_csv.sh
      ```
-     Once can also change filename, topic, sampling rate and subsample parameters in the publisher_csv.sh script.
+     One can also change filename, topic, sampling rate and subsample parameters in the publisher_csv.sh script.
+
+   * To publish JSON files (to test random forest UDF)
+     ```sh
+     $ ./build.sh && ./publisher_json.sh
+     ```
+     One can also change filename, topic in the publisher_json.sh script.
+
 
 3. If one wish to see the messages going over MQTT, run the
    subscriber with the following command:

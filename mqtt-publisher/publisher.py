@@ -27,6 +27,7 @@ import random
 import argparse
 import re
 import sys
+import glob
 import paho.mqtt.client as mqtt
 
 # MQTT topic string
@@ -63,6 +64,9 @@ def parse_args():
                      help='MQTT publication interval')
     a_p.add_argument('--csv', default=None, type=str,
                      help='CSV file to publish to MQTT broker')
+    a_p.add_argument('--json', default=None, type=str,
+                     help='folder containing json file(s) to publish'
+                     'to MQTT broker')
     a_p.add_argument('--temperature', default=None, type=str,
                      help='Random data generation range for temperature')
     a_p.add_argument('--pressure', default=None, type=str,
@@ -70,7 +74,7 @@ def parse_args():
     a_p.add_argument('--humidity', default=None, type=str,
                      help='Random data generation range for humidity')
     a_p.add_argument('--topic', default=TOPIC_TEMP, type=str,
-                     help='topic for csv file publish')
+                     help='topic for csv, JSON file publish')
     a_p.add_argument('--topic_temp', default=TOPIC_TEMP, type=str,
                      help='topic for temperature data')
     a_p.add_argument('--topic_pres', default=TOPIC_PRES, type=str,
@@ -124,6 +128,25 @@ def stream_csv(mqttc, topic, subsample, sampling_rate, filename):
         filename, row_served, time.time() - target_start_time))
 
 
+def publish_json(mqttc, topic, path, qos, argsinterval):
+    """ Publish the JSON file
+    """
+    data = []
+    path = path.replace("\\*", "*")
+    files = glob.glob(path)
+    for file in files:
+        with open(file) as fpd:
+            data.append(fpd.read())
+    print("Publishing json files to mqtt in loop")
+
+    while True:
+        for msg in data:
+            mqttc.publish(topic, msg, qos=qos)
+            if argsinterval > 1000:
+                argsinterval = 1000
+            time.sleep(3)
+
+
 def update_topic(args_dict, topics, topic_data):
     """Update topics with different kind of data
     """
@@ -160,6 +183,12 @@ def main():
                        args.subsample,
                        args.sampling_rate,
                        args.csv)
+        elif args.json is not None:
+            publish_json(client,
+                         args.topic,
+                         args.json,
+                         args.qos,
+                         args.interval)
         else:
             if not updated_topics:
                 sys.exit("Arguments are missing")
