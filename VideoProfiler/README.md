@@ -23,6 +23,7 @@ module.
     Enabled by setting the 'mode' key in [config](./config.json) to 'monitor', this mode calculates average & per frame stats
     for every frame while identifying if the frame was blocked at any queue of any module across the video pipeline thereby
     determining the fastest/slowest components in the pipeline.
+    To be performant in profiling scenarios, **VideoProfiler** is enabled to work when subscribing only to a single topic in monitor mode. User must also ensure only **VideoProfiler** & **VideoAnalytics** are used as **AppNames**  in their respective **docker-compose.yml** files.
     ```sh
         "mode": "monitor"
     ```

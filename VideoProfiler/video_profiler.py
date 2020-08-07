@@ -432,6 +432,11 @@ if __name__ == "__main__":
     gc_thread = threading.Thread(target=invoke_gc)
     gc_thread.start()
 
+    if(len(topics) > 1 and config_dict['mode'] == 'monitor'):
+        logger.error('Please ensure you are subscribing for a '
+                     'single topic when running in monitor mode.')
+        os._exit(-1)
+
     # Calculating FPS for each topic
     threads = []
     for topic in topics:
