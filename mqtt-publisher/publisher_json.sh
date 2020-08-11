@@ -40,8 +40,8 @@ fi
 # common.sh with detached mode or else calling without detached mode
 if [ $# -eq 0 ]; then
 	if [ ! -z "$detached_mode" ];then
-		./publisher.sh --detached_mode true --topic test/data --json "./json_files/\*.json"
+		./publisher.sh --detached_mode true --topic test/rfc_data --json "./json_files/\*.json"
 	else
-		./publisher.sh --topic test/data --json "./json_files/\*.json"
+		./publisher.sh --topic test/rfc_data --json "./json_files/\*.json"
         fi
 fi
