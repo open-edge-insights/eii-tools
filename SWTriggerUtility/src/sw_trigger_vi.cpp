@@ -43,6 +43,7 @@
 #define SLEEP_DURATION_SECONDS 120
 #define START_INGESTION_STR "START_INGESTION"
 #define STOP_INGESTION_STR "STOP_INGESTION"
+#define SNAPSHOT_STR "SNAPSHOT"
 #define CLIENT "client"
 #define REPLY_PAYLOAD "reply_payload"
 #define STATUS "status_code"
@@ -56,7 +57,8 @@
 
 enum SwTrigger {
         START_INGESTION,
-        STOP_INGESTION
+        STOP_INGESTION,
+        SNAPSHOT
     };
 
 enum ReqStatusCode {
@@ -73,14 +75,16 @@ void usage(const char* name) {
                     -> Optional argument: START_INGESTION | STOP_INGESTION - Action to send to Video Ingestion service  \n \
                     -> Optional argument: Duration to ingest in seconds (default=120 seconds). \n \
                     -> Optional argument: ../config/config.json - Configuration file used for sw_trigger_vi utility. \n\n\
+                    -> Optional argument: SNAPSHOT - Action to send to Video Ingestion service to get frame snapshot. \n\n \
                     NOTE: As a prerequisite update the config.json file for sw_trigger_utility based on the config need. \n \
-                    Refer READMe.md for more details on each options\n" << std::endl;
+                    Refer README.md for more details on each options\n" << std::endl;
 
         std::cout <<" Examples:\n \
                                 1. ./sw_trigger_utility or ./sw_trigger_utility ../config/config.json\n \
                                 2. ./sw_trigger_utility 300 or ./sw_trigger_utility 300 ../config/config.json\n \
                                 3. ./sw_trigger_utility START_INGESTION or ./sw_trigger_utility START_INGESTION ../config/config.json\n \
-                                4. ./sw_trigger_utility STOP_INGESTION or ./sw_trigger_utility STOP_INGESTION ../config/config.json" \
+                                4. ./sw_trigger_utility STOP_INGESTION or ./sw_trigger_utility STOP_INGESTION ../config/config.json\n \
+                                5. ./sw_trigger_utility SNAPSHOT or ./sw_trigger_utility SNAPSHOT ../config/config.json" \
         << std::endl;
     }
 
@@ -396,7 +400,7 @@ class SwTriggerUtility {
                             FREE_MEMORY(msg);
                             throw err;
                         }
-                        LOG_INFO_0("Success putting poalod into env");
+                        LOG_INFO_0("Success putting payload into env");
                         LOG_INFO_0("Sending START_INGESTION sw trigger");
                         ret = msgbus_request(m_msgbus_ctx, m_service_ctx, msg);
                         if (ret != MSG_SUCCESS) {
@@ -419,7 +423,7 @@ class SwTriggerUtility {
                             FREE_MEMORY(msg);
                             throw err;
                         }
-                        LOG_INFO_0("Success putting paylod into env");
+                        LOG_INFO_0("Success putting payload into env");
                         LOG_INFO_0("Sending STOP_INGESTION sw trigger");
                         ret = msgbus_request(m_msgbus_ctx, m_service_ctx, msg);
                         if (ret != MSG_SUCCESS) {
@@ -427,6 +431,29 @@ class SwTriggerUtility {
                             LOG_ERROR("%s", err);
                             throw err;
                         }
+                    }
+                    break;
+                    case SNAPSHOT: {
+                        LOG_INFO_0("Sending SNAPSHOT SW trigger..");
+                        // form the JSON payload to be sent over the msgbus in a msg-envelope
+                        msg_envelope_elem_body_t* sw_trigger = msgbus_msg_envelope_new_string(SNAPSHOT_STR);
+                        msg = msgbus_msg_envelope_new(CT_JSON);
+                        ret = msgbus_msg_envelope_put(msg, "command", sw_trigger);
+                        if (ret != MSG_SUCCESS) {
+                            const char* err = "Failed to put the payload message into message envelope";
+                            LOG_ERROR("%s", err);
+                            FREE_MEMORY(msg);
+                            throw err;
+                        }
+                        LOG_INFO_0("Success putting payload into env");
+                        LOG_INFO_0("Sending SNAPSHOT sw trigger");
+                        ret = msgbus_request(m_msgbus_ctx, m_service_ctx, msg);
+                        if (ret != MSG_SUCCESS) {
+                            const char* err = "FAILED TO SEND SW TRIGGER -- SNAPSHOT";
+                            LOG_ERROR("%s", err);
+                            throw err;
+                        }
+
                     }
                     break;
 
@@ -490,8 +517,8 @@ int main(int argc, char **argv) {
                 // checking if 2nd argument is config json file, if yes then pass that as the configuration file path
                 if((std::string(argv[1]).find("json", 0)) != std::string::npos) {
                     argv[2] = argv[1];
-                } 
-            } 
+                }
+            }
         }
         sw_trigger_obj = new SwTriggerUtility(argv[2]);
 
@@ -506,6 +533,9 @@ int main(int argc, char **argv) {
                     sw_trigger_obj->recv_ack();
                 } else if (!strcmp(argv[1], "STOP_INGESTION")) {
                     sw_trigger_obj->send_sw_trigger(STOP_INGESTION);
+                    sw_trigger_obj->recv_ack();
+                } else if (!strcmp(argv[1], "SNAPSHOT")) {
+                    sw_trigger_obj->send_sw_trigger(SNAPSHOT);
                     sw_trigger_obj->recv_ack();
                 } else if (is_number(std::string(argv[1]))) {
                     sw_trigger_obj->set_duration(std::stoi(std::string(argv[1])));

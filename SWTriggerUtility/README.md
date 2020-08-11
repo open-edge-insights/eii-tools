@@ -3,6 +3,7 @@
 This utility is used for invoking various software trigger features of VideoIngestion. The currently supported triggers to VideoIngestion module are:
 1. START INGESTION - to start the ingestor
 2. STOP_INGESTION -  to stop the ingestor
+3. SNAPSHOT - to get frame snapshot which feeds one only frame into the video data pipeline.
 
 ## Installing Software Trigger Utility requirements
 
@@ -39,7 +40,17 @@ USAGE 4: Selectively send STOP_INGESTION software trigger:
 
 ```
 
-> **Note**:  If duplicate START_INGESTION or STOP_INGESTION sw_triggers are sent by client by mistake then the VI is capable  of catching these duplicates & responds back to client conveying that duplicate triggers were sent & requets to send proper sw_triggers. 
+USAGE 5: Selectively send SNAPSHOT software trigger:
+```sh
+    "./sw_trigger_utility SNAPSHOT" or "./sw_trigger_utility SNAPSHOT ../config/config.json"
+
+```
+
+> **Note**:  
+
+* If duplicate START_INGESTION or STOP_INGESTION sw_triggers are sent by client by mistake then the VI is capable  of catching these duplicates & responds back to client conveying that duplicate triggers were sent & requets to send proper sw_triggers. 
+
+* In order to send SNAPSHOT trigger, ensure that the ingestion is stopped. In case START_INGESTION trigger is sent previously then stop the ingestion using the STOP_INGESTION trigger.
 
 ## Configuration file:
 
