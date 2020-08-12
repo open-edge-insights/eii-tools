@@ -1,0 +1,120 @@
+{
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "plugin_name",
+        "plugin_elements",
+        "pipeline_constant"
+    ],
+    "properties": {
+        "pipeline_constant": {
+            "description": "Specify the constant gstreamer element of pipeline",
+            "enum": "videoconvert ! video/x-raw,format=BGR !appsink",
+            "type": "string"
+        },
+        "plugin_name": {
+            "description": "Number of queued UDF jobs",
+            "enum": [
+                "pylonsrc"
+            ],
+            "type": "string"
+        },
+        "plugin_properties": {
+            "description": "Properties to be integrated in pipeline, The keys in here are mapped to respective gstreamer properties",
+            "properties": {
+                "BalanceWhiteAuto": {
+                    "default": "autowhitebalance",
+                    "description": "Determine whether or not the camera will try to adjust the best color balance",
+                    "type": "string"
+                },
+                "CenterX": {
+                    "default": "centerx",
+                    "description": "To center the horizontal offset",
+                    "type": "string"
+                },
+                "CenterY": {
+                    "default": "centery",
+                    "description": "To center the vertical offset",
+                    "type": "string"
+                },
+                "ExposureAuto": {
+                    "default": "autoexposure",
+                    "description": "Auto Exposure Mode which adjusts the exposure automatically overriding the exposure value",
+                    "type": "string"
+                },
+                "ExposureTimeRaw": {
+                    "default": "exposureGigE",
+                    "description": "Set Exposure time (\u00b5s) for each frame",
+                    "type": "string"
+                },
+                "GainAuto": {
+                    "default": "autogain",
+                    "description": "Auto Gain Mode which enables gain level automatically",
+                    "type": "string"
+                },
+                "GainSelector": {
+                    "default": "gain",
+                    "description": "Gain (dB) changes the gain added to the image before it is read by the application",
+                    "type": "string"
+                },
+                "GevSCPD": {
+                    "default": "interpacketdelay",
+                    "description": "The delay(ns) between two packets on the stream channel",
+                    "type": "string"
+                },
+                "Height": {
+                    "default": "height",
+                    "description": "The height attribute can be used to crop/specify the height of the image",
+                    "type": "string"
+                },
+                "OffsetX": {
+                    "default": "offsetx",
+                    "description": "Offset in x direction",
+                    "type": "string"
+                },
+                "OffsetY": {
+                    "default": "offsety",
+                    "description": "Offset in y direction",
+                    "type": "string"
+                },
+                "PixelFormat": {
+                    "default": "imageformat",
+                    "description": "To specify the pixel format to be used",
+                    "type": "string"
+                },
+                "ReverseX": {
+                    "default": "flipx",
+                    "description": "Flip the image horizontally",
+                    "type": "string"
+                },
+                "ReverseY": {
+                    "default": "flipy",
+                    "description": "Flip the image vertically",
+                    "type": "string"
+                },
+                "TriggerMode": {
+                    "default": "continuous",
+                    "description": "To specify the triggering mode supported by cameras",
+                    "type": "string"
+                },
+                "TriggerSource": {
+                    "default": "triggersource",
+                    "description": "To specify the source for the trigger",
+                    "type": "string"
+                },
+                "Width": {
+                    "default": "width",
+                    "description": "The width attribute can be used to crop/specify the width of the image",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "PixelFormat",
+                "ExposureTimeRaw",
+                "GevSCPD"
+            ],
+            "type": "object"
+        }
+    }
+}
+

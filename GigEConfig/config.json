@@ -1,0 +1,24 @@
+{
+    "pipeline_constant": "videoconvert ! video/x-raw,format=BGR ! appsink",
+    "plugin_name": "pylonsrc",
+    "plugin_properties": {
+        "BalanceWhiteAuto": "autowhitebalance",
+        "CenterX": "centerx",
+        "CenterY": "centery",
+        "ExposureAuto": "autoexposure",
+        "ExposureTimeRaw": "exposureGigE",
+        "GainAuto": "autogain",
+        "GainSelector": "gain",
+        "GevSCPD": "interpacketdelay",
+        "Height": "height",
+        "OffsetX": "offsetx",
+        "OffsetY": "offsety",
+        "PixelFormat": "imageformat",
+        "ReverseX": "flipx",
+        "ReverseY": "flipy",
+        "TriggerMode": "continuous",
+        "TriggerSource": "triggersource",
+        "Width": "width"
+    }
+}
+
