@@ -7,7 +7,7 @@ The Following are the steps required for benchmarking:
 1. Start RTSP server using cvlc server using the below command on the host m/c.
 
     ```
-    cvlc -vvv file:///[repo]IEdgeInsights/VideoIngestion/test_videos/Safety_Full_Hat_and_Vest.avi --sout '#gather:rtp{sdp=rtsp://localhost:8554/}' --loop --sout-keep
+    cvlc -vvv file:///[WORKDIR]/IEdgeInsights/VideoIngestion/test_videos/Safety_Full_Hat_and_Vest.avi --sout '#gather:rtp{sdp=rtsp://localhost:8554/}' --loop --sout-keep
     ```
 2. [Optional] Start the HDDL Dameon on host m/c following the steps given in `Using video accelerators` section in
  [../../README.md](../../README.md)
