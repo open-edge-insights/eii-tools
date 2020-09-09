@@ -13,93 +13,54 @@
             "type": "string"
         },
         "plugin_name": {
-            "description": "Number of queued UDF jobs",
+            "description": "Name of the Generic Plugin",
             "enum": [
-                "pylonsrc"
+                "gencamsrc"
             ],
+            "type": "string"
+        },
+        "device_serial_number": {
+            "default": "<DEVICE_SERIAL_NUMBER>",
+            "description": "Serial number of the camera device",
             "type": "string"
         },
         "plugin_properties": {
             "description": "Properties to be integrated in pipeline, The keys in here are mapped to respective gstreamer properties",
             "properties": {
-                "BalanceWhiteAuto": {
-                    "default": "autowhitebalance",
-                    "description": "Determine whether or not the camera will try to adjust the best color balance",
-                    "type": "string"
-                },
-                "CenterX": {
-                    "default": "centerx",
-                    "description": "To center the horizontal offset",
-                    "type": "string"
-                },
-                "CenterY": {
-                    "default": "centery",
-                    "description": "To center the vertical offset",
-                    "type": "string"
-                },
                 "ExposureAuto": {
-                    "default": "autoexposure",
-                    "description": "Auto Exposure Mode which adjusts the exposure automatically overriding the exposure value",
+                    "default": "exposure-auto",
+                    "description": "Sets the automatic exposure mode when ExposureMode is Timed",
                     "type": "string"
                 },
+                 "ExposureMode": {
+                    "default": "exposure-mode",
+                    "description": "Sets the operation mode of the Exposure",
+                    "type": "string"
+                },
+
                 "ExposureTimeRaw": {
-                    "default": "exposureGigE",
-                    "description": "Set Exposure time (\u00b5s) for each frame",
-                    "type": "string"
-                },
-                "GainAuto": {
-                    "default": "autogain",
-                    "description": "Auto Gain Mode which enables gain level automatically",
-                    "type": "string"
-                },
-                "GainSelector": {
-                    "default": "gain",
-                    "description": "Gain (dB) changes the gain added to the image before it is read by the application",
-                    "type": "string"
-                },
-                "GevSCPD": {
-                    "default": "interpacketdelay",
-                    "description": "The delay(ns) between two packets on the stream channel",
+                    "default": "exposure-time",
+                    "description": "Sets the Exposure time (in us) when ExposureMode is Timed and ExposureAuto is Off",
                     "type": "string"
                 },
                 "Height": {
                     "default": "height",
-                    "description": "The height attribute can be used to crop/specify the height of the image",
+                    "description": "The height attribute can be used to crop/specify the height of the image(in pixels)",
                     "type": "string"
                 },
                 "OffsetX": {
                     "default": "offsetx",
-                    "description": "Offset in x direction",
+                    "description": "Horizontal offset from the origin to the region of interest(in pixels)",
                     "type": "string"
                 },
                 "OffsetY": {
                     "default": "offsety",
-                    "description": "Offset in y direction",
+                    "description": "Vertical offset from the origin to the region of interest(in pixels)",
                     "type": "string"
                 },
                 "PixelFormat": {
-                    "default": "imageformat",
-                    "description": "To specify the pixel format to be used",
-                    "type": "string"
-                },
-                "ReverseX": {
-                    "default": "flipx",
-                    "description": "Flip the image horizontally",
-                    "type": "string"
-                },
-                "ReverseY": {
-                    "default": "flipy",
-                    "description": "Flip the image vertically",
-                    "type": "string"
-                },
-                "TriggerMode": {
-                    "default": "continuous",
-                    "description": "To specify the triggering mode supported by cameras",
-                    "type": "string"
-                },
-                "TriggerSource": {
-                    "default": "triggersource",
-                    "description": "To specify the source for the trigger",
+                    "default": "pixel-format",
+                    "description": "Format of the pixels provided by the device",
                     "type": "string"
                 },
                 "Width": {
@@ -110,8 +71,7 @@
             },
             "required": [
                 "PixelFormat",
-                "ExposureTimeRaw",
-                "GevSCPD"
+                "ExposureTimeRaw"
             ],
             "type": "object"
         }

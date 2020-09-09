@@ -1,23 +1,16 @@
 {
     "pipeline_constant": "videoconvert ! video/x-raw,format=BGR ! appsink",
-    "plugin_name": "pylonsrc",
+    "plugin_name": "gencamsrc",
+    "device_serial_number": "<DEVICE_SERIAL_NUMBER>",
     "plugin_properties": {
-        "BalanceWhiteAuto": "autowhitebalance",
-        "CenterX": "centerx",
-        "CenterY": "centery",
-        "ExposureAuto": "autoexposure",
-        "ExposureTimeRaw": "exposureGigE",
-        "GainAuto": "autogain",
-        "GainSelector": "gain",
-        "GevSCPD": "interpacketdelay",
+        "ExposureAuto": "exposure-auto",
+        "ExposureMode": "exposure-mode",
+        "ExposureTimeRaw": "exposure-time",
+        "AcquisitionFrameRateAbs": "frame-rate",
         "Height": "height",
-        "OffsetX": "offsetx",
-        "OffsetY": "offsety",
-        "PixelFormat": "imageformat",
-        "ReverseX": "flipx",
-        "ReverseY": "flipy",
-        "TriggerMode": "continuous",
-        "TriggerSource": "triggersource",
+        "OffsetX": "offset-x",
+        "OffsetY": "offset-y",
+        "PixelFormat": "pixel-format",
         "Width": "width"
     }
 }

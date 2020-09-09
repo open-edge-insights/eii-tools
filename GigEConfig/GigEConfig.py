@@ -43,15 +43,35 @@ def make_pipeline(pfs_config_map, config_table):
     :rtype: String
     """
     gstreamer_pipeline = config_table["plugin_name"] + " "
+    if "device_serial_number" in config_table:
+        gstreamer_pipeline += "serial=" + config_table["device_serial_number"] + " "
     video_raw = ""
-    if(pfs_config_map["imageformat"] == "yuv422"):
-        video_raw = "video/x-raw,format=YUY2 !"
-    elif(pfs_config_map["imageformat"] == "mono8"):
-        video_raw = "video/x-raw,format=GRAY8 !"
-    elif(pfs_config_map["imageformat"] == "bayerrg8"
-            or pfs_config_map["imageformat"] == "bayer8"):
-        pfs_config_map["imageformat"] = "bayer8"
+    if "mono" in pfs_config_map["pixel-format"]:
+        pfs_config_map["pixel-format"] = "mono8"
+    elif "yuv411" in pfs_config_map["pixel-format"]:
+        pfs_config_map["pixel-format"] = "ycbcr411_8"
+    elif "yuv422" in pfs_config_map["pixel-format"]:
+        pfs_config_map["pixel-format"] = "ycbcr422_8"
+    elif "rgb" in pfs_config_map["pixel-format"]:
+        pfs_config_map["pixel-format"] = "rgb8"
+    elif "bgr" in pfs_config_map["pixel-format"]:
+        pfs_config_map["pixel-format"] = "bgr8"
+    elif "bayer" in pfs_config_map["pixel-format"]:
+        if "bayerrg" in pfs_config_map["pixel-format"]:
+            pfs_config_map["pixel-format"] = "bayerrggb"
+        elif "bayerbg" in pfs_config_map["pixel-format"]:
+            pfs_config_map["pixel-format"] = "bayerbggr"
+        elif "bayergr" in pfs_config_map["pixel-format"]:
+            pfs_config_map["pixel-format"] = "bayergrbg"
+        elif "bayergb" in pfs_config_map["pixel-format"]:
+             pfs_config_map["pixel-format"] = "bayergbrg"
+        else:
+            logging.info("{} bayer format not supported".format(
+                         pfs_config_map["pixel-format"]))
         video_raw = "bayer2rgb !"
+    else:
+        logging.info("{} pixel-format not supported".format(
+                     pfs_config_map["pixel-format"]))
     for key, value in pfs_config_map.items():
         gstreamer_pipeline += key+"="+value+" "
     gstreamer_pipeline += "! "
@@ -74,9 +94,6 @@ def pfs_file_parser(pfs_file, config_table):
     look_up_table = config_table["plugin_properties"]
     look_up_table = dict((str(key).lower(), str(value).lower())
                          for key, value in look_up_table.items())
-    # For Serial element
-    if(look_up_table.get("serial")):
-        pfs_config_map["serial"] = str(look_up_table.get("serial"))
     # Processing pfs file
     with open(pfs_file) as fr:
         for line in fr.readlines():
@@ -179,7 +196,7 @@ if __name__ == '__main__':
     pfs_config_map = pfs_file_parser(pfs_file, config_content)
     # For creating new pipeline
     pipeline = make_pipeline(pfs_config_map, config_content)
-    logging.info("\nUpdated pipeline is:\n {}".format(pipeline))
+    logging.info("\nGstreamer pipeline generated:\n{}".format(pipeline))
     # For modifing etcd config
     if(etcd_flag):
         etcd_value["ingestor"]["pipeline"] = pipeline
