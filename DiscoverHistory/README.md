@@ -27,17 +27,24 @@ README FOR DISCOVER HISTORY TOOL
  3. Open [.env](DiscoverHistory/.env)
  4. Set the output directory variable at "SAVE_PATH".
  5. Check imagestore and influxdbconnector services are running.
- 6. Use "docker-compose build" to build tool image.
- 7. Use "docker-compose up" to run the tool.
- 8. In the provided "SAVE_PATH", you will find data & frames directory.
+ 6. To set environment variables run the below commands.
+
+    ```sh
+        set -a
+        source ../../build/.env
+        set +a
+    ```
+ 7. Use "docker-compose build" to build tool image.
+ 8. Use "docker-compose up" to run the tool.
+ 9. In the provided "SAVE_PATH", you will find data & frames directory.
     (Note: if img_handle is part of select statement , then only frames
     directory will be created)
- 9. If the user changes the query in "query_config.json" then no need to run build command, just execute the up command.
-10. In case of PROD mode, please make sure to uncomment the below line, for a section ia_imagestore  in file [build/docker-compose.yml](../../build/docker-compose.yml).
+10. If the user changes the query in "query_config.json" then no need to run build command, just execute the up command.
+11. In case of PROD mode, please make sure to uncomment the below line, for a section ia_imagestore  in file [build/docker-compose.yml](../../build/docker-compose.yml).
     '# Clients: "Visualizer"'
 
  ## ADDITIONAL STEP TO RUN DISCOVERY TOOL IN DEV MODE
- 1. Open [.env](DiscoverHistory/.env)
+ 1. Open [.env](../../build/.env)
  2. Set the DEV_MODE variable as "true".
  ```
     DEV_MODE=false

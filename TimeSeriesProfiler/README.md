@@ -7,10 +7,17 @@
 
 ## Installing TimeSeriesProfiler requirements
 
-1. To build the TimeSeriesProfiler run the below commands.
+1. To set environment variables run the below commands.
 
     ```sh
         cd tools/TimeSeriesProfiler
+        set -a
+        source ../../build/.env
+        set +a
+    ```
+2. To build the TimeSeriesProfiler run the below commands.
+
+    ```sh
         docker-compose build
     ```
 
@@ -71,3 +78,29 @@
     ```sh
         docker-compose up
     ```
+ ## ADDITIONAL STEP TO RUN TimeSeriesProfiler IN DEV MODE
+ 1. Open [.env](../../build/.env)
+ 2. Set the DEV_MODE variable as "true".
+ ```
+    DEV_MODE=false
+ ```
+to
+ ```
+    DEV_MODE=true
+ ```
+3. Comment the following lines in the [docker-compose.yml](docker-compose.yml)
+```
+    secrets:
+      - ca_etcd
+      - etcd_root_cert
+      - etcd_root_key
+
+```
+to
+```
+#    secrets:
+#      - ca_etcd
+#      - etcd_root_cert
+#      - etcd_root_key
+
+```

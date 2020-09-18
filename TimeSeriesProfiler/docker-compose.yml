@@ -32,7 +32,6 @@ services:
     hostname: ia_timeseries_profiler
     network_mode: host
     environment:
-      PY_LOG_LEVEL: ${LOG_LEVEL}
       dev_Mode: ${DEV_MODE}
       no_proxy: ${NO_PROXY},${eis_no_proxy},${ETCD_HOST}
       ETCD_HOST: ${ETCD_HOST}

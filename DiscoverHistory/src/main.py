@@ -31,7 +31,6 @@ import logging
 from eis.config_manager import ConfigManager
 
 logger = logging.getLogger()
-logger.setLevel(logging.os.environ['PY_LOG_LEVEL'].upper())
 dev_mode = os.environ["dev_Mode"]
 
 if dev_mode == "true":
