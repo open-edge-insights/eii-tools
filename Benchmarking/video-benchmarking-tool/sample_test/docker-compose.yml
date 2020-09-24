@@ -1,0 +1,98 @@
+# Copyright (c) 2020 Intel Corporation.
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+version: '3.6'
+services:
+  ia_video_ingestion:
+    depends_on:
+      - ia_openvino_base
+    build:
+      context: $PWD/../VideoIngestion
+      dockerfile: $PWD/../VideoIngestion/Dockerfile
+      args:
+        EIS_VERSION: ${EIS_VERSION}
+        EIS_UID: ${EIS_UID}
+        EIS_USER_NAME: ${EIS_USER_NAME}
+        # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
+        CMAKE_BUILD_TYPE: "Release"
+        WITH_PROFILE: "ON"
+        DOCKER_REGISTRY: ${DOCKER_REGISTRY}
+    image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
+    container_name: ia_video_ingestion
+    hostname: ia_video_ingestion
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      AppName: "VideoIngestion"
+      DEV_MODE: ${DEV_MODE}
+      PROFILING_MODE: ${PROFILING_MODE}
+      no_proxy: ${eis_no_proxy},${RTSP_CAMERA_IP},${ETCD_HOST}
+      ETCD_HOST: ${ETCD_HOST}
+      ETCD_PREFIX: ${ETCD_PREFIX}
+
+      # MessageBus Endpoint Configuration
+      # Setting Visualizer as a subscriber here for FpsCalculator
+      Clients: "VideoAnalytics,Visualizer,RestDataExport,WebVisualizer,TLSRemoteAgent"
+      CertType: "zmq"
+      ZMQ_RECV_HWM: "50"
+
+      # Use IPC mode (zmq_ipc) when VideoIngestion and VideoAnalytics based
+      # containers are running on the same host. If they are running on diff
+      # host, please use TCP mode for communication.
+      # Eg: Stream cfg for
+      # IPC: zmq_ipc, <absolut_socket_directory_path>
+      # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+      PubTopics: "camera1_stream"
+      camera1_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
+    volumes:
+      - "/dev:/dev"
+      - "vol_eis_socket:${SOCKET_DIR}"
+      - "/var/tmp:/var/tmp"
+      - "/opt/Intel/OpenCL/Boards:/opt/Intel/OpenCL/Boards"
+      - "/opt/altera:/opt/altera"
+      - "/opt/intel/intelFPGA:/opt/intel/intelFPGA"
+    privileged: true
+    devices:
+      - "/dev/dri"
+      - "/dev/:/dev/"
+      - "/dev/acla10_1150_sg10:/dev/acla10_1150_sg10"
+    secrets:
+      - ca_etcd
+      - etcd_VideoIngestion_cert
+      - etcd_VideoIngestion_key
+
+
+volumes:
+  vol_eis_socket:
+    driver: local
+    driver_opts:
+      type: local
+      o: bind
+      device: ${EIS_INSTALL_PATH}/sockets
+
+secrets:
+  ca_etcd:
+    file: provision/Certificates/ca/ca_certificate.pem
+
+  etcd_VideoIngestion_cert:
+    file: provision/Certificates/VideoIngestion/VideoIngestion_client_certificate.pem
+  etcd_VideoIngestion_key:
+    file: provision/Certificates/VideoIngestion/VideoIngestion_client_key.pem
+
