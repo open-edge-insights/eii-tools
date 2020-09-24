@@ -6,6 +6,22 @@ at every component thereby determining the fast or slow components of the whole 
 It can also be used to calculate the FPS of any EIS modules based on the stream published by that respective
 module.
 
+## EIS Video Profiler pre-requisites
+
+1. VideoProfiler expects a set of config, interfaces & public private keys to be present in ETCD as a pre-requisite.
+    To achieve this, please ensure an entry for VideoProfiler with its relative path from [IEdgeInsights](../../) directory is set in any of the .yml files present in [build](../../build) directory. An example has been provided below:
+    ```sh
+        AppName:
+        - VideoIngestion
+        - VideoAnalytics
+        - tools/VideoProfiler
+    ```
+
+2. With the above pre-requisite done, please run the below to command:
+    ```sh
+        python3 eis_builder.py -f ./video-streaming.yml
+    ```
+
 ## EIS Video Profiler modes
 
     By default the EIS Video Profiler supports two modes, which are 'fps' & 'monitor' mode.
@@ -91,7 +107,7 @@ module.
 5. If using Video Profiler in PROD mode, make sure to set required permissions to certificates.
 
     ```sh
-        sudo chmod -R 755 ../../build/provision/Certificates/ca
+        sudo chmod -R 755 ../../build/provision/Certificates/VideoProfiler
         sudo chmod -R 755 ../../build/provision/Certificates/root
     ```
     Note : This step is required everytime provisioning is done.

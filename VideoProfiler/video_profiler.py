@@ -33,8 +33,7 @@ import csv
 from distutils.util import strtobool
 # IMPORT the library to read from EIS
 from util.util import Util
-from eis.env_config import EnvConfig
-from eis.config_manager import ConfigManager
+import cfgmgr.config_manager as cfg
 import eis.msgbus as mb
 import coloredlogs
 
@@ -67,32 +66,24 @@ dict_of_keys = {
                }
 
 
-def get_config():
-    """ Method to fetch config. """
-    with open('config.json') as f:
-        config_dict = json.load(f)
-        return config_dict
-
-
 class VideoProfiler:
     """ A sample app to measure frame rate
         related info across Video Pipeline
     """
 
-    def __init__(self, topic,
-                 appname,
+    def __init__(self, msgbus_config, topics_list,
                  config_dict):
         """Constructor for VideoProfiler
 
-        :param topic: name of the topic
-        :type topic: str
-        :param appname: subscriber appname
-        :type appname: str
+        :param msgbus_config: msgbus config
+        :type msgbus_config: dict
+        :param topics_list: list of topics to subscribe
+        :type topics_list: list
         :param config_dict: VideoProfiler config
         :type config_dict: dict
         """
         # Initializing dev_mode variable
-        self.dev_mode = config_dict['dev_mode']
+        self.dev_mode = ctx.is_dev_mode()
 
         self.monitor_mode, self.fps_mode = False, False
         if config_dict['mode'] == 'monitor':
@@ -122,9 +113,10 @@ class VideoProfiler:
         self.export_to_csv = config_dict['export_to_csv']
 
         # Initializing msgbus related variables
-        self.publisher, self.topic = topic.split("/")
-        os.environ[self.topic+'_cfg'] = config_dict[self.topic+'_cfg']
+        self.msgbus_config = msgbus_config
+        self.topic = topics_list[0]
 
+        # Initializing FPS calculation related variables
         self.frame_count = 0
         self.start_time = 0.0
         self.done_receiving = False
@@ -135,39 +127,10 @@ class VideoProfiler:
         self.VI_time_to_push_to_queue = 0.0
         self.e2e = 0.0
 
-        conf = {
-            "certFile": "",
-            "keyFile": "",
-            "trustFile": ""
-        }
-        if not self.dev_mode:
-            conf = {
-                "certFile": config_dict["certFile"],
-                "keyFile": config_dict["keyFile"],
-                "trustFile": config_dict["trustFile"]
-            }
-        cfg_mgr = ConfigManager()
-        self.config_client = cfg_mgr.get_config_client("etcd", conf)
-        # Setting AppName of an existing subscriber
-        os.environ["AppName"] = appname
-
     def eisSubscriber(self):
         """ To subscribe over
         EISMessagebus. """
-        config = EnvConfig.get_messagebus_config(self.topic, "sub",
-                                                 self.publisher,
-                                                 self.config_client,
-                                                 self.dev_mode)
-
-        self.topic = self.topic.strip()
-        mode_address = os.environ[self.topic + "_cfg"].split(",")
-        mode = mode_address[0].strip()
-        if (not self.dev_mode and mode == "zmq_tcp"):
-            for key in config[self.topic]:
-                if config[self.topic][key] is None:
-                    raise ValueError("Invalid Config")
-
-        msgbus = mb.MsgbusContext(config)
+        msgbus = mb.MsgbusContext(self.msgbus_config)
         subscriber = msgbus.new_subscriber(self.topic)
         if self.monitor_mode:
             while not self.done_receiving:
@@ -394,16 +357,17 @@ def invoke_gc():
         time.sleep(3)
 
 
-def thread_runner(topic, config_dict):
+def thread_runner(msgbus_config, topics_list, config_dict):
     """Start VideoProfiler for every topic
 
-    :param topic: Topic name
-    :type topic: str
+    :param msgbus_config: config of subscriber element
+    :type msgbus_config: dict
+    :param topics_list: List of topics to subscribe on
+    :type topics_list: list
     :param config_dict: config required for Video Profiler
     :type config_dict: dict
     """
-    fps_app = VideoProfiler(topic,
-                            appname,
+    fps_app = VideoProfiler(msgbus_config, topics_list,
                             config_dict)
     fps_app.eisSubscriber()
 
@@ -412,9 +376,12 @@ if __name__ == "__main__":
     """Main method
     """
 
-    config_dict = get_config()
+    # Initializing ConfigMgr
+    ctx = cfg.ConfigMgr()
+    # Fetching app config
+    config_dict = ctx.get_app_config()
 
-    if config_dict['dev_mode']:
+    if ctx.is_dev_mode():
         fmt_str = ('%(asctime)s : %(levelname)s  : {}'
                    ': %(name)s : [%(filename)s] :' .format("Insecure Mode") +
                    '%(funcName)s : in line : [%(lineno)d] : %(message)s')
@@ -425,24 +392,31 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.DEBUG, format=fmt_str)
 
-    topics = config_dict['SubTopics']
+    # Setting required config variables
     export_to_csv = config_dict['export_to_csv']
     total_frames = config_dict['total_number_of_frames']
 
     gc_thread = threading.Thread(target=invoke_gc)
     gc_thread.start()
 
-    if(len(topics) > 1 and config_dict['mode'] == 'monitor'):
+    # Fetching total number of subscribers
+    num_of_elements = ctx.get_num_subscribers()
+
+    if(num_of_elements > 1 and config_dict['mode'] == 'monitor'):
         logger.error('Please ensure you are subscribing for a '
                      'single topic when running in monitor mode.')
         os._exit(-1)
 
-    # Calculating FPS for each topic
+    # Calculating FPS for each element of Subscribers
     threads = []
-    for topic in topics:
-        appname = config_dict['AppName']
+    for index in range(0, num_of_elements):
+        sub_ctx = ctx.get_subscriber_by_index(index)
+        msgbus_config = sub_ctx.get_msgbus_config()
+        topics_list = sub_ctx.get_topics()
         thread = threading.Thread(target=thread_runner,
-                                  args=(topic, config_dict, ))
+                                  args=(msgbus_config,
+                                        topics_list,
+                                        config_dict, ))
         threads.append(thread)
         thread.start()
     for thread in threads:

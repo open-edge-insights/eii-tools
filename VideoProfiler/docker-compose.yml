@@ -1,5 +1,3 @@
-#!/bin/bash -e
-
 # Copyright (c) 2020 Intel Corporation.
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,21 +18,29 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-export PYTHONPATH=$PYTHONPATH:../../:../../common/libs/EISMessageBus:../../common
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+version: '3.6'
 
-# Env variables to be set for communicating with ETCD
-export AppName="VideoProfiler"
-export DEV_MODE=FALSE
-export CONFIGMGR_CERT=../../build/provision/Certificates/VideoProfiler/VideoProfiler_client_certificate.pem
-export CONFIGMGR_KEY=../../build/provision/Certificates/VideoProfiler/VideoProfiler_client_key.pem
-export CONFIGMGR_CACERT=../../build/provision/Certificates/ca/ca_certificate.pem
+services:
+  ia_video_profiler:
+    depends_on:
+        - ia_eisbase
+    image: ia_eisbase:${EIS_VERSION}
+    container_name: ia_video_profiler
+    hostname: ia_video_profiler
+    network_mode: host
+    environment:
+      CertType: "zmq"
+      CONTEXT: $PWD/../tools/VideoProfiler
+      DEV_MODE: ${DEV_MODE}
+      no_proxy: ${NO_PROXY},${eis_no_proxy},${ETCD_HOST}
+      AppName: "VideoProfiler"
+    secrets:
+      - ca_etcd
+      - etcd_VideoProfiler_cert
+      - etcd_VideoProfiler_key
 
-# For running VideoProfiler on a separate node or with CSL, set these variables to
-# point to the etcd on different node
-ETCD_HOST=
-ETCD_CLIENT_PORT=2379
-# ETCD prefix for the key
-# Eg. ETCD_PREFIX=/csl/apps/EIS
-ETCD_PREFIX=
-no_proxy=localhost,127.0.0.1,$ETCD_HOST
+secrets:
+  etcd_VideoProfiler_cert:
+    file: provision/Certificates/VideoProfiler/VideoProfiler_client_certificate.pem
+  etcd_VideoProfiler_key:
+    file: provision/Certificates/VideoProfiler/VideoProfiler_client_key.pem

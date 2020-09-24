@@ -1,17 +1,25 @@
 {
-    "SubTopics": ["VideoAnalytics/camera1_stream_results"],
-    "AppName": "Visualizer",
-    "camera1_stream_results_cfg": "zmq_tcp,127.0.0.1:65013",
-    "dev_mode" : false,
-    "mode": "fps",
-    "monitor_mode_settings": {
-                                "display_metadata": false,
-                                "per_frame_stats":false,
-                                "avg_stats": true                                
-                             },
-    "total_number_of_frames" : 1000,
-    "export_to_csv" : false,
-    "certFile" : "../../build/provision/Certificates/root/root_client_certificate.pem",
-    "keyFile"  : "../../build/provision/Certificates/root/root_client_key.pem",
-    "trustFile": "../../build/provision/Certificates/ca/ca_certificate.pem"
+    "config": {
+        "mode": "fps",
+        "monitor_mode_settings": {
+                                    "display_metadata": false,
+                                    "per_frame_stats":false,
+                                    "avg_stats": true                                
+                                },
+        "total_number_of_frames" : 1000,
+        "export_to_csv" : false
+    },
+    "interfaces": {
+        "Subscribers": [
+            {
+                "Name": "default",
+                "Type": "zmq_tcp",
+                "EndPoint": "127.0.0.1:65013",
+                "PublisherAppName": "VideoAnalytics",
+                "Topics": [
+                    "camera1_stream_results"
+                ]
+            }
+        ]
+    }
 }
