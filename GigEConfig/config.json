@@ -3,13 +3,8 @@
     "plugin_name": "gencamsrc",
     "device_serial_number": "<DEVICE_SERIAL_NUMBER>",
     "plugin_properties": {
-        "ExposureAuto": "exposure-auto",
-        "ExposureMode": "exposure-mode",
         "ExposureTimeRaw": "exposure-time",
-        "AcquisitionFrameRateAbs": "frame-rate",
         "Height": "height",
-        "OffsetX": "offset-x",
-        "OffsetY": "offset-y",
         "PixelFormat": "pixel-format",
         "Width": "width"
     }

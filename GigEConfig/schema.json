@@ -27,6 +27,31 @@
         "plugin_properties": {
             "description": "Properties to be integrated in pipeline, The keys in here are mapped to respective gstreamer properties",
             "properties": {
+                "BalanceRatioRaw": {
+                    "default": "balance-ratio",
+                    "description": "Controls ratio of the selected color component to a reference color component",
+                    "type": "string"
+                },
+                "BalanceRatioSelector": {
+                     "default": "balance-ratio-selector",
+                     "description": "Selects which Balance ratio to control(Red/Green/Blue)",
+                     "type": "string"
+                },
+                "BalanceWhiteAuto": {
+                     "default": "balance-white-auto",
+                     "description": "Controls the mode for automatic white balancing between the color channels",
+                     "type": "string"
+                },
+                "BlackLevelRaw": {
+                    "default": "Controls the analog black level as an absolute physical value",
+                    "description": "black-level",
+                    "type": "string"
+                },
+                "BlackLevelSelector": {
+                    "default": "black-level-selector",
+                    "description": "Selects which Black Level is controlled by the various Black Level features",
+                    "type": "string"
+                },
                 "ExposureAuto": {
                     "default": "exposure-auto",
                     "description": "Sets the automatic exposure mode when ExposureMode is Timed",
@@ -43,6 +68,22 @@
                     "description": "Sets the Exposure time (in us) when ExposureMode is Timed and ExposureAuto is Off",
                     "type": "string"
                 },
+                 "GainAuto": {
+                    "default": "gain-auto",
+                    "description": "Sets the automatic gain control (AGC) mode",
+                    "type": "string"
+                },
+                 "GainSelector": {
+                    "default": "gain-selector",
+                    "description": "Selects which gain is controlled by the various Gain features",
+                    "type": "string"
+                },
+                 "GainRaw": {
+                    "default": "gain",
+                    "description": "Controls the selected gain as an absolute value. This is an amplification factor applied to video signal",
+                    "type": "string"
+                },
+
                 "Height": {
                     "default": "height",
                     "description": "The height attribute can be used to crop/specify the height of the image(in pixels)",
@@ -58,9 +99,29 @@
                     "description": "Vertical offset from the origin to the region of interest(in pixels)",
                     "type": "string"
                 },
+                "GevSCPSPacketSize": {
+                    "default": "packet-size",
+                    "description": "specifies the maximum packet size supported by a receiver",
+                    "type": "string"
+                },
+                "GevSCPD": {
+                    "default": "packet-delay",
+                    "description": "Controls the delay (in GEV timestamp counter unit) to insert between each packet for this stream channel",
+                    "type": "string"
+                },
                 "PixelFormat": {
                     "default": "pixel-format",
                     "description": "Format of the pixels provided by the device",
+                    "type": "string"
+                },
+                "TriggerSelector": {
+                    "default": "trigger-selector",
+                    "description": "Selects the type of trigger to configure",
+                    "type": "string"
+                },
+                "TriggerSource": {
+                    "default": "trigger-source",
+                    "description": "Specifies the internal signal or physical input Line to use as the trigger source",
                     "type": "string"
                 },
                 "Width": {
