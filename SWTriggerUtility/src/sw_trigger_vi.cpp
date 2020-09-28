@@ -34,11 +34,8 @@
 #include <eis/utils/logger.h>
 #include <eis/utils/json_config.h>
 #include <eis/utils/config.h>
-#include <eis/config_manager/config_manager.h>
-#include <eis/config_manager/env_config.h>
+#include "eis/config_manager/config_mgr.hpp"
 
-
-#define CONFIG_FILE_PATH "../config/config.json"
 
 #define SLEEP_DURATION_SECONDS 120
 #define START_INGESTION_STR "START_INGESTION"
@@ -54,6 +51,8 @@
         msg_env = NULL; \
     } \
 }
+
+using namespace eis::config_manager;
 
 enum SwTrigger {
         START_INGESTION,
@@ -104,35 +103,15 @@ class SwTriggerUtility {
         void* m_msgbus_ctx;
         recv_ctx_t* m_service_ctx;
         int m_duration;
-        config_mgr_t* m_config_mgr;
-        env_config_t* m_env_config_client;
-
-        // config file values
-        std::string m_client_cfg;
         int m_log_level;
         size_t m_num_of_cycles;
-        char* m_request_ep;
-        char* m_request_ep_cfg;
-        bool m_dev_mode;
-        char* m_app_name;
-        char* m_cert_file;
-        char* m_key_file;
-        char* m_trust_file;
-        char* m_client;
 
     public:
-        void read_config(char* config_file_path) {
-            // parse config file
-            config_t* config_file_cfg = json_config_new(config_file_path);
-            if (config_file_cfg == NULL) {
-                const char* err = "Failed to load JSON configuration of sw trigger utility";
-                LOG_ERROR("%s", err);
-                throw err;
-            }
+        void read_etcd_config(config_t* app_config) {
 
             // log_level
-            config_value_t* log_level_cvt = config_file_cfg->get_config_value(config_file_cfg->cfg,
-                                                              "log_level");
+            config_value_t* log_level_cvt = get_config_value(app_config->cfg,
+                                                            "log_level");
             if (log_level_cvt == NULL) {
                 const char* err = "\"log_level\" key is missing, setting to default log level as debug";
                 LOG_WARN("%s", err);
@@ -142,8 +121,8 @@ class SwTriggerUtility {
             }
 
             //num_of_cycles
-            config_value_t* num_of_cyles_cvt = config_file_cfg->get_config_value(config_file_cfg->cfg,
-                                                              "num_of_cycles");
+            config_value_t* num_of_cyles_cvt = get_config_value(app_config->cfg,
+                                                               "num_of_cycles");
 
             if (num_of_cyles_cvt == NULL) {
                 const char* err = "\"num_of_cyles\" key is missing, setting to default (1 cycle)";
@@ -153,92 +132,6 @@ class SwTriggerUtility {
                 m_num_of_cycles = num_of_cyles_cvt->body.integer;
             }
 
-            // RequestEP
-            config_value_t* request_ep_cvt = config_file_cfg->get_config_value(config_file_cfg->cfg,
-                                                              "RequestEP");
-            if (request_ep_cvt == NULL) {
-                const char* err = "\"RequestEP\" key is missing. Improper Configuration. ";
-                LOG_ERROR("%s", err);
-                throw err;
-            } else {
-                m_request_ep = request_ep_cvt->body.string;
-            }
-
-            m_client_cfg = std::string(m_request_ep) + "_cfg";
-
-            // RequestEP's configuration (_cfg)
-            config_value_t* request_ep_cfg_cvt = config_file_cfg->get_config_value(config_file_cfg->cfg,
-                                                              m_client_cfg.c_str());
-            if (request_ep_cfg_cvt == NULL) {
-                const char* err = "Request_EP's _cfg key is missing, Improper Configuration.";
-                LOG_ERROR("%s", err);
-                throw err;
-            } else {
-                m_request_ep_cfg = request_ep_cfg_cvt->body.string;
-            }
-
-            // dev_mode
-            config_value_t* dev_mode_cvt = config_file_cfg->get_config_value(config_file_cfg->cfg,
-                                                              "dev_mode");
-            if ( dev_mode_cvt == NULL ) {
-                const char* err = "dev_mode key is missing, Improper Configuration.";
-                LOG_ERROR("%s", err);
-                throw err;
-
-            } else {
-                m_dev_mode = dev_mode_cvt->body.boolean;
-            }
-
-            config_value_t* app_name_cvt = config_file_cfg->get_config_value(config_file_cfg->cfg,
-                                                              "app_name");
-            if (app_name_cvt == NULL) {
-                const char* err = "\"app_name\" key is missing, setting to default";
-                LOG_WARN("%s", err);
-                m_app_name = "VideoAnalytics";
-            } else {
-                m_app_name = app_name_cvt->body.string;
-            }
-
-            // Only if prod mode then read etcd secrets
-            if (!m_dev_mode) {
-                // read CerFile value from config.json
-                config_value_t* cert_file_cvt = config_file_cfg->get_config_value(config_file_cfg->cfg,
-                                                              "certFile");
-                if (cert_file_cvt == NULL) {
-                    const char* err = "\"certFile\" key is missing";
-                    LOG_WARN("%s", err);
-                    throw(err);
-                } else {
-                    m_cert_file = cert_file_cvt->body.string;
-                }
-
-                // read keyFile value from config.json
-                config_value_t* key_file_cvt = config_file_cfg->get_config_value(config_file_cfg->cfg,
-                                                              "keyFile");
-                if (key_file_cvt == NULL) {
-                    const char* err = "\"keyFile\" key is missing";
-                    LOG_WARN("%s", err);
-                    throw(err);
-                } else {
-                    m_key_file = key_file_cvt->body.string;
-                }
-
-                // read Trust File value from config.json
-                config_value_t* trust_file_cvt = config_file_cfg->get_config_value(config_file_cfg->cfg,
-                                                              "trustFile");
-                if (trust_file_cvt == NULL) {
-                    const char* err = "\"trustFile\" key is missing";
-                    LOG_WARN("%s", err);
-                    throw(err);
-                } else {
-                    m_trust_file = trust_file_cvt->body.string;
-                }
-
-            } else {
-                 m_cert_file ="";
-                 m_key_file = "";
-                 m_trust_file = "";
-            }
         }
 
         /**
@@ -251,34 +144,50 @@ class SwTriggerUtility {
                 // Initialize default values
                 m_msgbus_ctx = NULL;
                 m_service_ctx = NULL;
-                m_config_mgr = NULL;
-                m_env_config_client = NULL;
-
-                // parse config file
-                read_config(config_file_path);
-
-                // get config mgr
-                get_config_mgr();
 
                 m_duration = SLEEP_DURATION_SECONDS;
                 // Set log level
                 set_log_level((log_lvl_t)m_log_level);
 
-                // get env config client
-                m_env_config_client = env_config_new();
+                const char* dev_mode = getenv("DEV_MODE");
+                if (dev_mode == NULL) {
+                    throw "\"DEV_MODE\" env not set";
+                }
 
-                // Set env variables for env_config API
-                const char* dev_mode = (m_dev_mode == true) ? "true" : "false";
-                setenv("RequestEP", m_request_ep, 1);
-                setenv("DEV_MODE", dev_mode, 1);
-
-                setenv(m_client_cfg.c_str(), m_request_ep_cfg, 1);
-                setenv("AppName", m_app_name, 1);
-                char* request_ep[] = {m_request_ep};
+                if (dev_mode == TRUE) {
+                    setenv("DEV_MODE", "", 1);
+                    setenv("CONFIGMGR_CERT", "", 1);
+                    setenv("CONFIGMGR_KEY", "", 1);
+                    setenv("CONFIGMGR_CACERT", "", 1);
+                }
 
                 // Since VI is the server & sw_trigger_utility is the client, it is impersonating as VideoAnalytics to
                 // get access to the allowed_clients list in VI.
-                config_t* config = m_env_config_client->get_messagebus_config(m_config_mgr, request_ep, 1, CLIENT);
+                ConfigMgr* ch = new ConfigMgr();
+                AppCfg* cfg = ch->getAppConfig();
+                if(cfg == NULL) {
+                    const char* err = "Failed to initialize AppCfg object";
+                    throw("%s", err);
+                }
+                config_t* app_config = cfg->getConfig();
+                if (app_config == NULL) {
+                    const char* err =  "AppConfig is missing";
+                    throw("%s", err);
+                }
+
+                read_etcd_config(app_config);
+
+                ClientCfg* client_ctx = ch->getClientByName("default");
+                config_t* config = client_ctx->getMsgBusConfig();
+
+                config_value_t* interface_value = client_ctx->getInterfaceValue("Name");
+                if (interface_value->type != CVT_STRING) {
+                    const char* err = "Interface value type is not a string";
+                    LOG_ERROR("%s", err);
+                    exit(1);
+                }
+                char* name = interface_value->body.string;
+                LOG_INFO("Interface value is: %s", name);
 
                 m_msgbus_ctx = msgbus_initialize(config);
                 if (m_msgbus_ctx == NULL) {
@@ -288,12 +197,13 @@ class SwTriggerUtility {
                 }
 
                 msgbus_ret_t ret = msgbus_service_get(
-                m_msgbus_ctx, m_request_ep, NULL, &m_service_ctx);
+                m_msgbus_ctx, name, NULL, &m_service_ctx);
                 if (ret != MSG_SUCCESS) {
                     const char* err = "Failed to initialize service, msgbus_service_get failed";
                     LOG_ERROR("%s", err);
                     throw err;
                 }
+
             }
             catch (std::exception& ex) {
                 LOG_ERROR("Exception = %s occurred in construction of SW_trigger_utility object ", ex.what());
@@ -494,12 +404,6 @@ class SwTriggerUtility {
             }
         }
 
-        void get_config_mgr() {
-            m_config_mgr = config_mgr_new("etcd",
-                                        m_cert_file,
-                                        m_key_file,
-                                        m_trust_file);
-        }
 };
 
 
@@ -511,15 +415,6 @@ int main(int argc, char **argv) {
             return -1;
         }
 
-        if (argc < 3) {
-            argv[2] = CONFIG_FILE_PATH;
-            if(argc == 2){
-                // checking if 2nd argument is config json file, if yes then pass that as the configuration file path
-                if((std::string(argv[1]).find("json", 0)) != std::string::npos) {
-                    argv[2] = argv[1];
-                }
-            }
-        }
         sw_trigger_obj = new SwTriggerUtility(argv[2]);
 
         switch (argc) {

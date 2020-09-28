@@ -9,6 +9,37 @@ This utility is used for invoking various software trigger features of VideoInge
 
 1. To install EIS libs on bare-metal, follow the [README](../../common/README.md) of eis_libs_installer.
 
+## Software Trigger Utilily pre-requisites
+
+SWTriggerUtility expects a set of config, interfaces & public private keys to be present in ETCD as a pre-requisite.
+* To achieve this, please ensure an entry for SWTriggerUtility with its relative path from [IEdgeInsights](../../) directory is set in any of the .yml files present in [build](../../build) directory. An example has been provided in [video-streaming.yml](../../build/video-streaming.yml) and can be run using the below command
+    ```yml
+        AppName:
+        ---snip---
+        - tools/SWTriggerUtility
+    ```
+    ```sh
+        $ python3 eis_builder.py -f ./video-streaming.yml
+    ```
+* Run the below steps to load the data to ETCD
+
+    ```sh
+        $ cd  <EIS-working-directory>/IEdgeInsights/build/provision
+        $ sudo ./provision_eis.sh ../docker-compose.yml
+    ```
+* Run the below step to set the required env variables to communicate with ETCD
+
+  ```sh
+      $ source ./env.sh
+  ```
+
+* Since provisioning will stop the EIS services run the below command to start them
+
+   ```sh
+       $ cd <EIS-working-directory>/IEdgeInsights/build/
+       $ docker-compose up -d
+   ```
+
 ## Usage of Software Trigger Utility:
 
 Software trigger utility can be used in following ways:
@@ -56,20 +87,13 @@ USAGE 5: Selectively send SNAPSHOT software trigger:
 
 **config.json** is the configuration file used for sw_trigger_vi utility.
 
-
-
 |       Field      | Meaning |                                       Type of the value                                    |
-| :-------------: | :-----: | ------------------------------------------------------------------------------------ |
-| `num_of_cycles`   | `Number of cyles of start-stop ingestions to repeat`   | `integer`                           |
-| `server_client`       | `server/client configuration`   | `string` |
-| `client`    | `name of the client`   | `string`         |
-| `sw_trigger_utility_cfg` | `connection endpoint configuration`   | `string`    |
-| `dev_mode`     | `dev mode ON or OFF`   | `boolean (true or false)`  |
-| `app_name`     | `App name (to get the certificates in the list of VI's trusted clients)`   | `string`  |
-| `certFile`     | `ETCD cert file`   | `string`  |
-| `keyFile`     | `key file`   | `string`  |
-| `trustFile`     | `CA cert`   | `string`  |
-| `log_level`     | `Log level to view the logs accordingly`   |  `integer [DEBUG=3 (default), ERROR=0, WARN=1, INFO=2]`  |
+| :-------------:  | :-----: | ------------------------------------------------------------------------------------ |
+| `num_of_cycles`  | `Number of cyles of start-stop ingestions to repeat`   | `integer`                           |
+| `dev_mode`       | `dev mode ON or OFF`   | `boolean (true or false)`  |
+| `log_level`      | `Log level to view the logs accordingly`   |  `integer [DEBUG=3 (default), ERROR=0, WARN=1, INFO=2]`  |
+
+**Note**: In case one needs to change the values in [config.json](./config.json) then provisioning needs to be done or one can choose to update the ETCD UI to change the values and then restart the application.
 
 ## Build steps for sw_trigger_utility:
 
@@ -101,7 +125,7 @@ Install the required EIS baremetal libraries by referring [EISLibsInstaller_READ
 
 ```sh
     sudo chmod -R 755 <EIS-working-directory>/IEdgeInsights/build/provision/Certificates/ca
-    sudo chmod -R 755 <EIS-working-directory>/IEdgeInsights/build/provision/Certificates/VideoAnalytics
+    sudo chmod -R 755 <EIS-working-directory>/IEdgeInsights/build/provision/Certificates/SWTriggerUtility
 ```
 
 # 3. Make the field "dev_mode= false" in config.json of tools/sw_trigger_utility.

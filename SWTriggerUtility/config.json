@@ -1,0 +1,16 @@
+{
+    "config": {
+        "log_level" : 3,
+        "num_of_cycles" : 2
+    },
+    "interfaces": {
+        "Clients": [
+             {
+                 "Name": "default",
+                 "Type": "zmq_tcp",
+                 "EndPoint": "127.0.0.1:66013",
+                 "ServerAppName": "VideoIngestion"
+             }
+         ]
+    }
+   }
