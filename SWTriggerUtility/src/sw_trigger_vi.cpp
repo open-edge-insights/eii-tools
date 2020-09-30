@@ -154,7 +154,7 @@ class SwTriggerUtility {
                     throw "\"DEV_MODE\" env not set";
                 }
 
-                if (dev_mode == TRUE) {
+                if (strncmp(dev_mode, "TRUE", 5) == 0) {
                     setenv("DEV_MODE", "", 1);
                     setenv("CONFIGMGR_CERT", "", 1);
                     setenv("CONFIGMGR_KEY", "", 1);

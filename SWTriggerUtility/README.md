@@ -114,19 +114,32 @@ Install the required EIS baremetal libraries by referring [EISLibsInstaller_READ
 
 ### Prod mode support :
 
-# 1. Provision in prod mode by making dev_mode flag = false in "build.env"
+# 1. EIS services should be running in prod by setting `DEV_MODE=false` in [build/.env](../../build/.env)
 
-```sh
-    cd  <EIS-working-directory>/IEdgeInsights/build/provision
-    sudo ./provision_eis.sh ../docker-compose.yml
-```
-
-# 2. needs to give explicitly provide permission to the necessary certs as follows
+# 2. Provide permission to the necessary certs as follows
 
 ```sh
     sudo chmod -R 755 <EIS-working-directory>/IEdgeInsights/build/provision/Certificates/ca
     sudo chmod -R 755 <EIS-working-directory>/IEdgeInsights/build/provision/Certificates/SWTriggerUtility
 ```
 
-# 3. Make the field "dev_mode= false" in config.json of tools/sw_trigger_utility.
+# 3. Make the field `DEV_MODE=FALSE` in env.sh of tools/SWTriggerUtility
+
+# 4. Run the below step to source the env variable
+
+  ```sh
+      $ source ./env.sh
+  ```
+
+### Dev mode support :
+
+# 1. EIS services should be running in dev mode by setting `DEV_MODE=true` in [build/.env](../../build/.env)
+
+# 2. Make the field `DEV_MODE=TRUE` in env.sh of tools/SWTriggerUtility
+
+# 3. Run the below step to source the env variable
+
+  ```sh
+      $ source ./env.sh
+  ```
 
