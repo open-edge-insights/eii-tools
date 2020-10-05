@@ -33,6 +33,12 @@ SWTriggerUtility expects a set of config, interfaces & public private keys to be
       $ source ./env.sh
   ```
 
+* Export the below IP Address to `no_proxy` env variable to connect with ETCD
+
+   ```sh
+      $ export no_proxy=$no_proxy,127.0.0.1
+   ```
+
 * Since provisioning will stop the EIS services run the below command to start them
 
    ```sh
