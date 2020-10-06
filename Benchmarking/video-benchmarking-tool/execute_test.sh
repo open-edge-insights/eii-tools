@@ -118,7 +118,7 @@ run_logged modprobe msr
 # If necessary, start HDDL daemon
 # 
 # --------------------------------------------------------------
-export HDDL = "cpu"
+export HDDL="cpu"
 if [ "${HDDL}" == *"HDDL"* ]; then
 	myprocess=`ps aux | grep hddldaemon | grep -v grep`
 	if [ -z "${myprocess}" ]; then
@@ -174,7 +174,7 @@ run_logged sleep $SLEEP
 popd
 
 # --------------------------------------------------------------
-# Configure the FpsCalculator
+# Configure the VideoProfiler
 # --------------------------------------------------------------
 notice "Configuring the VideoProfiler"
 run_logged cp -v ${TEST_DIR}/VP_config.json ${EIS_HOME}/tools/VideoProfiler/config.json

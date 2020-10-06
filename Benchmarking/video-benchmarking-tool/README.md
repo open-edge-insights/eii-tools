@@ -32,7 +32,7 @@ Steps for running a benchmarking test case:
     ```
    For example:
     ```
-    ./execute_test.sh $PWD/tc1 16 60 /opt/intel/pcm 
+    sudo -E ./execute_test.sh $PWD/sample_test 16 60 /opt/intel/pcm /home/intel/IEdgeInsights
     ```
 
 3. The execution log, performance logs, and the output.csv will be saved in TEST_DIR/< timestamp >/ so that the same test case can be ran multiple times without overwriting the output. You can see if the test ocurred any errors in the execution.log, and you can see the results of a successful test in output.csv.

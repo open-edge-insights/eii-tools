@@ -1,4 +1,5 @@
 {
+    "config": {
         "ingestor": {
             "pipeline": "rtspsrc location=\"rtsp://localhost:8554/live.sdp\" latency=100 ! rtph264depay ! h264parse ! vaapih264dec ! vaapipostproc format=bgrx ! gvadetect device=CPU model=models/frozen_inference_graph.xml ! vaapipostproc height=300 width=300 ! videoconvert ! video/x-raw,format=BGR ! appsink",
             "queue_size": 10,
@@ -6,4 +7,20 @@
         },
         "max_jobs": 20,
         "max_workers": 4
+    },
+    "interfaces": {
+        "Publishers": [
+            {
+                "Name": "default",
+                "Type": "zmq_ipc",
+                "EndPoint": "/EIS/sockets",
+                "Topics": [
+                    "camera1_stream"
+                ],
+                "AllowedClients": [
+                    "VideoAnalytics", "Visualizer", "WebVisualizer", "TLSRemoteAgent", "RestDataExport"
+                ]
+            }
+        ]
+    }
 }

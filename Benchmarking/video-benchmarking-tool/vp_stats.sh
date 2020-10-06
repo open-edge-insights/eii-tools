@@ -23,7 +23,7 @@
 #Set permission
 sudo chmod -R 777 /opt/intel/eis/sockets
 sudo chmod -R 755 ../../build/provision/Certificates/ca
-sudo chmod -R 755 ../../build/provision/Certificates/root
+sudo chmod -R 755 ../../build/provision/Certificates/VideoProfiler
 
 #set the required env
 source ${PWD}/env.sh
