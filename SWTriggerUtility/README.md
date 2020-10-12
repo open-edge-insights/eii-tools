@@ -12,15 +12,20 @@ This utility is used for invoking various software trigger features of VideoInge
 ## Software Trigger Utilily pre-requisites
 
 SWTriggerUtility expects a set of config, interfaces & public private keys to be present in ETCD as a pre-requisite.
-* To achieve this, please ensure an entry for SWTriggerUtility with its relative path from [IEdgeInsights](../../) directory is set in any of the .yml files present in [build](../../build) directory. An example has been provided in [video-streaming.yml](../../build/video-streaming.yml) and can be run using the below command
+* To achieve this, please ensure an entry for SWTriggerUtility with its relative path from [IEdgeInsights](../../) directory is set in any of the .yml files present in [build](../../build) directory.
+    * An example has been provided below to add the entry in [video-streaming.yml](../../build/video-streaming.yml)
     ```yml
         AppName:
         ---snip---
         - tools/SWTriggerUtility
     ```
+
+    * Run the below command to generate config required for SWTriggerUtility
     ```sh
+        $ cd  <EIS-working-directory>/IEdgeInsights/build
         $ python3 eis_builder.py -f ./video-streaming.yml
     ```
+
 * Run the below steps to load the data to ETCD
 
     ```sh
@@ -30,6 +35,7 @@ SWTriggerUtility expects a set of config, interfaces & public private keys to be
 * Run the below step to set the required env variables to communicate with ETCD
 
   ```sh
+      $ cd  <EIS-working-directory>/IEdgeInsights/tools/SWTriggerUtility
       $ source ./env.sh
   ```
 
@@ -134,6 +140,7 @@ Install the required EIS baremetal libraries by referring [EISLibsInstaller_READ
 # 4. Run the below step to source the env variable
 
   ```sh
+      $ cd <EIS-working-directory>/IEdgeInsights/tools/SWTriggerUtility
       $ source ./env.sh
   ```
 
@@ -146,6 +153,7 @@ Install the required EIS baremetal libraries by referring [EISLibsInstaller_READ
 # 3. Run the below step to source the env variable
 
   ```sh
+      $ cd <EIS-working-directory>/IEdgeInsights/tools/SWTriggerUtility
       $ source ./env.sh
   ```
 
