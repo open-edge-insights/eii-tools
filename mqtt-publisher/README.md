@@ -32,6 +32,10 @@ Simple Python temperature sensor simulator.
    ```sh
 	$./build.sh && ./publisher.sh --temperature 10:30 --pressure 10:30 --humidity 10:30 
    ```
+   To publish multiple sensor data in detached mode:
+   ```sh
+   $./build.sh && ./publisher.sh --temperature 10:30 --pressure 10:30 --humidity 10:30 --detached_mode true
+   ```
    To publish differnt topic instead of default topic:
    ```sh
 	./build.sh && ./publisher.sh --temperature 10:30 --pressure 10:30 --humidity 10:30 --topic_temp <temperature topic> --topic_pres <pressure topic> --topic_humd <humidity topic>
@@ -43,11 +47,19 @@ Simple Python temperature sensor simulator.
      ```sh
      $ ./build.sh && ./publisher_csv.sh
      ```
+     To publish in deatched mode:
+     ```sh
+     $ ./build.sh && ./publisher_csv.sh --detached_mode true
+     ```
      One can also change filename, topic, sampling rate and subsample parameters in the publisher_csv.sh script.
 
    * To publish JSON files (to test random forest UDF)
      ```sh
      $ ./build.sh && ./publisher_json.sh
+     ```
+     To publish JSON files (to test random forest UDF) in detached mode:
+     ```sh
+     $ ./build.sh && ./publisher_json.sh --detached_mode true
      ```
      One can also change filename, topic in the publisher_json.sh script.
 
