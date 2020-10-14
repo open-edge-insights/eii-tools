@@ -11,12 +11,7 @@ HttpTestServer runs a simple HTTP Test server with security being optional.
     $ ./generate_testserver_cert.sh 127.0.0.1
     ```
 
-    2. Copy the ca certificate generated in the certificates folder to the /opt/intel/eis folder
-    ```
-    $ sudo cp certificates/ca_cert.pem /opt/intel/eis/cert.pem
-    ```
-
-    3. To run the HttpTestServer
+    2. To run the HttpTestServer
     ```
     $ cd IEdgeInsights/tools/HttpTestServer
     $ go run TestServer.go --dev_mode <true/false> --host <address of server> --port <port of server>
@@ -28,12 +23,7 @@ HttpTestServer runs a simple HTTP Test server with security being optional.
     $ ./generate_testserver_cert.sh test-server-ip
     ```
 
-    2. Copy the ca certificate generated in the certificates folder to the /opt/intel/eis folder
-    ```
-    $ sudo cp certificates/ca_cert.pem /opt/intel/eis/cert.pem
-    ```
-
-    3. To run the HttpTestServer
+    2. To run the HttpTestServer
     ```
     $ cd IEdgeInsights/tools/HttpTestServer
     $ go run TestServer.go --dev_mode false --host <address of test server> --port <port of test server> --rdehost <address of Rest Data Export server> --rdeport <port of Rest Data Export server>
