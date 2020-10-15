@@ -108,7 +108,7 @@ module.
 
     ```sh
         sudo chmod -R 755 ../../build/provision/Certificates/VideoProfiler
-        sudo chmod -R 755 ../../build/provision/Certificates/root
+        sudo chmod -R 755 ../../build/provision/Certificates/ca
     ```
     Note : This step is required everytime provisioning is done.
     Caution: This step will make the certs insecure. Please do not do it on a production machine.
@@ -168,3 +168,12 @@ module.
     1. User can consider reducing the ingestion rate to a required value.
     2. User can increase ZMQ_RECV_HWM to an optimum value so as to not drop
     the frames when the queue is full or switching to IPC mode of communication.
+
+## Benchmarking with multi instance config
+
+1. EIS supports multi instance config generation for benchmarking purposes. This can be acheived by running the [eis_builder.py](../../build/eis_builder.py) with certain parameters, please refer to the **Multi instance config generation** section of **EIS Pre-Requisites** in [README](../../README.md) for more details.
+
+2. For running VideoProfiler for multiple streams, ensure you have copied the [compose](docker-compose.yml) & [config](config.json) files to a directory within VideoProfiler which you will be providing as an override directory for eis_builder to auto-create multi instance config. For example, copy the [compose](docker-compose.yml) & [config](config.json) files to a directory named **benchmarking** within VideoProfiler and run the eis_builder for generating **6** streams config using the command given below:
+    ```sh
+        python3 eis_builder.py -f ./video-streaming.yml -v 6 -d benchmarking
+    ```
