@@ -25,10 +25,18 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
 # Env variables to be set for communicating with ETCD
 export AppName="VideoProfiler"
+
+# Comment out below 4 lines if running in DEV mode
 export DEV_MODE=FALSE
 export CONFIGMGR_CERT=../../build/provision/Certificates/VideoProfiler/VideoProfiler_client_certificate.pem
 export CONFIGMGR_KEY=../../build/provision/Certificates/VideoProfiler/VideoProfiler_client_key.pem
 export CONFIGMGR_CACERT=../../build/provision/Certificates/ca/ca_certificate.pem
+
+# Uncomment below 4 lines if running in DEV mode
+# export DEV_MODE=TRUE
+# export CONFIGMGR_CERT=""
+# export CONFIGMGR_KEY=""
+# export CONFIGMGR_CACERT=""
 
 # For running VideoProfiler on a separate node or with CSL, set these variables to
 # point to the etcd on different node
