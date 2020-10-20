@@ -109,8 +109,6 @@ USAGE 5: Selectively send SNAPSHOT software trigger:
 
 ## Build steps for sw_trigger_utility:
 
-Install the required EIS baremetal libraries by referring [EISLibsInstaller_README.md](../../common/README.md)
-
 ### To generate the "sw_trigger_vi"  binary.
 
 ```sh

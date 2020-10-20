@@ -26,4 +26,5 @@ export DEV_MODE="FALSE"
 export CONFIGMGR_CERT="../../../build/provision/Certificates/SWTriggerUtility/SWTriggerUtility_client_certificate.pem"
 export CONFIGMGR_KEY="../../../build/provision/Certificates/SWTriggerUtility/SWTriggerUtility_client_key.pem"
 export CONFIGMGR_CACERT="../../../build/provision/Certificates/ca/ca_certificate.pem"
-
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+export no_proxy=$no_proxy,127.0.0.1
