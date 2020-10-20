@@ -59,7 +59,6 @@ services:
       dockerfile: $PWD/../common/video/Dockerfile.openvino
       args:
         EIS_VERSION: ${EIS_VERSION}
-        FPGA_ENABLE: "disable"
         DOCKER_REGISTRY: ${DOCKER_REGISTRY}
         OPENVINO_IMAGE_VERSION: ${OPENVINO_IMAGE_VERSION}
     read_only: true
@@ -165,14 +164,10 @@ services:
       - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"
-      - "/opt/Intel/OpenCL/Boards:/opt/Intel/OpenCL/Boards"
-      - "/opt/altera:/opt/altera"
-      - "/opt/intel/intelFPGA:/opt/intel/intelFPGA"
     privileged: true
     devices:
       - "/dev/dri"
       - "/dev/:/dev/"
-      - "/dev/acla10_1150_sg10:/dev/acla10_1150_sg10"
     secrets:
       - ca_etcd
       - etcd_VideoIngestion1_cert
@@ -223,14 +218,10 @@ services:
       - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"
-      - "/opt/Intel/OpenCL/Boards:/opt/Intel/OpenCL/Boards"
-      - "/opt/altera:/opt/altera"
-      - "/opt/intel/intelFPGA:/opt/intel/intelFPGA"
     privileged: true
     devices:
       - "/dev/dri"
       - "/dev/:/dev/"
-      - "/dev/acla10_1150_sg10:/dev/acla10_1150_sg10"
     secrets:
       - ca_etcd
       - etcd_VideoIngestion2_cert
@@ -281,14 +272,10 @@ services:
       - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"
-      - "/opt/Intel/OpenCL/Boards:/opt/Intel/OpenCL/Boards"
-      - "/opt/altera:/opt/altera"
-      - "/opt/intel/intelFPGA:/opt/intel/intelFPGA"
     privileged: true
     devices:
       - "/dev/dri"
       - "/dev/:/dev/"
-      - "/dev/acla10_1150_sg10:/dev/acla10_1150_sg10"
     secrets:
       - ca_etcd
       - etcd_VideoIngestion3_cert
@@ -339,14 +326,10 @@ services:
       - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"
-      - "/opt/Intel/OpenCL/Boards:/opt/Intel/OpenCL/Boards"
-      - "/opt/altera:/opt/altera"
-      - "/opt/intel/intelFPGA:/opt/intel/intelFPGA"
     privileged: true
     devices:
       - "/dev/dri"
       - "/dev/:/dev/"
-      - "/dev/acla10_1150_sg10:/dev/acla10_1150_sg10"
     secrets:
       - ca_etcd
       - etcd_VideoIngestion4_cert
@@ -397,14 +380,10 @@ services:
       - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"
-      - "/opt/Intel/OpenCL/Boards:/opt/Intel/OpenCL/Boards"
-      - "/opt/altera:/opt/altera"
-      - "/opt/intel/intelFPGA:/opt/intel/intelFPGA"
     privileged: true
     devices:
       - "/dev/dri"
       - "/dev/:/dev/"
-      - "/dev/acla10_1150_sg10:/dev/acla10_1150_sg10"
     secrets:
       - ca_etcd
       - etcd_VideoIngestion5_cert
@@ -455,14 +434,10 @@ services:
       - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"
-      - "/opt/Intel/OpenCL/Boards:/opt/Intel/OpenCL/Boards"
-      - "/opt/altera:/opt/altera"
-      - "/opt/intel/intelFPGA:/opt/intel/intelFPGA"
     privileged: true
     devices:
       - "/dev/dri"
       - "/dev/:/dev/"
-      - "/dev/acla10_1150_sg10:/dev/acla10_1150_sg10"
     secrets:
       - ca_etcd
       - etcd_VideoIngestion6_cert
@@ -513,14 +488,10 @@ services:
       - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"
-      - "/opt/Intel/OpenCL/Boards:/opt/Intel/OpenCL/Boards"
-      - "/opt/altera:/opt/altera"
-      - "/opt/intel/intelFPGA:/opt/intel/intelFPGA"
     privileged: true
     devices:
       - "/dev/dri"
       - "/dev/:/dev/"
-      - "/dev/acla10_1150_sg10:/dev/acla10_1150_sg10"
     secrets:
       - ca_etcd
       - etcd_VideoIngestion7_cert
@@ -571,14 +542,10 @@ services:
       - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"
-      - "/opt/Intel/OpenCL/Boards:/opt/Intel/OpenCL/Boards"
-      - "/opt/altera:/opt/altera"
-      - "/opt/intel/intelFPGA:/opt/intel/intelFPGA"
     privileged: true
     devices:
       - "/dev/dri"
       - "/dev/:/dev/"
-      - "/dev/acla10_1150_sg10:/dev/acla10_1150_sg10"
     secrets:
       - ca_etcd
       - etcd_VideoIngestion8_cert
@@ -629,14 +596,10 @@ services:
       - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"
-      - "/opt/Intel/OpenCL/Boards:/opt/Intel/OpenCL/Boards"
-      - "/opt/altera:/opt/altera"
-      - "/opt/intel/intelFPGA:/opt/intel/intelFPGA"
     privileged: true
     devices:
       - "/dev/dri"
       - "/dev/:/dev/"
-      - "/dev/acla10_1150_sg10:/dev/acla10_1150_sg10"
     secrets:
       - ca_etcd
       - etcd_VideoIngestion9_cert
@@ -687,14 +650,10 @@ services:
       - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"
-      - "/opt/Intel/OpenCL/Boards:/opt/Intel/OpenCL/Boards"
-      - "/opt/altera:/opt/altera"
-      - "/opt/intel/intelFPGA:/opt/intel/intelFPGA"
     privileged: true
     devices:
       - "/dev/dri"
       - "/dev/:/dev/"
-      - "/dev/acla10_1150_sg10:/dev/acla10_1150_sg10"
     secrets:
       - ca_etcd
       - etcd_VideoIngestion10_cert
@@ -745,14 +704,10 @@ services:
       - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"
-      - "/opt/Intel/OpenCL/Boards:/opt/Intel/OpenCL/Boards"
-      - "/opt/altera:/opt/altera"
-      - "/opt/intel/intelFPGA:/opt/intel/intelFPGA"
     privileged: true
     devices:
       - "/dev/dri"
       - "/dev/:/dev/"
-      - "/dev/acla10_1150_sg10:/dev/acla10_1150_sg10"
     secrets:
       - ca_etcd
       - etcd_VideoIngestion11_cert
@@ -803,14 +758,10 @@ services:
       - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"
-      - "/opt/Intel/OpenCL/Boards:/opt/Intel/OpenCL/Boards"
-      - "/opt/altera:/opt/altera"
-      - "/opt/intel/intelFPGA:/opt/intel/intelFPGA"
     privileged: true
     devices:
       - "/dev/dri"
       - "/dev/:/dev/"
-      - "/dev/acla10_1150_sg10:/dev/acla10_1150_sg10"
     secrets:
       - ca_etcd
       - etcd_VideoIngestion12_cert
@@ -861,14 +812,10 @@ services:
       - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"
-      - "/opt/Intel/OpenCL/Boards:/opt/Intel/OpenCL/Boards"
-      - "/opt/altera:/opt/altera"
-      - "/opt/intel/intelFPGA:/opt/intel/intelFPGA"
     privileged: true
     devices:
       - "/dev/dri"
       - "/dev/:/dev/"
-      - "/dev/acla10_1150_sg10:/dev/acla10_1150_sg10"
     secrets:
       - ca_etcd
       - etcd_VideoIngestion13_cert
@@ -919,14 +866,10 @@ services:
       - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"
-      - "/opt/Intel/OpenCL/Boards:/opt/Intel/OpenCL/Boards"
-      - "/opt/altera:/opt/altera"
-      - "/opt/intel/intelFPGA:/opt/intel/intelFPGA"
     privileged: true
     devices:
       - "/dev/dri"
       - "/dev/:/dev/"
-      - "/dev/acla10_1150_sg10:/dev/acla10_1150_sg10"
     secrets:
       - ca_etcd
       - etcd_VideoIngestion14_cert
@@ -977,14 +920,10 @@ services:
       - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"
-      - "/opt/Intel/OpenCL/Boards:/opt/Intel/OpenCL/Boards"
-      - "/opt/altera:/opt/altera"
-      - "/opt/intel/intelFPGA:/opt/intel/intelFPGA"
     privileged: true
     devices:
       - "/dev/dri"
       - "/dev/:/dev/"
-      - "/dev/acla10_1150_sg10:/dev/acla10_1150_sg10"
     secrets:
       - ca_etcd
       - etcd_VideoIngestion15_cert
@@ -1035,14 +974,10 @@ services:
       - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"
-      - "/opt/Intel/OpenCL/Boards:/opt/Intel/OpenCL/Boards"
-      - "/opt/altera:/opt/altera"
-      - "/opt/intel/intelFPGA:/opt/intel/intelFPGA"
     privileged: true
     devices:
       - "/dev/dri"
       - "/dev/:/dev/"
-      - "/dev/acla10_1150_sg10:/dev/acla10_1150_sg10"
     secrets:
       - ca_etcd
       - etcd_VideoIngestion16_cert
@@ -1093,14 +1028,10 @@ services:
       - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"
-      - "/opt/Intel/OpenCL/Boards:/opt/Intel/OpenCL/Boards"
-      - "/opt/altera:/opt/altera"
-      - "/opt/intel/intelFPGA:/opt/intel/intelFPGA"
     privileged: true
     devices:
       - "/dev/dri"
       - "/dev/:/dev/"
-      - "/dev/acla10_1150_sg10:/dev/acla10_1150_sg10"
     secrets:
       - ca_etcd
       - etcd_VideoIngestion17_cert
@@ -1151,14 +1082,10 @@ services:
       - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"
-      - "/opt/Intel/OpenCL/Boards:/opt/Intel/OpenCL/Boards"
-      - "/opt/altera:/opt/altera"
-      - "/opt/intel/intelFPGA:/opt/intel/intelFPGA"
     privileged: true
     devices:
       - "/dev/dri"
       - "/dev/:/dev/"
-      - "/dev/acla10_1150_sg10:/dev/acla10_1150_sg10"
     secrets:
       - ca_etcd
       - etcd_VideoIngestion18_cert
