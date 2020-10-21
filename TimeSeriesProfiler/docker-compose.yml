@@ -21,34 +21,41 @@
 version: '3.6'
 
 services:
+  ## Define telegraf service
   ia_timeseries_profiler:
+    depends_on:
+      - ia_common
     build:
-      context: .
-      dockerfile: $PWD/Dockerfile
+      context: $PWD/../tools/TimeSeriesProfiler
+      dockerfile: $PWD/../tools/TimeSeriesProfiler/Dockerfile
       args:
-          EIS_VERSION: ${EIS_VERSION} 
-    image: ia_timeseries_profiler:${EIS_VERSION}
+        EIS_VERSION: ${EIS_VERSION}
+        EIS_UID: ${EIS_UID}
+        DOCKER_REGISTRY: ${DOCKER_REGISTRY}
     container_name: ia_timeseries_profiler
     hostname: ia_timeseries_profiler
     network_mode: host
+    image: ${DOCKER_REGISTRY}ia_timeseries_profiler:${EIS_VERSION}
+    restart: "no"
+    ipc: "none"
     environment:
-      dev_Mode: ${DEV_MODE}
-      no_proxy: ${NO_PROXY},${eis_no_proxy},${ETCD_HOST}
+      AppName: "TimeSeriesProfiler"
+      CertType: "pem,zmq"
+      DEV_MODE: ${DEV_MODE}
+      no_proxy: ${eis_no_proxy},${ETCD_HOST}
+      NO_PROXY: ${eis_no_proxy},${ETCD_HOST}
       ETCD_HOST: ${ETCD_HOST}
-      AppName: ${AppName}
+      ETCD_PREFIX: ${ETCD_PREFIX}
     volumes:
-      - "./config.json:/EIS/config.json"
       - ".:/EIS/out"
-    #comment secrets while running in DEV mode (DEV_MODE=true).
     secrets:
       - ca_etcd
-      - etcd_root_cert
-      - etcd_root_key
+      - etcd_TimeSeriesProfiler_cert
+      - etcd_TimeSeriesProfiler_key
+
 
 secrets:
-  ca_etcd:
-    file: ../../build/provision/Certificates/ca/ca_certificate.pem
-  etcd_root_cert:
-    file: ../../build/provision/Certificates/root/root_client_certificate.pem
-  etcd_root_key:
-    file: ../../build/provision/Certificates/root/root_client_key.pem
+  etcd_TimeSeriesProfiler_cert:
+    file: provision/Certificates/TimeSeriesProfiler/TimeSeriesProfiler_client_certificate.pem
+  etcd_TimeSeriesProfiler_key:
+    file: provision/Certificates/TimeSeriesProfiler/TimeSeriesProfiler_client_key.pem

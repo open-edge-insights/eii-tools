@@ -32,19 +32,10 @@ import time
 from distutils.util import strtobool
 # IMPORT the library to read from EIS
 from util.util import Util
-from eis.env_config import EnvConfig
-from eis.config_manager import ConfigManager
+import cfgmgr.config_manager as cfg
 import eis.msgbus as mb
 
 avg_sps_per_topic = {}
-
-
-def get_config():
-    with open('config.json') as f:
-        config_dict = json.load(f)
-        return config_dict
-
-
 logger = logging.getLogger(__name__)
 
 
@@ -52,31 +43,17 @@ class TimeSeriesCalculator:
     """ A sample app to check SPS of
     individual modules. """
 
-    def __init__(self, devMode, topic,
-                 total_number_of_samples, config_dict):
-        self.devMode = devMode
-        self.publisher, self.topic = topic.split("/")
-        os.environ[self.topic+'_cfg'] = config_dict[self.topic+'_cfg']
+    def __init__(self, topic, msgbus_cfg, dev_mode, total_number_of_samples):
+        self.devMode = dev_mode
+        self.topic = topic
         self.total_number_of_samples = total_number_of_samples
         self.sample_count = 0
         self.start_time = 0.0
         self.done_receiving = False
         self.start_subscribing = True
-        conf = {
-            "certFile": "",
-            "keyFile": "",
-            "trustFile": ""
-        }
-        if not self.devMode:
-            conf = {
-                "certFile": config_dict["certFile"],
-                "keyFile": config_dict["keyFile"],
-                "trustFile": config_dict["trustFile"]
-            }
-        cfg_mgr = ConfigManager()
-        self.config_client = cfg_mgr.get_config_client("etcd", conf)
-        self.total_records = dict()
 
+        self.total_records = dict()
+        self.msgbus_cfg = msgbus_cfg
         self.total_records['total_mqttpub_to_influx'] = '0'
         self.total_records['total_influx_to_kapacitor-udf'] = '0'
         self.total_records['total_kapacitor-udf_to_idbconn'] = '0'
@@ -92,18 +69,14 @@ class TimeSeriesCalculator:
     def eisSubscriber(self):
         """ To subscribe over
         EISMessagebus. """
-        config = EnvConfig.get_messagebus_config(self.topic, "sub",
-                                                 self.publisher,
-                                                 self.config_client,
-                                                 self.devMode)
 
-        mode = config["type"]
+        mode = self.msgbus_cfg["type"]
         if (not self.devMode and mode == "zmq_tcp"):
-            for key in config[self.topic]:
-                if config[self.topic][key] is None:
+            for key in self.msgbus_cfg[self.topic]:
+                if self.msgbus_cfg[self.topic][key] is None:
                     raise ValueError("Invalid Config")
 
-        msgbus = mb.MsgbusContext(config)
+        msgbus = mb.MsgbusContext(self.msgbus_cfg)
         subscriber = msgbus.new_subscriber(self.topic)
 
         logger.info('Ready to receive data from msgbus')
@@ -301,20 +274,27 @@ class TimeSeriesCalculator:
             return
 
 
-def threadRunner(topic, config_dict):
+def threadRunner(topic, msgbus_cfg, dev_mode, total_number_of_samples):
     """ To run TimeSeriesCalculator for each topic """
-    tsc_app = TimeSeriesCalculator(dev_mode, topic, total_number_of_samples,
-                                   config_dict)
+    tsc_app = TimeSeriesCalculator(topic, msgbus_cfg,
+                                   dev_mode, total_number_of_samples)
 
     tsc_app.eisSubscriber()
 
 
 if __name__ == "__main__":
 
-    config_dict = get_config()
-
-    dev_mode = bool(strtobool(config_dict['dev_mode']))
-
+    try:
+        ctx = cfg.ConfigMgr()
+        app_cfg = ctx.get_app_config()
+        app_name = ctx.get_app_name()
+        dev_mode = ctx.is_dev_mode()
+        logger.info("app name is{}".format(app_name))
+        sub_ctx = ctx.get_subscriber_by_index(0)
+        msgbus_cfg = sub_ctx.get_msgbus_config()
+        topics = sub_ctx.get_topics()
+    except Exception as e:
+        logger.error("{}".format(e))
     if dev_mode:
         fmt_str = (
             '%(asctime)s : %(levelname)s  : {} : %(name)s : [%(filename)s] :'
@@ -326,15 +306,15 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.DEBUG, format=fmt_str)
 
-    topics = config_dict['SubTopics']
-    export_to_csv = bool(strtobool(config_dict['export_to_csv']))
-    total_number_of_samples = int(config_dict['total_number_of_samples'])
-
+    export_to_csv = bool(strtobool(app_cfg['export_to_csv']))
+    total_number_of_samples = int(app_cfg['total_number_of_samples'])
+    logger.info("total_number_of_samples is {}"
+                .format(total_number_of_samples))
     # Calculating SPS for each topic
     threads = []
     for topic in topics:
-        thread = threading.Thread(target=threadRunner,
-                                  args=(topic, config_dict,))
+        thread = threading.Thread(target=threadRunner, args=(topic, msgbus_cfg,
+                                  dev_mode, total_number_of_samples,))
 
         threads.append(thread)
         thread.start()

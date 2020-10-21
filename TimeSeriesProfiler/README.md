@@ -5,25 +5,29 @@
    for a metric from mqtt-publisher to TimeSeriesProfiler (mqtt-publisher->telegraf->influx->kapacitor->influx->influxdbconnector->
    TimeSeriesProfiler)
 
-## Installing TimeSeriesProfiler requirements
 
-1. To set environment variables run the below commands.
+## EIS pre-requisites
 
+1. TimeSeriesProfiler expects a set of config, interfaces & public private keys to be present in ETCD as a pre-requisite.
+    To achieve this, please ensure an entry for TimeSeriesProfiler with its relative path from [IEdgeInsights](../../) directory is set in the time-series.yml file present in [build](../../build) directory. An example has been provided below:
     ```sh
-        cd tools/TimeSeriesProfiler
-        set -a
-        source ../../build/.env
-        set +a
+        AppName:
+        - Grafana
+        - InfluxDBConnector
+        - Kapacitor
+        - Telegraf
+        - tools/TimeSeriesProfiler
     ```
-2. To build the TimeSeriesProfiler run the below commands.
 
+2. With the above pre-requisite done, please run the below command:
     ```sh
-        docker-compose build
+        python3 eis_builder.py -f ./time-series.yml
     ```
+
 
 ## Running TimeSeriesProfiler
 
-1. Pre-requisite : EIS time-series recipe/stack should be running prior to start of this tool
+1. Pre-requisite :
 
    Kapacitor service should run profiler_udf.go, configuration required to run the profiler udf
 
@@ -64,43 +68,11 @@
     > **NOTE**: This step is required everytime publisher is restarted in IPC mode.
     > Caution: This step will make the streams insecure. Please do not do it on a production machine.
 
-5. If using TimeSeriesProfiler in PROD mode, make sure to set required permissions to certificates.
+5. Refer [provision/README.md](../../README.md) to provision, build and run the tool along with the EIS time-series recipe/stack.
+
+6. Run the following command to see the logs:
 
     ```sh
-        sudo chmod -R 755 ../../build/provision/Certificates/ca
-        sudo chmod -R 755 ../../build/provision/Certificates/root
+        docker logs -f ia_timeseries_profiler
     ```
-    Note : This step is required everytime provisioning is done. 
-    Caution: This step will make the certs insecure. Please do not do it on a production machine.
 
-6. Run the below command to start the TimeSeriesProfiler.
-
-    ```sh
-        docker-compose up
-    ```
- ## ADDITIONAL STEP TO RUN TimeSeriesProfiler IN DEV MODE
- 1. Open [.env](../../build/.env)
- 2. Set the DEV_MODE variable as "true".
- ```
-    DEV_MODE=false
- ```
-to
- ```
-    DEV_MODE=true
- ```
-3. Comment the following lines in the [docker-compose.yml](docker-compose.yml)
-```
-    secrets:
-      - ca_etcd
-      - etcd_root_cert
-      - etcd_root_key
-
-```
-to
-```
-#    secrets:
-#      - ca_etcd
-#      - etcd_root_cert
-#      - etcd_root_key
-
-```
