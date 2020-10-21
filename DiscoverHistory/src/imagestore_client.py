@@ -129,16 +129,17 @@ def draw_defects(elm, frame, dir_name):
 
 
 # Argument parsing
-def retrieve_image_frames(eis_config, query_config, img_handle_queue):
+def retrieve_image_frames(ctx, query, img_handle_queue):
     msgbus = None
     service = None
     dir_name = "/output/"
     try:
-        msgbus = mb.MsgbusContext(eis_config)
-
+        client_ctx = ctx.get_client_by_name("ImageStore")
+        config = client_ctx.get_msgbus_config()
+        interface_value = client_ctx.get_interface_value("Name")
+        msgbus = mb.MsgbusContext(config)
         logger.info(f'Initializing service for topic \'imagestore_service\'')
-        service = msgbus.get_service('ImageStore')
-
+        service = msgbus.get_service(interface_value)
         logger.info(f'Running...')
         while True:
             elm = img_handle_queue.get()
@@ -149,7 +150,10 @@ def retrieve_image_frames(eis_config, query_config, img_handle_queue):
             logger.info(f'Waiting for response')
             response = service.recv()
             output_dir = dir_name + "frames"
-            draw_defects(elm, response[1], output_dir)
+            if response[1] is not None:
+                draw_defects(elm, response[1], output_dir)
+            else:
+                logger.info("Image for {} is NULL".format(img_handle))
 
     except KeyboardInterrupt:
         logger.info(f'Quitting...')

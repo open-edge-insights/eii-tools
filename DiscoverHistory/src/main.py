@@ -28,72 +28,45 @@ import common
 import sys
 import os
 import logging
-from eis.config_manager import ConfigManager
+import cfgmgr.config_manager as cfg
 
 logger = logging.getLogger()
-dev_mode = os.environ["dev_Mode"]
 
-if dev_mode == "true":
-    fmt_str = ('%(asctime)s : %(levelname)s  : {} : %(name)s \
-                : [%(filename)s] :'.format("Insecure Mode") + '%(funcName)s \
-               : in line : [%(lineno)d] : %(message)s')
-else:
-    fmt_str = ('%(asctime)s : %(levelname)s : %(name)s : [%(filename)s] :' +
-               '%(funcName)s : in line : [%(lineno)d] : %(message)s')
-
-logging.basicConfig(format=fmt_str, level=logging.DEBUG)
 
 is_done = False
 
 
 def main():
     global is_done
-    with open('../config/eis_config.json', 'r') as f:
-        eis_config = json.load(f)
+    try:
+        ctx = cfg.ConfigMgr()
+        app_name = ctx.get_app_name()
+        dev_mode = ctx.is_dev_mode()
+        app_cfg = ctx.get_app_config()
+    except Exception as e:
+        logger.error("{}".format(e))
 
-    with open('../config/query_config.json', 'r') as f:
-        query_config = json.load(f)
+    if dev_mode == "true":
+        fmt_str = ('%(asctime)s : %(levelname)s  : {} : %(name)s \
+                    : [%(filename)s] :'.format("Insecure Mode") + '%(funcName)s \
+                   : in line : [%(lineno)d] : %(message)s')
+    else:
+        fmt_str = ('%(asctime)s : %(levelname)s : %(name)s : [%(filename)s] :' +
+                   '%(funcName)s : in line : [%(lineno)d] : %(message)s')
 
+    logging.basicConfig(format=fmt_str, level=logging.DEBUG)
+    query = app_cfg["query"]
     img_handle_queue = queue.Queue(maxsize=10000)
-    dev_Mode = os.environ["dev_Mode"]
-
-    if dev_Mode == "false":
-        conf = {
-            "certFile": "/run/secrets/etcd_root_cert",
-            "keyFile": "/run/secrets/etcd_root_key",
-            "trustFile": "/run/secrets/ca_etcd"
-            }
-
-        logger.info("config is: {}".format(conf))
-        cfg_mgr = ConfigManager()
-        config_client = cfg_mgr.get_config_client("etcd", conf)
-        if eis_config['type'] == 'zmq_tcp':
-            influxConfig = config_client.GetConfig(
-                "/Publickeys/InfluxDBConnector")
-            eis_config['InfluxDBConnector']['server_public_key'] = influxConfig
-            imageConfig = config_client.GetConfig("/Publickeys/ImageStore")
-            eis_config['ImageStore']['server_public_key'] = imageConfig
-            visualizerPublicKey = config_client.GetConfig(
-                "/Publickeys/Visualizer")
-            eis_config['InfluxDBConnector']['client_public_key'] = \
-                visualizerPublicKey
-            eis_config['ImageStore']['client_public_key'] = visualizerPublicKey
-            visualizerPrivateKey = config_client.GetConfig(
-                "/Visualizer/private_key")
-            eis_config['InfluxDBConnector']['client_secret_key'] = \
-                visualizerPrivateKey
-            eis_config['ImageStore']['client_secret_key'] = \
-                visualizerPrivateKey
 
     # This thread will retriueve the image from imagestore service
     # and will store into frames directory
     img_rt_thread = threading.Thread(
         target=imagestore_client.retrieve_image_frames,
-        args=(eis_config, query_config, img_handle_queue))
+        args=(ctx, query, img_handle_queue))
     img_rt_thread.daemon = True
     img_rt_thread.start()
 
-    retrieve_measurement_data(eis_config, query_config, img_handle_queue)
+    retrieve_measurement_data(ctx, query, img_handle_queue)
 
     while True:
         if img_handle_queue.empty() and is_done:
@@ -103,10 +76,10 @@ def main():
             time.sleep(5)
 
 
-def retrieve_measurement_data(eis_config, query_config, img_handle_queue):
+def retrieve_measurement_data(ctx, query, img_handle_queue):
     global is_done
     influxdbconnector_client.query_influxdb(
-        eis_config, query_config, img_handle_queue)
+        ctx, query, img_handle_queue)
     is_done = True
 
 

@@ -2,46 +2,37 @@ README FOR DISCOVER HISTORY TOOL
 
 # CONTENTS #
 
-1. CONFIG FILES
-2. PYTHON FILES
-3. PROCEDURE TO RUN DISCOVERY TOOL
-
-
-# CONFIG FILES #
-
-1. [eis_config.json](config/eis_config.json)
-
-    Details of "imagestore_service" and "influxconnector_service" have been configured here.
-
-2. [query_config.json](config/query_config.json)
-  
-    Details of Output Directory and User Query are provided here.
-
-    NOTE: The user can provide any select query of choice.
-
+1. PROCEDURE TO RUN DISCOVERY TOOL
 
 # PROCEDURE TO RUN DISCOVERY TOOL (DEFAULT: PROD MODE) #
 
- 1. Open "query_config.json"
- 2. Provide the required query to be passed on to InfluxDB.
- 3. Open [.env](DiscoverHistory/.env)
- 4. Set the output directory variable at "SAVE_PATH".
- 5. Check imagestore and influxdbconnector services are running.
- 6. To set environment variables run the below commands.
-
+ 1. DiscoverHistory expects a set of config, interfaces & public private keys to be present in ETCD as a pre-requisite.
+    To achieve this, please ensure an entry for DiscoverHistory with its relative path from [IEdgeInsights](../../) directory is set in in the video-streaming.yml file present in [build](../../build) directory. An example has been provided below:
     ```sh
-        set -a
-        source ../../build/.env
-        set +a
+        AppName:
+        - VideoIngestion
+        - VideoAnalytics
+        - Visualizer
+        - WebVisualizer
+        - tools/DiscoverHistory
+        - ImageStore
+        - InfluxDBConnector
     ```
- 7. Use "docker-compose build" to build tool image.
- 8. Use "docker-compose up" to run the tool.
+ 2. Add "DiscoverHistory" in "AllowedClients" list of "Servers" interface in config.json file of ImageStore and InfluxDBConnector directory.
+
+ 3. Open "config.json"
+ 4. Provide the required query to be passed on to InfluxDB.
+ 5. With the above pre-requisite done, please run the below to command:
+    ```sh
+        python3 eis_builder.py -f ./video-streaming.yml
+    ```
+ 6. Refer [provision/README.md](../../README.md) to provision, build and run the tool along with the EIS video-streaming recipe/stack.
+ 7. Set the output directory variable at "SAVE_PATH"=/tmp/eis_history in file [build/.env](../../build/.env).
+ 8. Check imagestore and influxdbconnector services are running.
  9. In the provided "SAVE_PATH", you will find data & frames directory.
     (Note: if img_handle is part of select statement , then only frames
     directory will be created)
-10. If the user changes the query in "query_config.json" then no need to run build command, just execute the up command.
-11. In case of PROD mode, please make sure to uncomment the below line, for a section ia_imagestore  in file [build/docker-compose.yml](../../build/docker-compose.yml).
-    '# Clients: "Visualizer"'
+ 10. Use ETCDUI to change the query in configuration.
 
  ## ADDITIONAL STEP TO RUN DISCOVERY TOOL IN DEV MODE
  1. Open [.env](../../build/.env)
@@ -53,22 +44,7 @@ to
  ```
     DEV_MODE=true
  ```
-3. Comment the following lines in the [docker-compose.yml](DiscoverHistory/docker-compose.yml)
-```
-    secrets:
-      - ca_etcd
-      - etcd_root_cert
-      - etcd_root_key
 
-```
-to
-```
-#    secrets:
-#      - ca_etcd
-#      - etcd_root_cert
-#      - etcd_root_key
-
-```
 ### NOTE:Building the base images like ia_common, ia_eisbase are must in cases if this tool isn't run on the same node where EIS is running.
 ### Please ensure that the base images i.e. ia_common and ia_eisbase are present on the node where this tool is run.
 
@@ -86,13 +62,15 @@ to
     This query will return all the records from the current time, going back upto last 1 hour.
 
 ## TO RUN THE TOOL IN zmq_ipc MODE
-Please make sure to change the content of [eis_config.json](DiscoverHistory/config/eis_config.json) 
+Please make sure to change the content of [config.json](DiscoverHistory/config/eis_config.json) 
 
 to
 ```
     {
         "type": "zmq_ipc",
-        "socket_dir": "/EIS/sockets/"
+        "EndPoint": {
+            "SocketDir": "/EIS/sockets/"
+        }
     }
 ```
 

@@ -21,38 +21,43 @@
 version: '3.6'
 
 services:
-
-  # Define DiscoverHistory service
+  ## Define Discover History service
   ia_discover_history:
+    depends_on:
+      - ia_influxdbconnector
+      - ia_imagestore
+
     build:
-      context: .
-      dockerfile: $PWD/Dockerfile
+      context: $PWD/../tools/DiscoverHistory
+      dockerfile: $PWD/../tools/DiscoverHistory/Dockerfile
       args:
-          EIS_VERSION: ${EIS_VERSION}
-          DOCKER_REGISTRY: ${DOCKER_REGISTRY}
-    image: ia_discover_history:${EIS_VERSION}
+        EIS_VERSION: ${EIS_VERSION}
+        EIS_UID: ${EIS_UID}
+        DOCKER_REGISTRY: ${DOCKER_REGISTRY}
     container_name: ia_discover_history
     hostname: ia_discover_history
     network_mode: host
+    image: ${DOCKER_REGISTRY}ia_discover_history:${EIS_VERSION}
+    ipc: "none"
     environment:
-      dev_Mode: ${DEV_MODE}
-      no_proxy: ${NO_PROXY},${eis_no_proxy},${ETCD_HOST}
+      AppName: "DiscoverHistory"
+      CertType: "zmq"
+      DEV_MODE: ${DEV_MODE}
+      no_proxy: ${eis_no_proxy},${ETCD_HOST}
+      NO_PROXY: ${eis_no_proxy},${ETCD_HOST}
       ETCD_HOST: ${ETCD_HOST}
       ETCD_PREFIX: ${ETCD_PREFIX}
     volumes:
-      - "${SAVE_PATH}:/output/"
-      - "./config:/EIS/DiscoverHistory/config"
+      - "${SAVE_PATH}:/output"
       - "${EIS_INSTALL_PATH}/sockets:${SOCKET_DIR}"
-    #comment secrets while running in DEV mode (DEV_MODE=true).
     secrets:
       - ca_etcd
-      - etcd_root_cert
-      - etcd_root_key
+      - etcd_DiscoverHistory_cert
+      - etcd_DiscoverHistory_key
+
 
 secrets:
-  ca_etcd:
-    file: ../../build/provision/Certificates/ca/ca_certificate.pem
-  etcd_root_cert:
-    file: ../../build/provision/Certificates/root/root_client_certificate.pem
-  etcd_root_key:
-    file: ../../build/provision/Certificates/root/root_client_key.pem
+  etcd_DiscoverHistory_cert:
+    file: provision/Certificates/DiscoverHistory/DiscoverHistory_client_certificate.pem
+  etcd_DiscoverHistory_key:
+    file: provision/Certificates/DiscoverHistory/DiscoverHistory_client_key.pem

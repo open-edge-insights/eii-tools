@@ -1,3 +1,0 @@
-{
-  "query": "select * from camera1_stream_results where time>=now()-1h limit 10"
-}

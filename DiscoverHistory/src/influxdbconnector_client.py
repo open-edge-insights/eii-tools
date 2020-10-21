@@ -39,14 +39,17 @@ service = None
 logger = logging.getLogger()
 
 
-def query_influxdb(eis_config, query_config, img_handle_queue):
+def query_influxdb(ctx, query, img_handle_queue):
     try:
         logger.info(f'Initializing message bus context')
-        msgbus = mb.MsgbusContext(eis_config)
+        client_ctx = ctx.get_client_by_name("InfluxDBConnector")
+        config = client_ctx.get_msgbus_config()
+        interface_value = client_ctx.get_interface_value("Name")
+        msgbus = mb.MsgbusContext(config)
         logger.info(
             'Initializing service for topic \'{"influxconnector_service"}\'')
-        service = msgbus.get_service("InfluxDBConnector")
-        request = {'command': query_config["query"]}
+        service = msgbus.get_service(interface_value)
+        request = {'command': query}
         logger.info(f'Running...')
         logger.info(f'Sending request {request}')
         service.request(request)
