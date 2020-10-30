@@ -1,0 +1,39 @@
+version: '3.6'
+
+services:
+
+  emb_publisher:
+    depends_on:
+      - ia_eisbase
+      - ia_common
+      - ia_eis_zmq_broker
+    build:
+      context: $PWD/../tools/EmbPublisher
+      dockerfile: $PWD/../tools/EmbPublisher/Dockerfile
+      args:
+        EIS_VERSION: ${EIS_VERSION}
+        DOCKER_REGISTRY: ${DOCKER_REGISTRY}
+    image: ${DOCKER_REGISTRY}emb_publisher:${EIS_VERSION}
+    container_name: emb_publisher
+    hostname: emb_publisher
+    network_mode: host
+    user: ${EIS_UID}
+    environment:
+      AppName: "EmbPublisher"
+      DEV_MODE: ${DEV_MODE}
+      no_proxy: ${eis_no_proxy},${ETCD_HOST}
+      ETCD_HOST: ${ETCD_HOST}
+      ETCD_PREFIX: ${ETCD_PREFIX}
+      CertType: "zmq"
+    volumes:
+      - "vol_eis_socket:${SOCKET_DIR}"
+    secrets:
+      - ca_etcd
+      - etcd_EmbPublisher_cert
+      - etcd_EmbPublisher_key
+
+secrets:
+  etcd_EmbPublisher_cert:
+    file: provision/Certificates/EmbPublisher/EmbPublisher_client_certificate.pem
+  etcd_EmbPublisher_key:
+    file: provision/Certificates/EmbPublisher/EmbPublisher_client_key.pem
