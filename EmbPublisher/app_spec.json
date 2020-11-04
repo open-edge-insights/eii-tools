@@ -1,0 +1,35 @@
+{
+    "Module" : {
+        "Name": "EmbPublisher",
+        "Description": "EmbPublisher module manifest",
+        "SchemaVersion": "0.2",
+        "ManifestFile": "${idx:embpublisher:$EIS_VERSION}",
+        "RunAsUser": "$EIS_UID",
+        "RunAsGroup": "$EIS_UID",
+        "Resources": {
+            "CPU": 100,
+            "MemoryMB": 100
+        },
+        "ExecutionEnv": {
+            "AppName": "EmbPublisher",
+            "ETCD_ENDPOINT": "${datastore.endpoint}",
+            "CONFIGMGR_CACERT": "${databucket.cacert}",
+            "CONFIGMGR_CERT": "${databucket.cert}",
+            "CONFIGMGR_KEY": "${databucket.key}",
+            "ETCD_PREFIX": "$ETCD_PREFIX",
+            "DEV_MODE": "$DEV_MODE",
+            "PROFILING_MODE": "false",
+            "PUBLISHER_TestPub_ENDPOINT" : "${ep.pubData.remoteaddress}:${ep.pubData.remoteport}",
+            "PUBLISHER_TestPub_TYPE" : "zmq_tcp"
+        },
+        "Endpoints": [
+            {
+                "Name": "pubData",
+                "Endtype": "client",
+                "Protocol": "TCP",
+                "DataType": "messages",
+                "Link": "brokerSubin"
+            }
+        ]
+    }
+}
