@@ -41,7 +41,7 @@ Before executing the tool make sure following steps are executed:-
 2. Install the dependencies:
 
     ```sh
-    $ pip install -r requirements.txt file
+    $ pip3 install -r requirements.txt 
     ```
 
 ### Usage of GigEConfig tool:
@@ -116,19 +116,25 @@ The tool can be executed in following manner :-
     b. In case only pipeline needs to be printed.
 
     ```sh
-    python3 GigEConfig.py --pfs_file <path to pylon's pfs file>
+    $ python3 GigEConfig.py --pfs_file <path to pylon's pfs file>
     ```
 
     For PROD Mode
+   
+    Before running in PROD mode please change the permissions of the certificates i.e :-
+
+    ```sh
+    $sudo chmod 755 -R [WORDK_DIR]/IEdgeInsights/build/provision/Certificates  
+    ```
 
     a. In case etcd configuration needs to be updated.
 
     ```sh
-    python3 GigEConfig.py -f <path to pylon's pfs file> -c [WORK_DIR]/IEdgeInsights/build/provision/Certificates/ca/ca_certificate.pem -r_k [WORK_DIR]/IEdgeInsights/build/provision/Certificates/root/root_client_key.pem -r_c [WORK_DIR]IEdgeInsights/build/provision/Certificates/root/root_client_certificate.pem -e
+    $ python3 GigEConfig.py -f <path to pylon's pfs file> -c [WORK_DIR]/IEdgeInsights/build/provision/Certificates/ca/ca_certificate.pem -r_k [WORK_DIR]/IEdgeInsights/build/provision/Certificates/root/root_client_key.pem -r_c [WORK_DIR]IEdgeInsights/build/provision/Certificates/root/root_client_certificate.pem -e
     ```
 
     b. In case only pipeline needs to be printed.
 
    ```sh
-    python3 GigEConfig.py -f <path to pylon's pfs file> -c [WORK_DIR]/IEdgeInsights/build/provision/Certificates/ca/ca_certificate.pem -r_k [WORK_DIR]/IEdgeInsights/build/provision/Certificates/root/root_client_key.pem -r_c [WORK_DIR]/IEdgeInsights/build/provision/Certificates/root/root_client_certificate.pem
+    $ python3 GigEConfig.py -f <path to pylon's pfs file> -c [WORK_DIR]/IEdgeInsights/build/provision/Certificates/ca/ca_certificate.pem -r_k [WORK_DIR]/IEdgeInsights/build/provision/Certificates/root/root_client_key.pem -r_c [WORK_DIR]/IEdgeInsights/build/provision/Certificates/root/root_client_certificate.pem
    ```
