@@ -87,7 +87,13 @@ func main() {
 		fmt.Printf("-- message size is: %v\n", len(buffer))
 	}
 
-	for _, tpName := range pubctx.GetTopics() {
+	topics, err := pubctx.GetTopics()
+	if err != nil {
+		fmt.Printf("Error: %v to GetTopics", err)
+		return
+	}
+
+	for _, tpName := range topics {
 		wg.Add(1)
 		go publisher_function(config, tpName, buffer, intval, itr)
 	}
