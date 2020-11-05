@@ -171,44 +171,44 @@ class VideoProfiler:
                 per_frame_stats[temp + "_diff"] = metadata[temp+"_exit"] -\
                     metadata[temp+"_entry"]
 
-        if 'VideoAnalytics_subscriber_ts' in metadata:
+        if analytics_appname + '_subscriber_ts' in metadata:
             # VI-VA enabled scenario
             per_frame_stats['VI_to_VA_and_zmq_wait_diff'] = \
-                metadata['VideoAnalytics_subscriber_ts'] -\
-                metadata['VideoIngestion_publisher_ts']
+                metadata[analytics_appname + '_subscriber_ts'] -\
+                metadata[ingestion_appname +  '_publisher_ts']
             per_frame_stats['VA_to_profiler_and_zmq_wait_diff'] = \
                 metadata['ts_vp_sub'] -\
-                metadata['VideoAnalytics_publisher_ts']
+                metadata[analytics_appname + '_publisher_ts']
         else:
             # Only VI scenario
             per_frame_stats['VI_profiler_transfer_time_diff'] = \
                 metadata['ts_vp_sub'] -\
-                metadata['VideoIngestion_publisher_ts']
-        if ('VideoAnalytics_first' in key for key in metadata) and\
-           ('VideoIngestion_first' in key for key in metadata):
+                metadata[ingestion_appname + '_publisher_ts']
+        if (analytics_appname + '_first' in key for key in metadata) and\
+           (ingestion_appname + '_first' in key for key in metadata):
             va_temp = None
             vi_temp = None
             for key in metadata:
-                if 'VideoAnalytics_first' in key:
-                    va_temp = key.split("VideoAnalytics_first")[0]
-                if 'VideoIngestion_first' in key:
-                    vi_temp = key.split("VideoIngestion_first")[0]
+                if analytics_appname + '_first' in key:
+                    va_temp = key.split(analytics_appname + "_first")[0]
+                if ingestion_appname + '_first' in key:
+                    vi_temp = key.split(ingestion_appname + "_first")[0]
                 if va_temp is not None and vi_temp is not None:
                     break
             if vi_temp is not None:
                 per_frame_stats['VI_UDF_input_queue_time_spent_diff'] =\
-                    metadata[vi_temp+'VideoIngestion_first_entry'] -\
+                    metadata[vi_temp + ingestion_appname + '_first_entry'] -\
                     metadata['ts_filterQ_exit']
-            if 'VideoAnalytics_subscriber_blocked_ts' in metadata and\
+            if analytics_appname + '_subscriber_blocked_ts' in metadata and\
                va_temp is not None:
                 per_frame_stats['VA_UDF_input_queue_time_spent_diff'] =\
-                    metadata[va_temp+'VideoAnalytics_first_entry'] -\
-                    metadata['VideoAnalytics_subscriber_blocked_ts']
-            elif 'VideoAnalytics_subscriber_ts' in metadata and\
+                    metadata[va_temp + analytics_appname + '_first_entry'] -\
+                    metadata[analytics_appname + '_subscriber_blocked_ts']
+            elif analytics_appname + '_subscriber_ts' in metadata and\
                  va_temp is not None:
                 per_frame_stats['VA_UDF_input_queue_time_spent_diff'] =\
-                    metadata[va_temp+'VideoAnalytics_first_entry'] -\
-                    metadata['VideoAnalytics_subscriber_ts']
+                    metadata[va_temp + analytics_appname + '_first_entry'] -\
+                    metadata[analytics_appname + '_subscriber_ts']
 
         return per_frame_stats
 
@@ -395,6 +395,10 @@ if __name__ == "__main__":
     # Setting required config variables
     export_to_csv = config_dict['export_to_csv']
     total_frames = config_dict['total_number_of_frames']
+
+    # Setting monitor mode varables
+    ingestion_appname = config_dict['monitor_mode_settings']['ingestion_appname']
+    analytics_appname = config_dict['monitor_mode_settings']['analytics_appname']
 
     gc_thread = threading.Thread(target=invoke_gc)
     gc_thread.start()

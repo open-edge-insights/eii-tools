@@ -39,7 +39,27 @@ module.
     Enabled by setting the 'mode' key in [config](./config.json) to 'monitor', this mode calculates average & per frame stats
     for every frame while identifying if the frame was blocked at any queue of any module across the video pipeline thereby
     determining the fastest/slowest components in the pipeline.
-    To be performant in profiling scenarios, VideoProfiler is enabled to work when subscribing only to a single topic in monitor mode. User must also ensure only **VideoIngestion** & **VideoAnalytics** are used as **AppNames** in their respective **docker-compose.yml** files.
+    To be performant in profiling scenarios, VideoProfiler is enabled to work when subscribing only to a single topic in monitor mode.
+
+    User must ensure that `ingestion_appname` and `analytics_appname` fields of the `monitor_mode_settings` need to be set accordingly for monitor mode.
+
+    Refer the below exmaple config where VideoProfiler is used in monitor mode to subscribe PySafetyGearAnalytics CustomUDF results.
+
+    ```javascript
+        "config": {
+        "mode": "monitor",
+        "monitor_mode_settings": {
+                                    "ingestion_appname": "PySafetyGearIngestion",
+                                    "analytics_appname": "PySafetyGearAnalytics",
+                                    "display_metadata": false,
+                                    "per_frame_stats":false,
+                                    "avg_stats": true
+                                },
+        "total_number_of_frames" : 5,
+        "export_to_csv" : false
+    }
+    ```
+
     ```sh
         "mode": "monitor"
     ```
