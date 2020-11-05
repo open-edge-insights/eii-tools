@@ -129,8 +129,7 @@ USAGE 5: Selectively send SNAPSHOT software trigger:
 # 2. Provide permission to the necessary certs as follows
 
 ```sh
-    sudo chmod -R 755 <EIS-working-directory>/IEdgeInsights/build/provision/Certificates/ca
-    sudo chmod -R 755 <EIS-working-directory>/IEdgeInsights/build/provision/Certificates/SWTriggerUtility
+    sudo chmod -R 755 <EIS-working-directory>/IEdgeInsights/build/provision/Certificates
 ```
 
 # 3. Make the field `DEV_MODE=FALSE` in env.sh of tools/SWTriggerUtility

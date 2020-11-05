@@ -101,14 +101,36 @@ module.
     ```sh
         sudo chmod -R 777 /opt/intel/eis/sockets
     ```
-    Note: This step is required everytime publisher is restarted in IPC mode.
-    Caution: This step will make the streams insecure. Please do not do it on a production machine.
+    **Note:**
+
+    *  This step is required everytime publisher is restarted in IPC mode.
+
+       Caution: This step will make the streams insecure. Please do not do it on a production machine.
+
+    * Since VideoProfiler is a baremetal tool please ensure that the socket directory path of the host system i.e. `/opt/intel/eis/sockets` is provided as the EndPoint for VideoProfiler interface with IPC mode.
+
+    * Refer the below VideoProfiler interface example to subscribe to GVASafetyGearIngestion CutomUDF results in fps mode.
+
+      ```javascript
+        "/VideoProfiler/interfaces": {
+            "Subscribers": [
+                {
+                    "EndPoint": "/opt/intel/eis/sockets",
+                    "Name": "default",
+                    "PublisherAppName": "GVASafetyGearIngestion",
+                    "Topics": [
+                        "gva_safety_gear_stream_results"
+                    ],
+                    "Type": "zmq_ipc"
+                }
+            ]
+        },
+      ```
 
 5. If using Video Profiler in PROD mode, make sure to set required permissions to certificates.
 
     ```sh
-        sudo chmod -R 755 ../../build/provision/Certificates/VideoProfiler
-        sudo chmod -R 755 ../../build/provision/Certificates/ca
+        sudo chmod -R 755 ../../build/provision/Certificates
     ```
     Note : This step is required everytime provisioning is done.
     Caution: This step will make the certs insecure. Please do not do it on a production machine.
