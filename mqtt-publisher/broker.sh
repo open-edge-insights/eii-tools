@@ -20,4 +20,4 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-docker run --rm -d -p 1883:1883 --name mosquitto trafex/alpine-mosquitto
+docker run --rm -d -p $1:$1 --name mosquitto_$1 trafex/alpine-mosquitto

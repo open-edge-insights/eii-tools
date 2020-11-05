@@ -55,6 +55,8 @@ function helpFunction {
     echo >&2
     echo "  --interval  MQTT publication interval" >&2
     echo >&2
+    echo "  --streams  Number of MQTT streams. This should correspond to the number of brokers launched." >&2
+    echo >&2
     exit 1
 }
 

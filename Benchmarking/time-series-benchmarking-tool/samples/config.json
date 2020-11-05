@@ -1,0 +1,13 @@
+{
+    "influxdb": {
+        "username": "admin",
+        "password": "admin123"
+    },
+    "udfs": {
+        "type": "go",
+	"name": "profiling_udf",
+	"tick_script": "profiling_udf.tick",
+	"task_name": "profiling_udf"
+    }
+
+}

@@ -1,0 +1,4 @@
+AppName:
+- InfluxDBConnector
+- Kapacitor
+- Telegraf
