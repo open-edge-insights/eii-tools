@@ -134,7 +134,7 @@ def retrieve_image_frames(ctx, query, img_handle_queue):
     service = None
     dir_name = "/output/"
     try:
-        client_ctx = ctx.get_client_by_name("ImageStore")
+        client_ctx = ctx.get_client_by_index(1)
         config = client_ctx.get_msgbus_config()
         interface_value = client_ctx.get_interface_value("Name")
         msgbus = mb.MsgbusContext(config)

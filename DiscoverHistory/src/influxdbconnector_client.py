@@ -42,7 +42,7 @@ logger = logging.getLogger()
 def query_influxdb(ctx, query, img_handle_queue):
     try:
         logger.info(f'Initializing message bus context')
-        client_ctx = ctx.get_client_by_name("InfluxDBConnector")
+        client_ctx = ctx.get_client_by_index(0)
         config = client_ctx.get_msgbus_config()
         interface_value = client_ctx.get_interface_value("Name")
         msgbus = mb.MsgbusContext(config)
