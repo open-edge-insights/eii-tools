@@ -6,8 +6,13 @@ Simple Python temperature sensor simulator.
 
 1. Run the broker (Use `docker ps` to see if the broker has started successfully as the container starts in detached mode)
     ```sh
-    $ ./broker.sh
+    $ ./broker.sh <port>
     ```
+    **NOTE:** To run the broker for EIS TimeSeries Analytics usecase:
+    ```sh
+    $ ./broker.sh 1883
+    ```
+
 2. Build and run the MQTT publisher docker container
    * For EIS TimeSeries Analytics usecase, 
     To publish temperature data to default topic:
