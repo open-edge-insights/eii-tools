@@ -52,49 +52,6 @@ SWTriggerUtility expects a set of config, interfaces & public private keys to be
        $ docker-compose up -d
    ```
 
-## Usage of Software Trigger Utility:
-
-Software trigger utility can be used in following ways:
-
-**NOTE**: Passing config file as a command line argument is optional.
-
-USAGE 1: "START INGESTION" -> "ALLOW INGESTION FOR DEFAULT TIME (120 seconds being default)" -> "STOP INGESTION"
-```sh
-    "./sw_trigger_utility" or "./sw_trigger_utility ../config/config.json"
-```
-Note: The num_of_cycles is configurable through config.json file.
-
-USAGE 2: "START INGESTION" -> "ALLOW INGESTION FOR USER DEFINED TIME (configurable time in seconds)" -> "STOP INGESTION"
-```sh
-    "./sw_trigger_utility 300" or "./sw_trigger_utility 300 ../config/config.json"
-```
-Note: In the above example, VideoIngestion starts then does ingestion for 300 seconds then stops ingestion after 300 seconds & cycle repeqats for number of cycles configured in the config.json.
-
-
-USAGE 3: Selectively send START_INGESTION software trigger:
-```sh
-    "./sw_trigger_utility START_INGESTION" or "./sw_trigger_utility START_INGESTION ../config/config.json"
-
-```
-
-USAGE 4: Selectively send STOP_INGESTION software trigger:
-```sh
-    "./sw_trigger_utility STOP_INGESTION" or "./sw_trigger_utility STOP_INGESTION ../config/config.json"
-
-```
-
-USAGE 5: Selectively send SNAPSHOT software trigger:
-```sh
-    "./sw_trigger_utility SNAPSHOT" or "./sw_trigger_utility SNAPSHOT ../config/config.json"
-
-```
-
-> **Note**:  
-
-* If duplicate START_INGESTION or STOP_INGESTION sw_triggers are sent by client by mistake then the VI is capable  of catching these duplicates & responds back to client conveying that duplicate triggers were sent & requets to send proper sw_triggers. 
-
-* In order to send SNAPSHOT trigger, ensure that the ingestion is stopped. In case START_INGESTION trigger is sent previously then stop the ingestion using the STOP_INGESTION trigger.
-
 ## Configuration file:
 
 **config.json** is the configuration file used for sw_trigger_vi utility.
@@ -153,4 +110,47 @@ USAGE 5: Selectively send SNAPSHOT software trigger:
       $ cd <EIS-working-directory>/IEdgeInsights/tools/SWTriggerUtility
       $ source ./env.sh
   ```
+## Usage of Software Trigger Utility:
+
+Software trigger utility can be used in following ways:
+
+**NOTE**: Passing config file as a command line argument is optional.
+
+1: "START INGESTION" -> "Allows ingestion for default time (120 seconds being default)" -> "STOP INGESTION"
+```sh
+    "./sw_trigger_utility" or "./sw_trigger_utility ../config/config.json"
+```
+Note: The num_of_cycles is configurable through config.json file.
+
+2: "START INGESTION" -> "Allows ingestion for user defined time (configurable time in seconds)" -> "STOP INGESTION"
+```sh
+    "./sw_trigger_utility 300" or "./sw_trigger_utility 300 ../config/config.json"
+```
+Note: In the above example, VideoIngestion starts then does ingestion for 300 seconds then stops ingestion after 300 seconds & cycle repeqats for number of cycles configured in the config.json.
+
+
+3: Selectively send START_INGESTION software trigger:
+```sh
+    "./sw_trigger_utility START_INGESTION" or "./sw_trigger_utility START_INGESTION ../config/config.json"
+
+```
+
+4: Selectively send STOP_INGESTION software trigger:
+```sh
+    "./sw_trigger_utility STOP_INGESTION" or "./sw_trigger_utility STOP_INGESTION ../config/config.json"
+
+```
+
+5: Selectively send SNAPSHOT software trigger:
+```sh
+    "./sw_trigger_utility SNAPSHOT" or "./sw_trigger_utility SNAPSHOT ../config/config.json"
+
+```
+
+> **Note**:  
+
+* If duplicate START_INGESTION or STOP_INGESTION sw_triggers are sent by client by mistake then the VI is capable  of catching these duplicates & responds back to client conveying that duplicate triggers were sent & requets to send proper sw_triggers. 
+
+* In order to send SNAPSHOT trigger, ensure that the ingestion is stopped. In case START_INGESTION trigger is sent previously then stop the ingestion using the STOP_INGESTION trigger.
+
 
