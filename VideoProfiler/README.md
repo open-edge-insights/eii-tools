@@ -129,7 +129,7 @@ module.
 
     * Since VideoProfiler is a baremetal tool please ensure that the socket directory path of the host system i.e. `/opt/intel/eis/sockets` is provided as the EndPoint for VideoProfiler interface with IPC mode.
 
-    * Refer the below VideoProfiler interface example to subscribe to GVASafetyGearIngestion CutomUDF results in fps mode.
+    * Refer the below VideoProfiler interface example to subscribe to PyMultiClassificationIngestion CutomUDF results in fps mode.
 
       ```javascript
         "/VideoProfiler/interfaces": {
@@ -137,9 +137,9 @@ module.
                 {
                     "EndPoint": "/opt/intel/eis/sockets",
                     "Name": "default",
-                    "PublisherAppName": "GVASafetyGearIngestion",
+                    "PublisherAppName": "PyMultiClassificationIngestion",
                     "Topics": [
-                        "gva_safety_gear_stream_results"
+                        "py_multi_calssification_results_stream"
                     ],
                     "Type": "zmq_ipc"
                 }

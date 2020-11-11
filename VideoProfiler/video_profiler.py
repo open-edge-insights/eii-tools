@@ -398,7 +398,10 @@ if __name__ == "__main__":
 
     # Setting monitor mode varables
     ingestion_appname = config_dict['monitor_mode_settings']['ingestion_appname']
-    analytics_appname = config_dict['monitor_mode_settings']['analytics_appname']
+    if 'analytics_appname' in config_dict['monitor_mode_settings']:
+        analytics_appname = config_dict['monitor_mode_settings']['analytics_appname']
+    else:
+        analytics_appname = ""
 
     gc_thread = threading.Thread(target=invoke_gc)
     gc_thread.start()
