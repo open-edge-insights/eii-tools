@@ -110,11 +110,11 @@ module.
 
 ## Running Video Profiler
 
-1. Set environment variables accordingly in [config.json](config.json)
+1. Set environment variables accordingly in [config.json](config.json) & [env.sh](env.sh).
 
 2. Set the required output stream/streams and appropriate stream config in [config.json](config.json) file.
 
-3. VideoProfiler should be given an **AppName** which is present in the **Clients** list of the publisher services available in **SubTopics** of [config.json](config.json). This **AppName** has to be set in the [config.json](config.json). If VideoProfiler is subscribing to multiple streams, ensure the **AppName** of VideoProfiler is added in the Clients list of all the publishers.
+3. If VideoProfiler is subscribing to multiple streams, ensure the **AppName** of VideoProfiler is added in the Clients list of all the publishers.
 
 4. If using Video Profiler in IPC mode, make sure to set required permissions to socket file created in SOCKET_DIR in [build/.env](../../build/.env).
 
@@ -155,13 +155,15 @@ module.
     Note : This step is required everytime provisioning is done.
     Caution: This step will make the certs insecure. Please do not do it on a production machine.
 
-6. Run the below command to start the Video Profiler.
+6. If using VideoProfiler in DEV mode, please ensure you have commented out the variables defining the certs path and uncomment the variables initializing the certs path to empty strings in [env.sh](env.sh)
+
+7. Run the below command to start the Video Profiler.
 
     ```sh
         python3.6 video_profiler.py
     ```
 
-7. The runtime stats of Video Profiler if enabled with export_to_csv switch can be found at [video_profiler_runtime_stats](video_profiler_runtime_stats.csv)
+8. The runtime stats of Video Profiler if enabled with export_to_csv switch can be found at [video_profiler_runtime_stats](video_profiler_runtime_stats.csv)
 
   > **Note:**
   > * `poll_interval` option in the VideoIngestion [config](../../VideoIngestion/config.json) sets the delay(in seconds)
