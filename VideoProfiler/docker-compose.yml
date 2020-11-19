@@ -32,6 +32,8 @@ services:
       CertType: "zmq"
       CONTEXT: $PWD/../tools/VideoProfiler
       DEV_MODE: ${DEV_MODE}
+      ETCD_HOST: ${ETCD_HOST}
+      ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
       no_proxy: ${NO_PROXY},${eis_no_proxy},${ETCD_HOST}
       AppName: "VideoProfiler"
     secrets:
