@@ -7,7 +7,7 @@ README FOR DISCOVER HISTORY TOOL
 # PROCEDURE TO RUN DISCOVERY TOOL (DEFAULT: PROD MODE) #
 
  1. DiscoverHistory expects a set of config, interfaces & public private keys to be present in ETCD as a pre-requisite.
-    To achieve this, please ensure an entry for DiscoverHistory with its relative path from [IEdgeInsights](../../) directory is set in in the video-streaming.yml file present in [build](../../build) directory. An example has been provided below:
+    To achieve this, please ensure an entry for DiscoverHistory with its relative path from [IEdgeInsights](../../) directory is set in the video-streaming-storage.yml file present in [build](../../build) directory. An example has been provided below:
     ```sh
         AppName:
         - VideoIngestion
@@ -24,16 +24,18 @@ README FOR DISCOVER HISTORY TOOL
  4. Provide the required query to be passed on to InfluxDB.
  5. With the above pre-requisite done, please run the below to command:
     ```sh
-        python3 eis_builder.py -f ./video-streaming.yml
+        python3 eis_builder.py -f ./video-streaming-storage.yml
     ```
- 6. Refer [provision/README.md](../../README.md) to provision, build and run the tool along with the EIS video-streaming recipe/stack.
- 7. Set the output directory variable at "SAVE_PATH"=/tmp/eis_history in file [build/.env](../../build/.env).
+ 6. Set the output directory variable at SAVE_PATH=/tmp/eis_history in file [build/.env](../../build/.env).
+ 7. Refer [main EIS README.md](../../README.md) to provision, build and run the tool along with the EIS video-streaming-storage recipe/stack.
  8. Check imagestore and influxdbconnector services are running.
  9. In the provided "SAVE_PATH", you will find data & frames directory.
     (Note: if img_handle is part of select statement , then only frames
     directory will be created)
- 10. Use ETCDUI to change the query in configuration.
-
+ 10. Use ETCDUI to change the query in configuration. Please run below command to start container with new configuration:
+     ```sh
+        docker restart ia_discover_history
+     ```
  ## ADDITIONAL STEP TO RUN DISCOVERY TOOL IN DEV MODE
  1. Open [.env](../../build/.env)
  2. Set the DEV_MODE variable as "true".
