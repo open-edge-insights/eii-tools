@@ -28,7 +28,9 @@ import logging
 import time
 import datetime
 import threading
+import copy
 import gc
+import re
 import csv
 from distutils.util import strtobool
 # IMPORT the library to read from EIS
@@ -72,7 +74,7 @@ class VideoProfiler:
     """
 
     def __init__(self, msgbus_config, topics_list,
-                 config_dict):
+                 config_dict, appname_dict):
         """Constructor for VideoProfiler
 
         :param msgbus_config: msgbus config
@@ -81,6 +83,8 @@ class VideoProfiler:
         :type topics_list: list
         :param config_dict: VideoProfiler config
         :type config_dict: dict
+        :param appname_dict: dict of appnames for Monitor mode
+        :type appname_dict: dict
         """
         # Initializing dev_mode variable
         self.dev_mode = ctx.is_dev_mode()
@@ -100,6 +104,8 @@ class VideoProfiler:
             self.monitor_mode_settings = config_dict['monitor_mode_settings']
             logger.info('Please ensure EIS containers are '
                         'running with PROFILING_MODE set to true')
+            self.ingestion_appname = appname_dict["ingestion_appname"]
+            self.analytics_appname = appname_dict["analytics_appname"]
         if config_dict['total_number_of_frames'] is (-1):
             # Set total number of frames to infinity
             self.total_frames = float('inf')
@@ -171,44 +177,44 @@ class VideoProfiler:
                 per_frame_stats[temp + "_diff"] = metadata[temp+"_exit"] -\
                     metadata[temp+"_entry"]
 
-        if analytics_appname + '_subscriber_ts' in metadata:
+        if self.analytics_appname + '_subscriber_ts' in metadata:
             # VI-VA enabled scenario
             per_frame_stats['VI_to_VA_and_zmq_wait_diff'] = \
-                metadata[analytics_appname + '_subscriber_ts'] -\
-                metadata[ingestion_appname +  '_publisher_ts']
+                metadata[self.analytics_appname + '_subscriber_ts'] -\
+                metadata[self.ingestion_appname +  '_publisher_ts']
             per_frame_stats['VA_to_profiler_and_zmq_wait_diff'] = \
                 metadata['ts_vp_sub'] -\
-                metadata[analytics_appname + '_publisher_ts']
+                metadata[self.analytics_appname + '_publisher_ts']
         else:
             # Only VI scenario
             per_frame_stats['VI_profiler_transfer_time_diff'] = \
                 metadata['ts_vp_sub'] -\
-                metadata[ingestion_appname + '_publisher_ts']
-        if (analytics_appname + '_first' in key for key in metadata) and\
-           (ingestion_appname + '_first' in key for key in metadata):
+                metadata[self.ingestion_appname + '_publisher_ts']
+        if (self.analytics_appname + '_first' in key for key in metadata) and\
+           (self.ingestion_appname + '_first' in key for key in metadata):
             va_temp = None
             vi_temp = None
             for key in metadata:
-                if analytics_appname + '_first' in key:
-                    va_temp = key.split(analytics_appname + "_first")[0]
-                if ingestion_appname + '_first' in key:
-                    vi_temp = key.split(ingestion_appname + "_first")[0]
+                if self.analytics_appname + '_first' in key:
+                    va_temp = key.split(self.analytics_appname + "_first")[0]
+                if self.ingestion_appname + '_first' in key:
+                    vi_temp = key.split(self.ingestion_appname + "_first")[0]
                 if va_temp is not None and vi_temp is not None:
                     break
             if vi_temp is not None:
                 per_frame_stats['VI_UDF_input_queue_time_spent_diff'] =\
-                    metadata[vi_temp + ingestion_appname + '_first_entry'] -\
+                    metadata[vi_temp + self.ingestion_appname + '_first_entry'] -\
                     metadata['ts_filterQ_exit']
-            if analytics_appname + '_subscriber_blocked_ts' in metadata and\
+            if self.analytics_appname + '_subscriber_blocked_ts' in metadata and\
                va_temp is not None:
                 per_frame_stats['VA_UDF_input_queue_time_spent_diff'] =\
-                    metadata[va_temp + analytics_appname + '_first_entry'] -\
-                    metadata[analytics_appname + '_subscriber_blocked_ts']
-            elif analytics_appname + '_subscriber_ts' in metadata and\
+                    metadata[va_temp + self.analytics_appname + '_first_entry'] -\
+                    metadata[self.analytics_appname + '_subscriber_blocked_ts']
+            elif self.analytics_appname + '_subscriber_ts' in metadata and\
                  va_temp is not None:
                 per_frame_stats['VA_UDF_input_queue_time_spent_diff'] =\
-                    metadata[va_temp + analytics_appname + '_first_entry'] -\
-                    metadata[analytics_appname + '_subscriber_ts']
+                    metadata[va_temp + self.analytics_appname + '_first_entry'] -\
+                    metadata[self.analytics_appname + '_subscriber_ts']
 
         return per_frame_stats
 
@@ -310,13 +316,15 @@ class VideoProfiler:
                 logger.info(f'Per frame stats '
                             'in miliseconds: {per_frame_stats}')
             if self.monitor_mode_settings['avg_stats']:
-                logger.info(f'Frame avg stats in miliseconds: {avg_value}')
+                logger.info(f'Frame avg stats in milliseconds: {avg_value}')
 
         if self.export_to_csv:
             csv_file.close()
         if self.done_receiving:
             global monitor_mode_results
-            monitor_mode_results = avg_value
+            # Updating avg values of all streams
+            # after subscription is done
+            monitor_mode_results.update(avg_value)
 
     def calculate_fps(self):
         """ Method to calculate FPS of provided stream """
@@ -357,7 +365,7 @@ def invoke_gc():
         time.sleep(3)
 
 
-def thread_runner(msgbus_config, topics_list, config_dict):
+def thread_runner(msgbus_config, topics_list, config_dict, appname_dict):
     """Start VideoProfiler for every topic
 
     :param msgbus_config: config of subscriber element
@@ -366,9 +374,11 @@ def thread_runner(msgbus_config, topics_list, config_dict):
     :type topics_list: list
     :param config_dict: config required for Video Profiler
     :type config_dict: dict
+    :param appname_dict: dict of appnames for Monitor mode
+    :type appname_dict: dict
     """
     fps_app = VideoProfiler(msgbus_config, topics_list,
-                            config_dict)
+                            config_dict, appname_dict)
     fps_app.eisSubscriber()
 
 
@@ -397,11 +407,17 @@ if __name__ == "__main__":
     total_frames = config_dict['total_number_of_frames']
 
     # Setting monitor mode varables
-    ingestion_appname = config_dict['monitor_mode_settings']['ingestion_appname']
+    # AppName dict to store AppNames of publishers
+    appname_dict = {
+        "ingestion_appname": "",
+        "analytics_appname": ""
+    }
+    # Fetching ingestion_appname & analytics_appname from config
+    appname_dict["ingestion_appname"] = config_dict['monitor_mode_settings']['ingestion_appname']
     if 'analytics_appname' in config_dict['monitor_mode_settings']:
-        analytics_appname = config_dict['monitor_mode_settings']['analytics_appname']
+        appname_dict["analytics_appname"] = config_dict['monitor_mode_settings']['analytics_appname']
     else:
-        analytics_appname = ""
+        appname_dict["analytics_appname"] = ""
 
     gc_thread = threading.Thread(target=invoke_gc)
     gc_thread.start()
@@ -409,21 +425,39 @@ if __name__ == "__main__":
     # Fetching total number of subscribers
     num_of_elements = ctx.get_num_subscribers()
 
-    if(num_of_elements > 1 and config_dict['mode'] == 'monitor'):
-        logger.error('Please ensure you are subscribing for a '
-                     'single topic when running in monitor mode.')
-        os._exit(-1)
-
     # Calculating FPS for each element of Subscribers
     threads = []
     for index in range(0, num_of_elements):
         sub_ctx = ctx.get_subscriber_by_index(index)
+        # Fetching publisher_name to check for monitor mode
+        # multi instance scenarios
+        publisher_name = sub_ctx.get_interface_value("PublisherAppName")
+        # Copying appname dict to avoid over-writes when threads
+        # are running in parallel
+        appname_dict = copy.deepcopy(appname_dict)
+        # Change AppNames in case of multi instance scenario
+        if bool(re.search(r'\d', publisher_name)):
+            # For VI-VA scenario
+            if "Analytics" in publisher_name:
+                # Modify analytics_appname
+                appname_dict["analytics_appname"] = publisher_name
+                # Modify ingestion_appname
+                if bool(re.search(r'\d', appname_dict["ingestion_appname"])):
+                    appname_dict["ingestion_appname"] = re.sub(r'\d+', str(index+1),
+                                                         appname_dict["ingestion_appname"])
+                # For handling corner case of ingestion_appname first instance
+                else:
+                    appname_dict["ingestion_appname"] = appname_dict["ingestion_appname"] + str(index+1)
+            # For VI only scenario
+            elif "Ingestion" in publisher_name:
+                appname_dict["ingestion_appname"] = publisher_name
         msgbus_config = sub_ctx.get_msgbus_config()
         topics_list = sub_ctx.get_topics()
         thread = threading.Thread(target=thread_runner,
                                   args=(msgbus_config,
                                         topics_list,
-                                        config_dict, ))
+                                        config_dict,
+                                        appname_dict, ))
         threads.append(thread)
         thread.start()
     for thread in threads:
