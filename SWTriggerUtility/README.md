@@ -81,17 +81,20 @@ SWTriggerUtility expects a set of config, interfaces & public private keys to be
 
 ### Prod mode support :
 
-# 1. EIS services should be running in prod by setting `DEV_MODE=false` in [build/.env](../../build/.env)
+1. EIS services should be running in prod by setting `DEV_MODE=false` in [build/.env](../../build/.env)
 
-# 2. Provide permission to the necessary certs as follows
+2. If using SWTrigger Utility in PROD mode, make sure to set required permissions to certificates.
 
-```sh
-    sudo chmod -R 755 <EIS-working-directory>/IEdgeInsights/build/provision/Certificates
-```
+   ```sh
+       $ sudo chmod -R 755 <EIS-working-directory>/IEdgeInsights/build/provision/Certificates
+   ```
+    **Note:** This step is required everytime provisioning is done.
+    **Caution:** This step will make the certs insecure. Please do not do it on a production machine.
 
-# 3. Make the field `DEV_MODE=FALSE` in env.sh of tools/SWTriggerUtility
 
-# 4. Run the below step to source the env variable
+3. Make the field `DEV_MODE=FALSE` in env.sh of tools/SWTriggerUtility
+
+4. Run the below step to source the env variable
 
   ```sh
       $ cd <EIS-working-directory>/IEdgeInsights/tools/SWTriggerUtility
@@ -100,11 +103,11 @@ SWTriggerUtility expects a set of config, interfaces & public private keys to be
 
 ### Dev mode support :
 
-# 1. EIS services should be running in dev mode by setting `DEV_MODE=true` in [build/.env](../../build/.env)
+1. EIS services should be running in dev mode by setting `DEV_MODE=true` in [build/.env](../../build/.env)
 
-# 2. Make the field `DEV_MODE=TRUE` in env.sh of tools/SWTriggerUtility
+2. Make the field `DEV_MODE=TRUE` in env.sh of tools/SWTriggerUtility
 
-# 3. Run the below step to source the env variable
+3. Run the below step to source the env variable
 
   ```sh
       $ cd <EIS-working-directory>/IEdgeInsights/tools/SWTriggerUtility

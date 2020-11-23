@@ -176,11 +176,12 @@ if __name__ == '__main__':
     etcd_client = etcd_config(ca_cert, root_key, root_cert)
     etcd_value = {}
     # Command to get etcd data
-    try:
-        cmd = etcd_client.get(app_name)
-        etcd_value = json.loads(cmd[0].decode('utf-8'))
-    except Exception as e:
-        sys.exit("{}error in reading config from etcd".format(e))
+    if etcd_flag:
+        try:
+            cmd = etcd_client.get(app_name)
+            etcd_value = json.loads(cmd[0].decode('utf-8'))
+        except Exception as e:
+            sys.exit("{}error in reading config from etcd".format(e))
     # Getting config.json data
     config_content = {}
     with open("config.json") as file_reader,\
