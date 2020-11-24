@@ -73,17 +73,16 @@ void usage(const char* name) {
                     ./sw_trigger_vi [Duration to ingest in seconds] [<START_INGESTION | STOP_INGESTION>] [Config file path] \n\n \
                     -> Optional argument: START_INGESTION | STOP_INGESTION - Action to send to Video Ingestion service  \n \
                     -> Optional argument: Duration to ingest in seconds (default=120 seconds). \n \
-                    -> Optional argument: ../config/config.json - Configuration file used for sw_trigger_vi utility. \n\n\
                     -> Optional argument: SNAPSHOT - Action to send to Video Ingestion service to get frame snapshot. \n\n \
                     NOTE: As a prerequisite update the config.json file for sw_trigger_utility based on the config need. \n \
                     Refer README.md for more details on each options\n" << std::endl;
 
         std::cout <<" Examples:\n \
-                                1. ./sw_trigger_utility or ./sw_trigger_utility ../config/config.json\n \
-                                2. ./sw_trigger_utility 300 or ./sw_trigger_utility 300 ../config/config.json\n \
-                                3. ./sw_trigger_utility START_INGESTION or ./sw_trigger_utility START_INGESTION ../config/config.json\n \
-                                4. ./sw_trigger_utility STOP_INGESTION or ./sw_trigger_utility STOP_INGESTION ../config/config.json\n \
-                                5. ./sw_trigger_utility SNAPSHOT or ./sw_trigger_utility SNAPSHOT ../config/config.json" \
+                                1. ./sw_trigger_utility\n \
+                                2. ./sw_trigger_utility 300\n \
+                                3. ./sw_trigger_utility START_INGESTION\n \
+                                4. ./sw_trigger_utility STOP_INGESTION\n \
+                                5. ./sw_trigger_utility SNAPSHOT" \
         << std::endl;
     }
 

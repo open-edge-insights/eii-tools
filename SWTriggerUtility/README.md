@@ -96,10 +96,10 @@ SWTriggerUtility expects a set of config, interfaces & public private keys to be
 
 4. Run the below step to source the env variable
 
-  ```sh
-      $ cd <EIS-working-directory>/IEdgeInsights/tools/SWTriggerUtility
-      $ source ./env.sh
-  ```
+    ```sh
+        $ cd <EIS-working-directory>/IEdgeInsights/tools/SWTriggerUtility
+        $ source ./env.sh
+    ```
 
 ### Dev mode support :
 
@@ -109,44 +109,41 @@ SWTriggerUtility expects a set of config, interfaces & public private keys to be
 
 3. Run the below step to source the env variable
 
-  ```sh
-      $ cd <EIS-working-directory>/IEdgeInsights/tools/SWTriggerUtility
-      $ source ./env.sh
-  ```
+    ```sh
+        $ cd <EIS-working-directory>/IEdgeInsights/tools/SWTriggerUtility
+        $ source ./env.sh
+    ```
 ## Usage of Software Trigger Utility:
 
 Software trigger utility can be used in following ways:
 
-**NOTE**: Passing config file as a command line argument is optional.
-
 1: "START INGESTION" -> "Allows ingestion for default time (120 seconds being default)" -> "STOP INGESTION"
 ```sh
-    "./sw_trigger_utility" or "./sw_trigger_utility ../config/config.json"
+    "./sw_trigger_utility"
 ```
-Note: The num_of_cycles is configurable through config.json file.
 
 2: "START INGESTION" -> "Allows ingestion for user defined time (configurable time in seconds)" -> "STOP INGESTION"
 ```sh
-    "./sw_trigger_utility 300" or "./sw_trigger_utility 300 ../config/config.json"
+    "./sw_trigger_utility 300" or "./sw_trigger_utility 300"
 ```
 Note: In the above example, VideoIngestion starts then does ingestion for 300 seconds then stops ingestion after 300 seconds & cycle repeqats for number of cycles configured in the config.json.
 
 
 3: Selectively send START_INGESTION software trigger:
 ```sh
-    "./sw_trigger_utility START_INGESTION" or "./sw_trigger_utility START_INGESTION ../config/config.json"
+    "./sw_trigger_utility START_INGESTION"
 
 ```
 
 4: Selectively send STOP_INGESTION software trigger:
 ```sh
-    "./sw_trigger_utility STOP_INGESTION" or "./sw_trigger_utility STOP_INGESTION ../config/config.json"
+    "./sw_trigger_utility STOP_INGESTION"
 
 ```
 
 5: Selectively send SNAPSHOT software trigger:
 ```sh
-    "./sw_trigger_utility SNAPSHOT" or "./sw_trigger_utility SNAPSHOT ../config/config.json"
+    "./sw_trigger_utility SNAPSHOT"
 
 ```
 
