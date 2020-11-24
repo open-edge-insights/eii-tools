@@ -33,11 +33,7 @@ import cfgmgr.config_manager as cfg
 logger = logging.getLogger()
 
 
-is_done = False
-
-
 def main():
-    global is_done
     try:
         ctx = cfg.ConfigMgr()
         app_name = ctx.get_app_name()
@@ -58,30 +54,29 @@ def main():
     query = app_cfg["query"]
     img_handle_queue = queue.Queue(maxsize=10000)
 
-    # This thread will retriueve the image from imagestore service
+    # This thread will retrieve the image from imagestore service
     # and will store into frames directory
-    img_rt_thread = threading.Thread(
+    condition = threading.Condition()
+    img_query_thread = threading.Thread(
         target=imagestore_client.retrieve_image_frames,
-        args=(ctx, query, img_handle_queue))
-    img_rt_thread.daemon = True
-    img_rt_thread.start()
+        args=(ctx, query, img_handle_queue, condition))
+    img_query_thread.start()
 
-    retrieve_measurement_data(ctx, query, img_handle_queue)
+    influx_query_thread = threading.Thread(
+        target= retrieve_measurement_data,
+        args=(ctx, query, img_handle_queue, condition))
+    influx_query_thread.start()
 
-    while True:
-        if img_handle_queue.empty() and is_done:
-            logger.info("Exiting...")
-            sys.exit(0)
-        else:
-            time.sleep(5)
+    influx_query_thread.join()
+    logger.info("Influx query processing done")
+    img_query_thread.join()
+    logger.info("Retrieved all the frames exiting....")
+    sys.exit(0)
 
-
-def retrieve_measurement_data(ctx, query, img_handle_queue):
-    global is_done
+def retrieve_measurement_data(ctx, query, img_handle_queue, condition):
     influxdbconnector_client.query_influxdb(
-        ctx, query, img_handle_queue)
-    is_done = True
-
+        ctx, query, img_handle_queue, condition)
+    imagestore_client.influxdb_query_done = True
 
 if __name__ == "__main__":
     main()

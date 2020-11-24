@@ -39,7 +39,7 @@ service = None
 logger = logging.getLogger()
 
 
-def query_influxdb(ctx, query, img_handle_queue):
+def query_influxdb(ctx, query, img_handle_queue, condition):
     try:
         logger.info(f'Initializing message bus context')
         client_ctx = ctx.get_client_by_index(0)
@@ -77,17 +77,22 @@ def query_influxdb(ctx, query, img_handle_queue):
                         temp_dict[key] = elm[count]
                         count = count + 1
 
+                    is_queue_empty = img_handle_queue.empty()
                     img_handle_queue.put(temp_dict)
+                    if is_queue_empty:
+                        with condition:
+                            condition.notifyAll()
 
             output_dir = "/output" + "/" + "data"
             now = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
             filename = str(now) + ".dat"
             common.write_to_file(filename,
                                  str.encode(response['Data']),
-                                 output_dir)
+                                 output_dir)        
+        with condition:
+            condition.notifyAll()
 
         service.close()
-
     except KeyboardInterrupt:
         logger.info(f' Quitting...')
         service.close()

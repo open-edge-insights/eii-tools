@@ -30,14 +30,16 @@ import logging
 import cv2
 import numpy as np
 import influxdbconnector_client
+import time
+
+influxdb_query_done = False
 
 bad_color = (0, 0, 255)
 good_color = (0, 255, 0)
 logger = logging.getLogger()
 
 
-def save_images(elm, frame, dir, tag):
-    img_handle = elm['img_handle']
+def save_images(img_handle, frame, dir, tag):
     now = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
     imgname = str(now) + "_" + tag + img_handle + ".png"
     if not os.path.exists(dir):
@@ -47,14 +49,13 @@ def save_images(elm, frame, dir, tag):
                 [cv2.IMWRITE_PNG_COMPRESSION, 3])
 
 
-def draw_defects(elm, frame, dir_name):
-
-    if 'defects' in elm.keys():
-        defect_json = json.loads(elm['defects'])
-        if elm['encoding_type'] and elm['encoding_level']:
-            encoding = {"type": elm['encoding_type'],
-                        "level": elm['encoding_level']}
-        logger.info(elm)
+def draw_defects(metadata, frame, dir_name):
+    if 'defects' in metadata.keys():
+        defect_json = json.loads(metadata['defects'])
+        if metadata['encoding_type'] and metadata['encoding_level']:
+            encoding = {"type": metadata['encoding_type'],
+                        "level": metadata['encoding_level']}
+        logger.info(metadata)
         # Convert to Numpy array and reshape to frame
         logger.info('Preparing frame for visualization')
         frame = np.frombuffer(frame, dtype=np.uint8)
@@ -70,8 +71,8 @@ def draw_defects(elm, frame, dir_name):
 
         # Display information about frame
         (dx, dy) = (20, 10)
-        if 'display_info' in elm.keys():
-            display_info = json.loads(elm['display_info'])
+        if 'display_info' in metadata.keys():
+            display_info = json.loads(metadata['display_info'])
             for d_i in display_info:
                 # Get priority
                 priority = d_i['priority']
@@ -117,7 +118,7 @@ def draw_defects(elm, frame, dir_name):
                                        value=outline_color)
             tag = 'bad_'
             dir = dir_name + "/bad_frames"
-            save_images(elm, frame, dir, tag)
+            save_images(metadata['img_handle'], frame, dir, tag)
         # PROCESS IF THE FRAME DOES NOT HAVE DEFECTS
         else:
             outline_color = good_color
@@ -125,14 +126,15 @@ def draw_defects(elm, frame, dir_name):
                                        value=outline_color)
             dir = dir_name + "/good_frames"
             tag = 'good_'
-            save_images(elm, frame, dir, tag)
+            save_images(metadata['img_handle'], frame, dir, tag)
 
 
 # Argument parsing
-def retrieve_image_frames(ctx, query, img_handle_queue):
+def retrieve_image_frames(ctx, query, img_handle_queue, condition):
     msgbus = None
     service = None
     dir_name = "/output/"
+    global influxdb_query_done
     try:
         client_ctx = ctx.get_client_by_index(1)
         config = client_ctx.get_msgbus_config()
@@ -142,19 +144,25 @@ def retrieve_image_frames(ctx, query, img_handle_queue):
         service = msgbus.get_service(interface_value)
         logger.info(f'Running...')
         while True:
-            elm = img_handle_queue.get()
-            img_handle = elm['img_handle']
-            request = {'command': 'read', 'img_handle': img_handle}
-            logger.info(f'Sending request {request}')
-            service.request(request)
-            logger.info(f'Waiting for response')
-            response = service.recv()
-            output_dir = dir_name + "frames"
-            if response[1] is not None:
-                draw_defects(elm, response[1], output_dir)
-            else:
-                logger.info("Image for {} is NULL".format(img_handle))
-
+            if not img_handle_queue.empty():
+                metadata = img_handle_queue.get()
+                img_handle = metadata['img_handle']
+                request = {'command': 'read', 'img_handle': img_handle}
+                logger.info(f'Sending request {request}')
+                service.request(request)
+                logger.info(f'Waiting for response')
+                response = service.recv()
+                output_dir = dir_name + "frames"
+                if response[1] is not None:
+                    draw_defects(metadata, response[1], output_dir)
+                else:
+                    logger.info("Image for {} is NULL".format(img_handle))
+            elif img_handle_queue.empty() and influxdb_query_done:
+                break
+            elif img_handle_queue.empty() and not influxdb_query_done:
+                with condition:
+                    condition.wait()
+                    
     except KeyboardInterrupt:
         logger.info(f'Quitting...')
     finally:
