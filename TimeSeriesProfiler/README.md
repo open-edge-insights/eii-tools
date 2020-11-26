@@ -29,9 +29,15 @@
 
 1. Pre-requisite :
 
-   Kapacitor service should run profiler_udf.go, configuration required to run the profiler udf
+   Profiling UDF returns "ts_kapacitor_udf_entry" and "ts_kapacitor_udf_exit" timestamp.  
+   
+    These 2 as examples to refer:
+    1. profiler_udf.go
+    2. rfc_classifier.py.
+   
+* configuration required to run profiler_udf.go as profiler udf
 
-   In [Kapacitor config.json](../../Kapacitor/config.json):
+   In **[Kapacitor config.json](../../Kapacitor/config.json)** , update "task" key as below:
    ```
    "task": [{
        "tick_script": "profiling_udf.tick",
@@ -42,7 +48,7 @@
        }]
    }]
    ```
-   In [kapacitor.conf](../../Kapacitor/config/kapacitor.conf) under udf section:
+   In **[kapacitor.conf](../../Kapacitor/config/kapacitor.conf)** under udf section:
 
    ```
       [udf.functions]
@@ -51,6 +57,50 @@
            timeout = "20s"
 
    ```
+ * configuration required to run rfc_classifier.py as profiler udf
+   In **[Kapacitor config.json](../../Kapacitor/config.json)** , update "task" key as below:
+   ```
+   "task": [{
+       {
+        "tick_script": "rfc_task.tick",
+        "task_name": "random_forest_sample"
+        }
+   }]
+   ```
+   In **[kapacitor.conf](../../Kapacitor/config/kapacitor.conf)** under udf section:
+
+   ```
+    [udf.functions.rfc]
+      prog = "python3.7"
+      args = ["-u", "/EIS/udfs/rfc_classifier.py"]
+      timeout = "60s"
+      [udf.functions.rfc.env]
+         PYTHONPATH = "/EIS/go/src/github.com/influxdata/kapacitor/udf/agent/py/"
+   ```
+  keep **[config.json](./config.json)** file as following:
+```
+  {
+    "config": {
+        "total_number_of_samples": 10,
+        "export_to_csv": "False"
+    },
+    "interfaces": {
+        "Subscribers": [
+            {
+                "Name": "default",
+                "Type": "zmq_tcp",
+                "EndPoint": "127.0.0.1:65032",
+                "PublisherAppName": "InfluxDBConnector",
+                "Topics": [
+                    "rfc_results"
+                ]
+            }
+        ]
+    }
+}
+```
+
+
 
    In [.env](../../build/.env):
 

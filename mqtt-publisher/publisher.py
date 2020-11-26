@@ -148,8 +148,11 @@ def publish_json(mqttc, topic, path, qos, argsinterval, streams):
     print("Publishing json files to mqtt in loop")
     if streams == 1: 
         while True:
-            for msg in data:
-                mqttc.publish(topic, msg, qos=qos)
+            t_s = time.time()
+            for value in data:
+                msg = {'ts': t_s, 'value': value}
+                mqttc.publish(topic, json.dumps(msg), qos=qos)
+                msg.clear()
                 if argsinterval > 1000:
                     argsinterval = 1000
                 time.sleep(1)
