@@ -42,12 +42,13 @@ def main():
     except Exception as e:
         logger.error("{}".format(e))
 
-    if dev_mode == "true":
+    if dev_mode:
         fmt_str = ('%(asctime)s : %(levelname)s  : {} : %(name)s \
-                    : [%(filename)s] :'.format("Insecure Mode") + '%(funcName)s \
-                   : in line : [%(lineno)d] : %(message)s')
+                   : [%(filename)s] :'.format("Insecure Mode") +
+                   '%(funcName)s : in line : [%(lineno)d] : %(message)s')
     else:
-        fmt_str = ('%(asctime)s : %(levelname)s : %(name)s : [%(filename)s] :' +
+        fmt_str = ('%(asctime)s : %(levelname)s : %(name)s \
+                   : [%(filename)s] :' +
                    '%(funcName)s : in line : [%(lineno)d] : %(message)s')
 
     logging.basicConfig(format=fmt_str, level=logging.DEBUG)
@@ -63,7 +64,7 @@ def main():
     img_query_thread.start()
 
     influx_query_thread = threading.Thread(
-        target= retrieve_measurement_data,
+        target=retrieve_measurement_data,
         args=(ctx, query, img_handle_queue, condition))
     influx_query_thread.start()
 
@@ -73,10 +74,12 @@ def main():
     logger.info("Retrieved all the frames exiting....")
     sys.exit(0)
 
+
 def retrieve_measurement_data(ctx, query, img_handle_queue, condition):
     influxdbconnector_client.query_influxdb(
         ctx, query, img_handle_queue, condition)
     imagestore_client.influxdb_query_done = True
+
 
 if __name__ == "__main__":
     main()

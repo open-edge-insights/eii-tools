@@ -88,7 +88,7 @@ def query_influxdb(ctx, query, img_handle_queue, condition):
             filename = str(now) + ".dat"
             common.write_to_file(filename,
                                  str.encode(response['Data']),
-                                 output_dir)        
+                                 output_dir)
         with condition:
             condition.notifyAll()
 

@@ -162,7 +162,7 @@ def retrieve_image_frames(ctx, query, img_handle_queue, condition):
             elif img_handle_queue.empty() and not influxdb_query_done:
                 with condition:
                     condition.wait()
-                    
+
     except KeyboardInterrupt:
         logger.info(f'Quitting...')
     finally:
