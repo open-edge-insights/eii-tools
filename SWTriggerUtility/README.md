@@ -39,12 +39,6 @@ SWTriggerUtility expects a set of config, interfaces & public private keys to be
       $ source ./env.sh
   ```
 
-* Export the below IP Address to `no_proxy` env variable to connect with ETCD
-
-   ```sh
-      $ export no_proxy=$no_proxy,127.0.0.1
-   ```
-
 * Since provisioning will stop the EIS services run the below command to start them
 
    ```sh
@@ -54,7 +48,7 @@ SWTriggerUtility expects a set of config, interfaces & public private keys to be
 
 ## Configuration file:
 
-**config.json** is the configuration file used for sw_trigger_vi utility.
+**config.json** is the configuration file used for sw_trigger_utility.
 
 |       Field      | Meaning |                                       Type of the value                                    |
 | :-------------:  | :-----: | ------------------------------------------------------------------------------------ |
@@ -66,7 +60,7 @@ SWTriggerUtility expects a set of config, interfaces & public private keys to be
 
 ## Build steps for sw_trigger_utility:
 
-### To generate the "sw_trigger_vi"  binary.
+### To generate the "sw_trigger_utility"  binary.
 
 ```sh
    cd <multi_repo>/IEdgeInsights/tools/SWTriggerUtility && \
