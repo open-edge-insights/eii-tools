@@ -49,7 +49,6 @@ endif()
 find_package(EISMsgEnv REQUIRED)
 find_package(EISUtils REQUIRED)
 find_package(EISConfigMgr REQUIRED)
-find_package(EISConfigMgrNew REQUIRED)
 find_package(EISMessageBus REQUIRED)
 find_package(PkgConfig REQUIRED)
 find_package(IntelSafeString REQUIRED)
@@ -61,7 +60,6 @@ include_directories(
     ${EISMsgEnv_INCLUDE}
     ${EISUtils_INCLUDE}
     ${EISConfigMgr_INCLUDE}
-    ${EISConfigMgrNew_INCLUDE}
     ${EISMessageBus_INCLUDE}
     ${IntelSafeString_INCLUDE}
     ${WJE_INCLUDE_DIRS})
@@ -74,8 +72,7 @@ target_link_libraries(sw_trigger_utility
     PRIVATE
         ${EISUtils_LIBRARIES}
         ${EISMsgEnv_LIBRARIES}
-        eisconfigmgr
-        ${EISConfigMgrNew_LIBRARIES}
+        ${EISConfigMgr_LIBRARIES}
         ${EISMessageBus_LIBRARIES}
         ${ZMQ_LIBRARIES}
         ${CJSON_LIBRARIEES}
