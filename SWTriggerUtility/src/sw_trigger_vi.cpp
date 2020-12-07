@@ -176,7 +176,7 @@ class SwTriggerUtility {
 
                 read_etcd_config(app_config);
 
-                ClientCfg* client_ctx = ch->getClientByName("default");
+                ClientCfg* client_ctx = ch->getClientByIndex(0);
                 config_t* config = client_ctx->getMsgBusConfig();
 
                 config_value_t* interface_value = client_ctx->getInterfaceValue("Name");
