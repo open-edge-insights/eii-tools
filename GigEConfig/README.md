@@ -31,19 +31,21 @@ In order to execute this tool user has to provide a PFS file as a pre-requisite.
 
 Before executing the tool make sure following steps are executed:-
 
-1. Source build/.env to get all the required ENVs
+1. Please make sure that provisioning is done.
+
+2. Source build/.env to get all the required ENVs
 
     ```sh
     $ set -a
     $ source [WORKDIR]/IEdgeInsights/build/.env
     $ set +a
     ```
-2. Install the dependencies:
+3. Install the dependencies:
 
     ```sh
     $ pip3 install -r requirements.txt
     ```
-3. If using GigE tool in PROD mode, make sure to set required permissions to certificates.
+4. If using GigE tool in PROD mode, make sure to set required permissions to certificates.
 
     ```sh
         sudo chmod -R 755 [WORKDIR]/IEdgeInsights/build/provision/Certificates

@@ -64,7 +64,7 @@ def make_pipeline(pfs_config_map, config_table):
         elif "bayergr" in pfs_config_map["pixel-format"]:
             pfs_config_map["pixel-format"] = "bayergrbg"
         elif "bayergb" in pfs_config_map["pixel-format"]:
-             pfs_config_map["pixel-format"] = "bayergbrg"
+            pfs_config_map["pixel-format"] = "bayergbrg"
         else:
             logging.info("{} bayer format not supported".format(
                          pfs_config_map["pixel-format"]))
@@ -121,6 +121,12 @@ def etcd_config(ca_cert, root_key, root_cert):
     """
     hostname = os.getenv("ETCD_HOST", "localhost")
     port = os.getenv("ETCD_CLIENT_PORT", "2379")
+    if(len(hostname) == 0):
+        hostname = "localhost"
+
+    if(len(port) == 0):
+        port = "2379"
+    
     try:
         if ca_cert is None and root_key is None and root_cert is None:
             etcd = etcd3.client(host=hostname, port=port)
