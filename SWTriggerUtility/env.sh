@@ -28,3 +28,8 @@ export CONFIGMGR_KEY="../../../build/provision/Certificates/SWTriggerUtility/SWT
 export CONFIGMGR_CACERT="../../../build/provision/Certificates/ca/ca_certificate.pem"
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 export no_proxy=$no_proxy,127.0.0.1
+# The name of the interface to be fetched
+# If using with multi instance:
+# If user wants to connect to VideoIngestion1, the interface_name
+# would be default1 & default2 for VideoIngestion2 etc
+export interface_name="default"
