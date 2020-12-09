@@ -24,7 +24,7 @@ services:
   ia_video_profiler:
     depends_on:
         - ia_eisbase
-    image: ia_eisbase:${EIS_VERSION}
+    image: ${DOCKER_REGISTRY}ia_eisbase:${EIS_VERSION}
     container_name: ia_video_profiler
     hostname: ia_video_profiler
     network_mode: host
