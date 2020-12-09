@@ -28,7 +28,6 @@ import time
 import datetime
 import threading
 import gc
-import time
 from distutils.util import strtobool
 # IMPORT the library to read from EIS
 from util.util import Util
@@ -92,6 +91,19 @@ class TimeSeriesCalculator:
                 key, value = i.split('=')
                 records[key] = value
 
+            required_timestamps = ["ts", "ts_kapacitor_udf_entry",
+                                   "ts_kapacitor_udf_exit",
+                                   "ts_idbconn_pub_entry",
+                                   "ts_idbconn_pub_queue_entry",
+                                   "ts_idbconn_influx_respose_write",
+                                   "ts_idbconn_pub_queue_exit",
+                                   "ts_idbconn_pub_exit"]
+            missing_timestamps = \
+                [x for x in required_timestamps if x not in records.keys()]
+            if len(missing_timestamps) != 0:
+                logger.error("These timestamps are missing! {}. Exiting.."
+                             .format(missing_timestamps))
+                os._exit(1)
             records['ts_influx_entry'] = int(int(data[2])/1000000)
             records['ts'] = int(float(records['ts']) * 1000)
             records['ts_kapacitor_udf_entry'] = \

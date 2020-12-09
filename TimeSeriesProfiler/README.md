@@ -32,10 +32,25 @@
    Profiling UDF returns "ts_kapacitor_udf_entry" and "ts_kapacitor_udf_exit" timestamp.  
    
     These 2 as examples to refer:
-    1. profiler_udf.go
-    2. rfc_classifier.py.
+    1. [profiling_udf.go](../../Kapacitor/udfs/profiling_udf.go)
+    2. [rfc_classifier.py](../../Kapacitor/udfs/rfc_classifier.py)
    
-* configuration required to run profiler_udf.go as profiler udf
+* **Additional:** Adding timestamps in ingestion and UDFs:
+
+  In case user wants to enable his/her own ingestion and UDFs, timestamps need to be added to ingestion and UDFs modules respectively.
+  The TS Profiler needs three timestamps.
+
+  1. "ts" timestamp which is to be filled by the ingestor (done by the mqtt-publisher app).
+
+  2. The udf to give "ts_kapacitor_udf_entry" and "ts_kapacitor_udf_exit" timestamps to profile the udf execution time.
+
+     ts_kapacitor_udf_entry : timestamp in UDF before execution of the of the algorithm
+
+     ts_kapacitor_udf_exit : timestamp in UDF after execution of the algorithm.
+
+    The sample profiling UDFs can be referred at [profiling_udf.go](../../Kapacitor/udfs/profiling_udf.go) and [rfc_classifier.py](../../Kapacitor/udfs/rfc_classifier.py).
+
+* configuration required to run profiling_udf.go as profiling udf
 
    In **[Kapacitor config.json](../../Kapacitor/config.json)** , update "task" key as below:
    ```
