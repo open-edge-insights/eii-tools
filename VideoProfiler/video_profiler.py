@@ -130,7 +130,6 @@ class VideoProfiler:
         self.total_records = dict()
 
         # Initializing variables related to profiling
-        self.VI_time_to_push_to_queue = 0.0
         self.e2e = 0.0
 
     def eisSubscriber(self):
@@ -164,11 +163,7 @@ class VideoProfiler:
         :type per_frame_stats: dict
         """
         per_frame_stats = dict()
-        VI_time_to_push_to_queue = \
-            metadata["ts_filterQ_exit"] - metadata["ts_filterQ_entry"]
         e2e = metadata["ts_vp_sub"] - metadata["ts_Ingestor_entry"]
-        per_frame_stats['VI_time_to_push_to_queue'] = \
-            VI_time_to_push_to_queue
         per_frame_stats["e2e"] = e2e
         for key in metadata:
             if 'entry' in key and 'Ingestor' not in key and\
@@ -202,9 +197,9 @@ class VideoProfiler:
                 if va_temp is not None and vi_temp is not None:
                     break
             if vi_temp is not None:
-                per_frame_stats['VI_UDF_input_queue_time_spent_diff'] =\
+                per_frame_stats['VI_UDF_input_queue_time_to_push_and_spent_diff'] =\
                     metadata[vi_temp + self.ingestion_appname + '_first_entry'] -\
-                    metadata['ts_filterQ_exit']
+                    metadata['ts_filterQ_entry']
             if self.analytics_appname + '_subscriber_blocked_ts' in metadata and\
                va_temp is not None:
                 per_frame_stats['VA_UDF_input_queue_time_spent_diff'] =\
@@ -237,11 +232,6 @@ class VideoProfiler:
                     self.total_records[temp + '_total'] +\
                     per_frame_stats[temp + '_diff']
 
-        self.VI_time_to_push_to_queue += \
-            per_frame_stats['VI_time_to_push_to_queue']
-        avg_VI_time_to_push_to_queue = \
-            self.VI_time_to_push_to_queue / self.frame_count
-
         self.e2e += per_frame_stats["e2e"]
         avg_e2e = self.e2e / self.frame_count
 
@@ -252,10 +242,7 @@ class VideoProfiler:
                 avg_stats[temp + '_avg'] =\
                     int(self.total_records[temp + '_total']) / self.frame_count
 
-        avg_stats["avg_VI_time_to_push_to_queue"] = \
-            avg_VI_time_to_push_to_queue
         avg_stats["avg_e2e"] = avg_e2e
-        avg_stats.pop('VI_time_to_push_to_queue_avg', None)
         avg_stats.pop('e2e_avg', None)
         return avg_stats
 
