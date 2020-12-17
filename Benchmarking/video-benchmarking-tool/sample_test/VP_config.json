@@ -14,39 +14,12 @@
     "interfaces": {
         "Subscribers": [
             {
-                "Name": "default1",
+                "Name": "default",
                 "Type": "zmq_ipc",
                 "EndPoint": "/opt/intel/eis/sockets",
-                "PublisherAppName": "VideoIngestion1",
+                "PublisherAppName": "VideoIngestion",
                 "Topics": [
                     "camera1_stream"
-                ]
-            },
-            {
-                "Name": "default2",
-                "Type": "zmq_ipc",
-                "EndPoint": "/opt/intel/eis/sockets",
-                "PublisherAppName": "VideoIngestion2",
-                "Topics": [
-                    "camera2_stream"
-                ]
-            },
-            {
-                "Name": "default3",
-                "Type": "zmq_ipc",
-                "EndPoint": "/opt/intel/eis/sockets",
-                "PublisherAppName": "VideoIngestion3",
-                "Topics": [
-                    "camera3_stream"
-                ]
-            },
-            {
-                "Name": "default4",
-                "Type": "zmq_ipc",
-                "EndPoint": "/opt/intel/eis/sockets",
-                "PublisherAppName": "VideoIngestion4",
-                "Topics": [
-                    "camera4_stream"
                 ]
             }
         ]

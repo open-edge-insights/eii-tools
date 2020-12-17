@@ -191,7 +191,7 @@ popd
 # Configure the VideoProfiler
 # --------------------------------------------------------------
 notice "Configuring the VideoProfiler"
-run_logged cp -v ${TEST_DIR}/VP_config.json ${EIS_HOME}/tools/VideoProfiler/config.json
+run_logged cp -rvf ${TEST_DIR}/VP_config.json ${EIS_HOME}/tools/VideoProfiler/config.json
 run_logged cp -v ${EIS_HOME}/tools/Benchmarking/video-benchmarking-tool/vp_stats.sh ${EIS_HOME}/tools/VideoProfiler/vp_stats.sh 
 
 # --------------------------------------------------------------

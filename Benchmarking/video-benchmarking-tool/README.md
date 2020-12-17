@@ -10,12 +10,12 @@ Steps for running a benchmarking test case:
 
 1. Start RTSP server on a sepereate system on the network:
 
-    ```
-    $ sh stream_rtsp.sh <number-of-streams> <starting-port-number> <bitrate> <width> <height> <framerate>
+    ```sh
+    $ ./stream_rtsp.sh <number-of-streams> <starting-port-number> <bitrate> <width> <height> <framerate>
     ```
    For example:
-   ```
-    $ sh stream_rtsp.sh 16 8554 4096 1920 1080 30
+   ```sh
+    $ ./stream_rtsp.sh 16 8554 4096 1920 1080 30
    ```
 
 2. Run execute_test.sh with the desired benchmarking config:
@@ -31,7 +31,7 @@ Steps for running a benchmarking test case:
         EIS_HOME - [Optional] The absolute path to EIS home directory, if running from a non-default location 
     ```
    For example:
-    ```
+    ```sh
     sudo -E ./execute_test.sh $PWD/sample_test 16 60 /opt/intel/pcm /home/intel/IEdgeInsights
     ```
 

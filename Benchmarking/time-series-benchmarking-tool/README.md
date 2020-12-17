@@ -10,28 +10,28 @@ Steps for running a benchmarking test case:
 
 1. Start 1 broker for every data stream you want to send with the publisher in step #2:
 
-    ```
-    $ sh cd ../../mqtt-publisher/
-    $ sh broker.sh <port> &
+    ```sh
+    $ cd ../../mqtt-publisher/
+    $ ./broker.sh <port> &
     ```
    For example:
-   ```
-    $ sh cd ../../mqtt-publisher/
-    $ sh broker.sh 1883 &
-    $ sh broker.sh 1884 &
+   ```sh
+    $ cd ../../mqtt-publisher/
+    $ ./broker.sh 1883 &
+    $ ./broker.sh 1884 &
    ```
 
 2. Build and run MQTT publisher:
-    ```
-     $ sh cd ../../mqtt-publisher/
-     $ sh ./build.sh
-     $ sh ./publish_json.sh <streams>
+    ```sh
+     $ cd ../../mqtt-publisher/
+     $ ./build.sh
+     $ ./publish_json.sh <streams>
     ```
    For example:
-    ```
-     $ sh cd ../../mqtt-publisher/
-     $ sh ./build.sh
-     $ sh ./publish_json.sh 2
+    ```sh
+     $ cd ../../mqtt-publisher/
+     $ ./build.sh
+     $ ./publish_json.sh 2
     ```
 
 3. Run execute test to execute the time series test case:

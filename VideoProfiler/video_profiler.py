@@ -492,4 +492,4 @@ if __name__ == "__main__":
                         .format(monitor_mode_results))
 
     # Exiting after metrics are calculated
-    os._exit(-1)
+    os._exit(0)
