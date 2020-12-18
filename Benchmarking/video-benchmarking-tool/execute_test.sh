@@ -165,6 +165,13 @@ run_logged cp -v ${TEST_DIR}/services.yml ${EIS_HOME}/build/services.yml
 run_logged cp -rv ${TEST_DIR}/docker-compose.yml ${EIS_HOME}/VideoIngestion/benchmarking/
 run_logged cp -rv ${TEST_DIR}/config.json ${EIS_HOME}/VideoIngestion/benchmarking/
 
+# --------------------------------------------------------------
+# Configure the VideoProfiler
+# --------------------------------------------------------------
+notice "Configuring the VideoProfiler"
+run_logged cp -rvf ${TEST_DIR}/VP_config.json ${EIS_HOME}/tools/VideoProfiler/config.json
+run_logged cp -v ${EIS_HOME}/tools/Benchmarking/video-benchmarking-tool/vp_stats.sh ${EIS_HOME}/tools/VideoProfiler/vp_stats.sh
+
 pushd "${EIS_HOME}/build"
 run_logged python3 eis_builder.py -f services.yml -d benchmarking -v $STREAMS
 popd
@@ -186,13 +193,6 @@ run_logged docker-compose up --build -d
 #${PCM_HOME}/pcm.x 2>&1 | tee -a "${ACTUAL_DATA_DIR}/output.pcm" &
 run_logged sleep $SLEEP
 popd
-
-# --------------------------------------------------------------
-# Configure the VideoProfiler
-# --------------------------------------------------------------
-notice "Configuring the VideoProfiler"
-run_logged cp -rvf ${TEST_DIR}/VP_config.json ${EIS_HOME}/tools/VideoProfiler/config.json
-run_logged cp -v ${EIS_HOME}/tools/Benchmarking/video-benchmarking-tool/vp_stats.sh ${EIS_HOME}/tools/VideoProfiler/vp_stats.sh 
 
 # --------------------------------------------------------------
 # Start statistics gathering tasks in the background
