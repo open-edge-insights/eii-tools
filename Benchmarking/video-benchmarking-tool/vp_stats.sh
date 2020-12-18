@@ -22,7 +22,15 @@
 
 #Set permission
 sudo chmod -R 777 /opt/intel/eis/sockets
-sudo chmod -R 755 ../../build/provision/Certificates
+
+if [ -n "$DEV_MODE" ]
+then
+  if [ "$DEV_MODE" == "FALSE" ]
+  then
+    sudo chmod -R 755 ../../build/provision/Certificates
+  fi
+fi
+
 
 #set the required env
 source ${PWD}/env.sh
