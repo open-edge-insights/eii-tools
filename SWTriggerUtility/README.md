@@ -56,7 +56,7 @@ SWTriggerUtility expects a set of config, interfaces & public private keys to be
 | `dev_mode`       | `dev mode ON or OFF`   | `boolean (true or false)`  |
 | `log_level`      | `Log level to view the logs accordingly`   |  `integer [DEBUG=3 (default), ERROR=0, WARN=1, INFO=2]`  |
 
-**Note**: In case one needs to change the values in [config.json](./config.json) then provisioning needs to be done or one can choose to update the ETCD UI to change the values and then restart the application.
+**Note**: In case one needs to change the values in [config.json](./config.json), then ensure to re-run the steps mentioned in [pre-requisites section](#software-trigger-utilily-pre-requisites) to see the updated changes are getting applied `OR` one can choose to update the config key of SWTriggerUtility app via ETCD UI and then restart the application.
 
 ## Build steps for sw_trigger_utility:
 
@@ -147,4 +147,4 @@ Note: In the above example, VideoIngestion starts then does ingestion for 
 
 * In order to send SNAPSHOT trigger, ensure that the ingestion is stopped. In case START_INGESTION trigger is sent previously then stop the ingestion using the STOP_INGESTION trigger.
 
-* If running SWTriggerUtility with multi instance wherein there are multiple VideoIngestion services, one can connect to the required VideoIngestion service by using the respective name of the interface mentioned in [eis_config.json](../../build/provision/config/eis_config.json). The name of the interface can be specified in the **interface_name** env in [env.sh](env.sh). Eg: If user wants to connect to **VideoIngestion1**, the **interface_name** would be **default1** & **default2** for **VideoIngestion2** etc
+* If running SWTriggerUtility with multi instance wherein there are multiple VideoIngestion services, one can connect to the required VideoIngestion service by using the respective name of the interface mentioned in [eis_config.json](../../build/provision/config/eis_config.json). The name of the interface can be specified in the **interface_name** env in [env.sh](env.sh). Eg: If user wants to connect to **VideoIngestion1**, the **interface_name** would be **default1** & **default2** for **VideoIngestion2** etc.  Also, ensure to have the same `Name`, `EndPoint` and `Type` values in `Clients` interface key of `config.json` matching to those coming in `Servers` interface key of respective VideoIngestion service `config.json`

@@ -31,5 +31,8 @@ export no_proxy=$no_proxy,127.0.0.1
 # The name of the interface to be fetched
 # If using with multi instance:
 # If user wants to connect to VideoIngestion1, the interface_name
-# would be default1 & default2 for VideoIngestion2 etc
+# would be default1 & default2 for VideoIngestion2 etc. Also, ensure
+# to have the same `Name`, `EndPoint` and `Type` values in `Clients`
+# interface key of `config.json` matching to those coming in `Servers`
+# interface key of respective VideoIngestion service `config.json`
 export interface_name="default"
