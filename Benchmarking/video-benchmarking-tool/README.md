@@ -2,9 +2,11 @@
 
 These scripts are designed to automate the running of benchmarking tests and the collection of the performance data. This performance data includes the FPS of each video stream, and also the CPU%, Memory%, and Memory Read/Write bandwidth.
 
-The Processor Counter Monitor (PCM) is required for measuring memory read/write bandwidth, which can be downloaded and built here: https://github.com/opcm/pcm 
+The Processor Counter Monitor (PCM) is required for measuring memory read/write bandwidth, which can be downloaded and built here: https://github.com/opcm/pcm
 
 If you do not have PCM on your system, those columns will be blank in the output.csv.
+
+**Note**: For running the gstreamer pipeline mentioned in [sample_test/config.json](sample_test/config.json) one needs to copy the required model files to [WORKDIR]/IEdgeInsights/VideoIngestion/models by referring [models-readme](../../../VideoIngestion/models/README.md).
 
 Steps for running a benchmarking test case:
 
@@ -28,7 +30,7 @@ Steps for running a benchmarking test case:
         STREAMS   - The number of streams (1, 2, 4, 8, 16)
         SLEEP     - The number of seconds to wait after the containers come up
         PCM_HOME  - The absolute path to the PCM repository where pcm.x is built
-        EIS_HOME - [Optional] The absolute path to EIS home directory, if running from a non-default location 
+        EIS_HOME - [Optional] The absolute path to EIS home directory, if running from a non-default location
     ```
    For example:
     ```sh
