@@ -10,7 +10,9 @@ If you do not have PCM on your system, those columns will be blank in the output
 
 Steps for running a benchmarking test case:
 
-1. Start RTSP server on a sepereate system on the network:
+1. Please ensure the VideoProfiler requirements are installed by following the README at [README](../../VideoProfiler/README.md)
+
+2. Start RTSP server on a sepereate system on the network:
 
     ```sh
     $ ./stream_rtsp.sh <number-of-streams> <starting-port-number> <bitrate> <width> <height> <framerate>
@@ -20,7 +22,7 @@ Steps for running a benchmarking test case:
     $ ./stream_rtsp.sh 16 8554 4096 1920 1080 30
    ```
 
-2. Run execute_test.sh with the desired benchmarking config:
+3. Run execute_test.sh with the desired benchmarking config:
     ```
     USAGE:
         ./execute_test.sh TEST_DIR STREAMS SLEEP PCM_HOME [EIS_HOME]
@@ -37,4 +39,4 @@ Steps for running a benchmarking test case:
     sudo -E ./execute_test.sh $PWD/sample_test 16 60 /opt/intel/pcm /home/intel/IEdgeInsights
     ```
 
-3. The execution log, performance logs, and the output.csv will be saved in TEST_DIR/< timestamp >/ so that the same test case can be ran multiple times without overwriting the output. You can see if the test ocurred any errors in the execution.log, and you can see the results of a successful test in output.csv.
+4. The execution log, performance logs, and the output.csv will be saved in TEST_DIR/< timestamp >/ so that the same test case can be ran multiple times without overwriting the output. You can see if the test ocurred any errors in the execution.log, and you can see the results of a successful test in output.csv.

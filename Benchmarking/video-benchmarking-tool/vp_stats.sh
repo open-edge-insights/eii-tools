@@ -25,7 +25,7 @@ sudo chmod -R 777 /opt/intel/eis/sockets
 
 if [ -n "$DEV_MODE" ]
 then
-  if [ "$DEV_MODE" == "FALSE" ]
+  if [ "${DEV_MODE^^}" == "FALSE" ]
   then
     sudo chmod -R 755 ../../build/provision/Certificates
   fi
