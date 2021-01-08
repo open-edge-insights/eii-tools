@@ -25,13 +25,13 @@ Steps for running a benchmarking test case:
     ```sh
      $ cd ../../mqtt-publisher/
      $ ./build.sh
-     $ ./publish_json.sh <streams>
+     $ ./publisher_json.sh <streams>
     ```
    For example:
     ```sh
      $ cd ../../mqtt-publisher/
      $ ./build.sh
-     $ ./publish_json.sh 2
+     $ ./publisher_json.sh 2
     ```
 
 3. Run execute test to execute the time series test case:
