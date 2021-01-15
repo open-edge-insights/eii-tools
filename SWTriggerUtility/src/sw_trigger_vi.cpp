@@ -138,7 +138,7 @@ class SwTriggerUtility {
         * Constructor of SwTriggerUtility class
         */
 
-        SwTriggerUtility(char* config_file_path) {
+        explicit SwTriggerUtility(char* config_file_path) {
             try {
                 // Initialize default values
                 m_msgbus_ctx = NULL;
