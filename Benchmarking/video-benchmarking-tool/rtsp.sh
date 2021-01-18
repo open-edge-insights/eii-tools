@@ -29,4 +29,4 @@ FRAMERATE=$5
 
 GSTREAMER_PIPE="videotestsrc ! videoscale ! video/x-raw,width=$WIDTH,height=$HEIGHT ! videorate ! video/x-raw,framerate=$FRAMERATE/1 ! x264enc speed-preset=superfast bitrate=$BIT_RATE ! rtph264pay name=pay0 pt=96"
 echo $GSTREAMER_PIPE
-docker run -d --rm  -e RTSP_PORT=$RTSP_PORT -e GST_PIPELINE="$GSTREAMER_PIPE" -p $RTSP_PORT:$RTSP_PORT --name rtsp_$RTSP_PORT ullaakut/rtspatt:1.3.2
+docker run -d --rm  -e RTSP_PORT=$RTSP_PORT -e GST_PIPELINE="$GSTREAMER_PIPE" -p $RTSP_PORT:$RTSP_PORT --name rtsp_$RTSP_PORT ullaakut/rtspatt:latest
