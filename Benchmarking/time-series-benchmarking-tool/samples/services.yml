@@ -2,3 +2,4 @@ AppName:
 - InfluxDBConnector
 - Kapacitor
 - Telegraf
+- tools/TimeSeriesProfiler

@@ -34,7 +34,7 @@ Steps for running a benchmarking test case:
      $ ./publisher_json.sh 2
     ```
 
-3. Run execute test to execute the time series test case:
+3. Run execute test to execute the time series test case.Before running following command, make sure that "export_to_csv" value in **[TimeSeriesProfiler config.json](../../TimeSeriesProfiler/config.json)** is set to "True":
    ```
 	USAGE:
 	  ./execute_test.sh TEST_DIR STREAMS SLEEP PCM_HOME [EIS_HOME]
@@ -47,4 +47,6 @@ Steps for running a benchmarking test case:
           [EIS_HOME] - [Optional] Absolut path to EIS home directory, if running from a non-default location
    ```
 
-4. The execution log, performance logs, and the output.ppc will be saved in TEST_DIR/< timestamp >/ so that the same test case can be ran multiple times without overwriting the output. You can see if the test ocurred any errors in the execution.log, and you can see the results of a successful test in output.ppc
+4. The execution log, performance logs, and the output.ppc will be saved in TEST_DIR/output/< timestamp >/ so that the same test case can be ran multiple times without overwriting the output. You can see if the test ocurred any errors in the execution.log, and you can see the results of a successful test in output.ppc
+
+5. The timeseries profiler output file (named "SPS_Results.csv" ) will be store in TEST_DIR/output/< timestamp >/.

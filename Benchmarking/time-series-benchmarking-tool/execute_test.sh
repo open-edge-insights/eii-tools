@@ -151,30 +151,15 @@ run_logged docker-compose up --build -d
 run_logged sleep 10
 popd
 
-
-# --------------------------------------------------------------
-# If this is test TS1, remove influx container
-# -----------------------------s---------------------------------
-#TODO
-if [ "${TEST}" == "TS1" ]; then
-	pushd "${EIS_HOME}/docker_setup"
-	run_logged docker-compose stop ia_influxdbconnector
-	run_logged docker-compose rm -f ia_influxdbconnector
-fi
-
 ./ts-start-stats.sh ${ACTUAL_DATA_DIR} ${SLEEP} ${PCM_HOME} ${EIS_HOME}
-
-
-# --------------------------------------------------------------
-# Run Time Series Profiler
-# --------------------------------------------------------------
-notice "Time Series Profiler"
-pushd "${EIS_HOME}/tools/TimeSeriesProfiler/"
-run_logged docker-compose up 
-popd
 
 notice "Test Complete"
 pushd "${EIS_HOME}/build/"
+while [[ $(docker ps -a | grep ia_timeseries_profiler | grep Exited | wc -l) -ne 1 ]]; do
+	echo "time series profiler is running..sleep for 10s"
+	sleep 10
+done
+	
 run_logged docker-compose down
 popd
 
@@ -186,6 +171,9 @@ notice "Post-Processing Results"
 run_logged "./post-process.sh" "${ACTUAL_DATA_DIR}" "${STREAMS}" > "${ACTUAL_DATA_DIR}/results.ppc"
 run_logged "./aggregateresults.sh" "${ACTUAL_DATA_DIR}" "${STREAMS}" "${DATETIME}" "${ACTUAL_DATA_DIR}/output.csv"
 #sed -e "s/\r//g" ${ACTUAL_DATA_DIR}/output.csv > ${ACTUAL_DATA_DIR}/final_output.csv
+
+# copying Time series profiler SPS Results into ACTUAL_DATA_DIR
+cp "${EIS_HOME}/build/SPS_Results.csv" "${ACTUAL_DATA_DIR}"
 
 # --------------------------------------------------------------
 # Post-process complete
