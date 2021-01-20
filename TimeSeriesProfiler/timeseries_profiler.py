@@ -34,12 +34,13 @@ from util.util import Util
 import cfgmgr.config_manager as cfg
 import eis.msgbus as mb
 
-avg_sps_per_topic = {}
+avg_records = {}
+
 logger = logging.getLogger(__name__)
 
 
 class TimeSeriesCalculator:
-    """ A sample app to check SPS of
+    """ A sample app to check Average Stats of
     individual modules. """
 
     def __init__(self, topic, msgbus_cfg, dev_mode, total_number_of_samples):
@@ -49,7 +50,6 @@ class TimeSeriesCalculator:
         self.sample_count = 0
         self.start_time = 0.0
         self.done_receiving = False
-        self.start_subscribing = True
 
         self.total_records = dict()
         self.msgbus_cfg = msgbus_cfg
@@ -124,7 +124,8 @@ class TimeSeriesCalculator:
             # logger.info('Diff info : {0}'.format(diff))
             # logger.info('-----------------')
 
-            self.calculate_sps()
+            if self.sample_count == self.total_number_of_samples:
+                self.done_receiving = True
 
         avg_records = self.calculate_avg()
         logger.info('Average stats are : {0}'.format(avg_records))
@@ -215,7 +216,7 @@ class TimeSeriesCalculator:
             int(diff['ts_influx_to_idbconn'])
 
     def calculate_avg(self):
-        avg_records = dict()
+        global avg_records
 
         avg_records['avg_mqttpub_to_influx'] = \
             int(self.total_records[
@@ -258,34 +259,6 @@ class TimeSeriesCalculator:
 
         return avg_records
 
-    def calculate_sps(self):
-        """ Calculates the SPS of required module"""
-        # Setting timestamp after first sample receival
-        if self.start_subscribing:
-            self.start_time = int(round(time.time()))
-            self.start_subscribing = False
-
-        # Check if all samples are received
-        if self.sample_count == self.total_number_of_samples:
-            # Get time in milliseconds
-            end_time = int(round(time.time()))
-
-            logger.info('start-time and end-time are : {0} {1}'.
-                        format(self.start_time, end_time))
-
-            diff = end_time - self.start_time
-            # Calculating average sps
-            avg_sps = self.sample_count/diff
-
-            # Updating sps per topic dict
-            global avg_sps_per_topic
-            avg_sps_per_topic[self.topic] = avg_sps
-
-            # Notifying caller once all samples are received
-            self.done_receiving = True
-            return
-
-
 def threadRunner(topic, msgbus_cfg, dev_mode, total_number_of_samples):
     """ To run TimeSeriesCalculator for each topic """
     tsc_app = TimeSeriesCalculator(topic, msgbus_cfg,
@@ -322,7 +295,7 @@ if __name__ == "__main__":
     total_number_of_samples = int(app_cfg['total_number_of_samples'])
     logger.info("total_number_of_samples is {}"
                 .format(total_number_of_samples))
-    # Calculating SPS for each topic
+    # Calculating Average stats for each topic
     threads = []
     for topic in topics:
         thread = threading.Thread(target=threadRunner, args=(topic, msgbus_cfg,
@@ -333,28 +306,15 @@ if __name__ == "__main__":
     for thread in threads:
         thread.join()
 
-    # Calculating overall sps for all topics
-    final_sps = 0.0
-    for topic in avg_sps_per_topic.keys():
-        final_sps += avg_sps_per_topic[topic]
-
     if export_to_csv:
-
-        f = open('./out/SPS_Results.csv', 'wt')
+        f = open('./out/avg_latency_Results.csv', 'wt')
         try:
             writer = csv.writer(f)
-            writer.writerow(('total number of samples', 'final sps'))
-            writer.writerow((total_number_of_samples, final_sps))
+            writer.writerow(avg_records.keys())
+            writer.writerow(avg_records.values())
         finally:
             f.close()
+        logger.info('Check avg_latency_Results.csv file for Average stats...')
 
-        logger.info('Check SPS_Results.csv file for total SPS...')
-    else:
-        logger.info('Average SPS for each topic {0}'
-                    .format(avg_sps_per_topic))
-        logger.info('Total SPS for {0} samples {1}'
-                    .format(total_number_of_samples,
-                            final_sps))
-
-    # Exiting after SPS is calculated
+    # Exiting after Average stats is calculated
     sys.exit()

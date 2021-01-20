@@ -51,6 +51,5 @@ sleep $SLEEP
 
 pkill pcm &
 pkill stats.sh &
-tokill=`ps aux | grep top | grep -v grep | head -n 1 | awk '{print $2}'`
-kill "${tokill}"
+pkill top &
 

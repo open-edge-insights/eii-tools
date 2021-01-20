@@ -159,7 +159,10 @@ while [[ $(docker ps -a | grep ia_timeseries_profiler | grep Exited | wc -l) -ne
 	echo "time series profiler is running..sleep for 10s"
 	sleep 10
 done
-	
+
+# Storing time series profiler log into file
+docker logs ia_timeseries_profiler >& ${ACTUAL_DATA_DIR}/profiler_output.log
+
 run_logged docker-compose down
 popd
 
@@ -172,8 +175,8 @@ run_logged "./post-process.sh" "${ACTUAL_DATA_DIR}" "${STREAMS}" > "${ACTUAL_DAT
 run_logged "./aggregateresults.sh" "${ACTUAL_DATA_DIR}" "${STREAMS}" "${DATETIME}" "${ACTUAL_DATA_DIR}/output.csv"
 #sed -e "s/\r//g" ${ACTUAL_DATA_DIR}/output.csv > ${ACTUAL_DATA_DIR}/final_output.csv
 
-# copying Time series profiler SPS Results into ACTUAL_DATA_DIR
-cp "${EIS_HOME}/build/SPS_Results.csv" "${ACTUAL_DATA_DIR}"
+# copying Time series profiler avg Results into ACTUAL_DATA_DIR
+cp "${EIS_HOME}/build/avg_latency_Results.csv" "${ACTUAL_DATA_DIR}"
 
 # --------------------------------------------------------------
 # Post-process complete

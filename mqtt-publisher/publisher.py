@@ -130,13 +130,26 @@ def stream_csv(mqttc, topic, subsample, sampling_rate, filename):
     print('{} Done! {} rows served in {}'.format(
         filename, row_served, time.time() - target_start_time))
 
-def send_json_cb(client, topic, data, qos):
-    while True:
-        for msg in data:
-            client.publish(topic, msg, qos=qos)
+def send_json_cb(instance_id, host, port, topic, data, qos):
+    client = mqtt.Client(str(instance_id))
+    client.on_disconnect = on_disconnect
+    client.on_connect = on_connect
+    client.connect(host, port, 60)
+    client.loop_start()
+    try:
+        while True:
+            t_s = time.time()
+            for value in data:
+                msg = {'ts': t_s, 'value': value}
+                client.publish(topic, json.dumps(msg), qos=qos)
+                time.sleep(1)
+    except KeyboardInterrupt:
+        client.loop_stop()
 
 
-def publish_json(mqttc, topic, path, qos, argsinterval, streams):
+
+
+def publish_json(mqttc, topic, path, qos, argsinterval, streams, host, port):
     """ Publish the JSON file
     """
     data = []
@@ -157,8 +170,8 @@ def publish_json(mqttc, topic, path, qos, argsinterval, streams):
                     argsinterval = 1000
                 time.sleep(1)
     else:
-        for i in range(0, streams-1):
-            PROCS.append(Process(target=send_json_cb, args=(mqttc[i], topic, data, qos)))
+        for i in range(0, streams):
+            PROCS.append(Process(target=send_json_cb, args=(i, host, port, topic, data, qos)))
             PROCS[i].start()
             
 
@@ -191,22 +204,11 @@ def main():
     topics = {'topic_temp': args.topic_temp, 'topic_pres': args.topic_pres,
               'topic_humd': args.topic_humd}
     updated_topics = update_topic(args_dict, topics, topic_data)
+    client = None
     if int(args.streams) == 1:
         client = mqtt.Client()
         client.connect(args.host, args.port, 60)
         client.loop_start()
-    else:
-        for i in  range(0, args.streams-1):
-            client = []
-            port = int(args.port)
-            client.append(mqtt.Client(str(i)))
-            print("Attempting to connect client {} on port {}".format(i, port))
-            client[i].on_disconnect=on_disconnect
-            client[i].on_connect=on_connect
-            client[i].connect(args.host, port, 60)
-            client[i].loop_start()
-            i+=1
-            port+=1
 
     try:
         if args.csv is not None:
@@ -221,7 +223,10 @@ def main():
                          args.json,
                          args.qos,
                          args.interval,
-                         args.streams)
+                         args.streams,
+                         args.host,
+                         args.port)
+
         else:
             if not updated_topics:
                 sys.exit("Arguments are missing")
@@ -247,9 +252,8 @@ def main():
         if args.streams == 1:
             client.loop_stop()
         else:
-            for i in range(0, args.streams-1):
+            for i in range(0, args.streams):
                 PROCS[i].close()
-                client[i].loop_stop()
 
 if __name__ == '__main__':
     main()

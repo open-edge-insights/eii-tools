@@ -1,6 +1,6 @@
 # Time Series Benchmarking Tool
 
-These scripts are designed to automate the running of benchmarking tests and the collection of the performance data. This performance data includes the Samples per second (SPS) of each data stream, and also the CPU%, Memory%, and Memory Read/Write bandwidth.
+These scripts are designed to automate the running of benchmarking tests and the collection of the performance data. This performance data includes the Average Stats of each data stream, and also the CPU%, Memory%, and Memory Read/Write bandwidth.
 
 The Processor Counter Monitor (PCM) is required for measuring memory read/write bandwidth, which can be downloaded and built here: https://github.com/opcm/pcm 
 
@@ -25,13 +25,13 @@ Steps for running a benchmarking test case:
     ```sh
      $ cd ../../mqtt-publisher/
      $ ./build.sh
-     $ ./publisher_json.sh <streams>
+     $ ./publisher_json.sh --streams <streams>
     ```
    For example:
     ```sh
      $ cd ../../mqtt-publisher/
      $ ./build.sh
-     $ ./publisher_json.sh 2
+     $ ./publisher_json.sh --streams 2
     ```
 
 3. Run execute test to execute the time series test case.Before running following command, make sure that "export_to_csv" value in **[TimeSeriesProfiler config.json](../../TimeSeriesProfiler/config.json)** is set to "True":
@@ -46,7 +46,10 @@ Steps for running a benchmarking test case:
           PCM_HOME  - The absolute path to the PCM repository where pcm.x is built
           [EIS_HOME] - [Optional] Absolut path to EIS home directory, if running from a non-default location
    ```
-
+   For example:
+    ```sh
+    sudo -E ./execute_test.sh $PWD/samples 2 10 /opt/intel/pcm /home/intel/IEdgeInsights
+    ```
 4. The execution log, performance logs, and the output.ppc will be saved in TEST_DIR/output/< timestamp >/ so that the same test case can be ran multiple times without overwriting the output. You can see if the test ocurred any errors in the execution.log, and you can see the results of a successful test in output.ppc
 
-5. The timeseries profiler output file (named "SPS_Results.csv" ) will be store in TEST_DIR/output/< timestamp >/.
+5. The timeseries profiler output file (named "avg_latency_Results.csv" ) will be stored in TEST_DIR/output/< timestamp >/.
