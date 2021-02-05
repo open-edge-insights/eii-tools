@@ -27,13 +27,13 @@ services:
       context: $PWD/../VideoIngestion
       dockerfile: $PWD/../VideoIngestion/Dockerfile
       args:
-        EIS_VERSION: ${EIS_VERSION}
-        EIS_UID: ${EIS_UID}
-        EIS_USER_NAME: ${EIS_USER_NAME}
+        EII_VERSION: ${EII_VERSION}
+        EII_UID: ${EII_UID}
+        EII_USER_NAME: ${EII_USER_NAME}
         # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
         CMAKE_BUILD_TYPE: "Release"
         DOCKER_REGISTRY: ${DOCKER_REGISTRY}
-    image: ${DOCKER_REGISTRY}ia_video_ingestion:${EIS_VERSION}
+    image: ${DOCKER_REGISTRY}ia_video_ingestion:${EII_VERSION}
     container_name: ia_video_ingestion
     hostname: ia_video_ingestion
     network_mode: host
@@ -42,14 +42,14 @@ services:
       AppName: "VideoIngestion"
       DEV_MODE: ${DEV_MODE}
       PROFILING_MODE: ${PROFILING_MODE}
-      no_proxy: ${eis_no_proxy},${RTSP_CAMERA_IP},${ETCD_HOST}
+      no_proxy: ${eii_no_proxy},${RTSP_CAMERA_IP},${ETCD_HOST}
       ETCD_HOST: ${ETCD_HOST}
       ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
       ETCD_PREFIX: ${ETCD_PREFIX}
       CertType: "zmq"
     volumes:
       - "/dev:/dev"
-      - "vol_eis_socket:${SOCKET_DIR}"
+      - "vol_eii_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"
     privileged: true
     devices:
@@ -62,12 +62,12 @@ services:
 
 
 volumes:
-  vol_eis_socket:
+  vol_eii_socket:
     driver: local
     driver_opts:
       type: local
       o: bind
-      device: ${EIS_INSTALL_PATH}/sockets
+      device: ${EII_INSTALL_PATH}/sockets
 
 secrets:
   ca_etcd:

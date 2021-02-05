@@ -22,7 +22,7 @@ cmake_minimum_required(VERSION 3.11)
 project(sw_trigger_utility VERSION 1.0.0 LANGUAGES C CXX)
 
 # Globals
-set(EIS_COMMON_CMAKE "${CMAKE_CURRENT_SOURCE_DIR}/../../common/cmake")
+set(EII_COMMON_CMAKE "${CMAKE_CURRENT_SOURCE_DIR}/../../common/cmake")
 
 # Set C++ version
 set(CMAKE_CXX_STANDARD 14)
@@ -35,7 +35,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
 set(CMAKE_SHARED_LINKER_FLAGS "-z noexecstack -z relro -z now")
 
 # Add cmake module path
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${EIS_COMMON_CMAKE}")
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${EII_COMMON_CMAKE}")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json")
@@ -46,10 +46,10 @@ if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json")
 endif()
 
 # Finding packages
-find_package(EISMsgEnv REQUIRED)
-find_package(EISUtils REQUIRED)
-find_package(EISConfigMgr REQUIRED)
-find_package(EISMessageBus REQUIRED)
+find_package(EIIMsgEnv REQUIRED)
+find_package(EIIUtils REQUIRED)
+find_package(EIIConfigMgr REQUIRED)
+find_package(EIIMessageBus REQUIRED)
 find_package(PkgConfig REQUIRED)
 find_package(IntelSafeString REQUIRED)
 find_package(WJE REQUIRED)
@@ -57,10 +57,10 @@ find_package(WJE REQUIRED)
 # Include header directories
 include_directories(
     include/
-    ${EISMsgEnv_INCLUDE}
-    ${EISUtils_INCLUDE}
-    ${EISConfigMgr_INCLUDE}
-    ${EISMessageBus_INCLUDE}
+    ${EIIMsgEnv_INCLUDE}
+    ${EIIUtils_INCLUDE}
+    ${EIIConfigMgr_INCLUDE}
+    ${EIIMessageBus_INCLUDE}
     ${IntelSafeString_INCLUDE}
     ${WJE_INCLUDE_DIRS})
 
@@ -70,10 +70,10 @@ add_executable(sw_trigger_utility ${SOURCES})
 
 target_link_libraries(sw_trigger_utility
     PRIVATE
-        ${EISUtils_LIBRARIES}
-        ${EISMsgEnv_LIBRARIES}
-        ${EISConfigMgr_LIBRARIES}
-        ${EISMessageBus_LIBRARIES}
+        ${EIIUtils_LIBRARIES}
+        ${EIIMsgEnv_LIBRARIES}
+        ${EIIConfigMgr_LIBRARIES}
+        ${EIIMessageBus_LIBRARIES}
         ${ZMQ_LIBRARIES}
         ${CJSON_LIBRARIEES}
         ${IntelSafeString_LIBRARIES}

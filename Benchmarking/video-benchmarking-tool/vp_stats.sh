@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 #Set permission
-sudo chmod -R 777 /opt/intel/eis/sockets
+sudo chmod -R 777 /opt/intel/eii/sockets
 CertificatesDir="../../build/provision/Certificates"
 
 if [ -d "$CertificatesDir" ]; then
@@ -32,7 +32,7 @@ fi
 source ${PWD}/env.sh
 
 #set paths
-export PYTHONPATH="../../:../../common/libs/EISMessageBus:../../common"
+export PYTHONPATH="../../:../../common/libs/EIIMessageBus:../../common"
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
 

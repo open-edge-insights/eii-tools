@@ -25,21 +25,21 @@ package main
 
 import (
 	"flag"
-	eismsgbus "EISMessageBus/eismsgbus"
-	eiscfgmgr "ConfigMgr/eisconfigmgr"
+	eiimsgbus "EIIMessageBus/eiimsgbus"
+	eiicfgmgr "ConfigMgr/eiiconfigmgr"
 	"github.com/golang/glog"
 	"os"
 )
 
 type msgbusSubscriber struct {
-	msgBusSubMap       map[*eismsgbus.Subscriber]string // eis messagebus subscriber handels for topic prefix
-	confMgr            *eiscfgmgr.ConfigMgr             // Config manager reference
-	msgBusClient       []*eismsgbus.MsgbusClient        // list of message bus client
+	msgBusSubMap       map[*eiimsgbus.Subscriber]string // eii messagebus subscriber handels for topic prefix
+	confMgr            *eiicfgmgr.ConfigMgr             // Config manager reference
+	msgBusClient       []*eiimsgbus.MsgbusClient        // list of message bus client
 }
 
 // Creates the subscriber for each topic
 func (subObj *msgbusSubscriber) startSubscribers(subTopics []string, subConfig map[string]interface{}) error {
-	msgBusClient, err := eismsgbus.NewMsgbusClient(subConfig)
+	msgBusClient, err := eiimsgbus.NewMsgbusClient(subConfig)
 	if err != nil {
 		glog.Errorf("-- Error initializing message bus context: %v\n", err)
 		os.Exit(1)
@@ -69,7 +69,7 @@ func (subObj *msgbusSubscriber) receiveFromAllTopics() error {
 	return nil
 }
 
-func processMsg(sub *eismsgbus.Subscriber) {
+func processMsg(sub *eiimsgbus.Subscriber) {
 	for {
 		select {
 		case msg := <-sub.MessageChannel:
@@ -100,8 +100,8 @@ func main() {
 	var subObj msgbusSubscriber
 	var err error
 	flag.Parse()
-	subObj.msgBusSubMap = make(map[*eismsgbus.Subscriber]string)
-	subObj.confMgr, err = eiscfgmgr.ConfigManager()
+	subObj.msgBusSubMap = make(map[*eiimsgbus.Subscriber]string)
+	subObj.confMgr, err = eiicfgmgr.ConfigManager()
 	if err != nil {
 		glog.Errorf("Config Manager initialization failed...")
 		os.Exit(1)
@@ -128,7 +128,7 @@ func main() {
 		}
 		config, err := subCtx.GetMsgbusConfig()
 		if err != nil {
-			glog.Errorf("Error while getting eis message bus config: %v\n", err)
+			glog.Errorf("Error while getting eii message bus config: %v\n", err)
 			os.Exit(1)
 		}
 		subCtx.Destroy()

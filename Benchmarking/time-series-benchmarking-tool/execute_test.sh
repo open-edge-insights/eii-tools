@@ -26,14 +26,14 @@
 function usage(){
 	echo "Error: missing one or more parameters." 1>&2
 	echo "USAGE:" 1>&2
-	echo "  $0 TEST_DIR STREAMS SLEEP PCM_HOME [EIS_HOME]" 1>&2
+	echo "  $0 TEST_DIR STREAMS SLEEP PCM_HOME [EII_HOME]" 1>&2
 	echo "" 1>&2
 	echo "WHERE:" 1>&2
 	echo "  TEST_DIR  - Directory containing services.yml and config files for influx, telegraf, and kapacitor" 1>&2
 	echo "  STREAMS   - The number of streams (1, 2, 4, 8, 16)" 1>&2
 	echo "  SLEEP     - The number of seconds to wait after the containers come up " 1>&2
 	echo "	PCM_HOME  - The absolute path to the PCM repository where pcm.x is built" 1>&2
-	echo "	[EIS_HOME] - [Optional] Absolut path to EIS home directory, if running from a non-default location" 1>&2
+	echo "	[EII_HOME] - [Optional] Absolut path to EII home directory, if running from a non-default location" 1>&2
 	echo 1>&2
 	echo "Aborting..." 1>&2
 	exit ${FAILURE}
@@ -52,11 +52,11 @@ TEST_DIR=$1
 STREAMS=$2
 SLEEP=$3
 PCM_HOME=$4
-EIS_HOME="../../.."
+EII_HOME="../../.."
 
 if [ $# -eq 5 ]
 then
-    EIS_HOME=$5
+    EII_HOME=$5
 fi
 
 DATETIME=`date -u +"%Y%b%d_%H%M"`
@@ -107,7 +107,7 @@ run_logged modprobe msr
 # Kill any previously provisioned containers
 # --------------------------------------------------------------
 notice "Stop any old containers"
-pushd "${EIS_HOME}/build/"
+pushd "${EII_HOME}/build/"
 run_logged docker-compose down
 popd
 
@@ -115,46 +115,46 @@ popd
 # Remove files from last test and copy over files for this test
 # --------------------------------------------------------------
 notice "Cleaning files from prior tests"
-#run_logged rm -v "${EIS_HOME}/build/docker-compose.yml"
-#run_logged rm -v "${EIS_HOME}/build/provision/config/eis_config.json"
-#run_logged rm -v "${EIS_HOME}/build/config/telegraf"*".conf"
-#run_logged rm -v "${EIS_HOME}/build/config/influxdb.conf"
+#run_logged rm -v "${EII_HOME}/build/docker-compose.yml"
+#run_logged rm -v "${EII_HOME}/build/provision/config/eii_config.json"
+#run_logged rm -v "${EII_HOME}/build/config/telegraf"*".conf"
+#run_logged rm -v "${EII_HOME}/build/config/influxdb.conf"
 
 notice "Copying in test configuration files"
-#run_logged cp -v "${CFG_DIR}/docker-compose.yml" "${EIS_HOME}/build/docker-compose.yml"
-#run_logged cp -v "${CFG_DIR}/eis_config.json" "${EIS_HOME}/build/provision/config/eis_config.json"
-#run_logged cp -v "${CFG_DIR}/telegraf"*".conf" "${EIS_HOME}/build/config/"
-#run_logged cp -v "${CFG_DIR}/influxdb.conf" "${EIS_HOME}/build/config/"
+#run_logged cp -v "${CFG_DIR}/docker-compose.yml" "${EII_HOME}/build/docker-compose.yml"
+#run_logged cp -v "${CFG_DIR}/eii_config.json" "${EII_HOME}/build/provision/config/eii_config.json"
+#run_logged cp -v "${CFG_DIR}/telegraf"*".conf" "${EII_HOME}/build/config/"
+#run_logged cp -v "${CFG_DIR}/influxdb.conf" "${EII_HOME}/build/config/"
 
 
 notice "Generating test configuration files"
-run_logged cp -v ${TEST_DIR}/services.yml ${EIS_HOME}/build/services.yml
+run_logged cp -v ${TEST_DIR}/services.yml ${EII_HOME}/build/usecases/services.yml
 
-pushd "${EIS_HOME}/build"
-run_logged python3 eis_builder.py -f services.yml
+pushd "${EII_HOME}/build"
+run_logged python3 builder.py -f usecases/services.yml
 popd
 
 # --------------------------------------------------------------
 # Provision containers
 # --------------------------------------------------------------
 notice "Provisioning cluster"
-pushd "${EIS_HOME}/build/provision/"
-run_logged ./provision_eis.sh ../docker-compose.yml
+pushd "${EII_HOME}/build/provision/"
+run_logged ./provision.sh ../docker-compose.yml
 popd
 
 # --------------------------------------------------------------
 # Launch
 # --------------------------------------------------------------
 notice "Starting containers"
-pushd "${EIS_HOME}/build"
+pushd "${EII_HOME}/build"
 run_logged docker-compose up --build -d
 run_logged sleep 10
 popd
 
-./ts-start-stats.sh ${ACTUAL_DATA_DIR} ${SLEEP} ${PCM_HOME} ${EIS_HOME}
+./ts-start-stats.sh ${ACTUAL_DATA_DIR} ${SLEEP} ${PCM_HOME} ${EII_HOME}
 
 notice "Test Complete"
-pushd "${EIS_HOME}/build/"
+pushd "${EII_HOME}/build/"
 while [[ $(docker ps -a | grep ia_timeseries_profiler | grep Exited | wc -l) -ne 1 ]]; do
 	echo "time series profiler is running..sleep for 10s"
 	sleep 10
@@ -176,7 +176,7 @@ run_logged "./aggregateresults.sh" "${ACTUAL_DATA_DIR}" "${STREAMS}" "${DATETIME
 #sed -e "s/\r//g" ${ACTUAL_DATA_DIR}/output.csv > ${ACTUAL_DATA_DIR}/final_output.csv
 
 # copying Time series profiler avg Results into ACTUAL_DATA_DIR
-cp "${EIS_HOME}/build/avg_latency_Results.csv" "${ACTUAL_DATA_DIR}"
+cp "${EII_HOME}/build/avg_latency_Results.csv" "${ACTUAL_DATA_DIR}"
 
 # --------------------------------------------------------------
 # Post-process complete

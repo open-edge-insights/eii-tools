@@ -33,10 +33,10 @@ import gc
 import re
 import csv
 from distutils.util import strtobool
-# IMPORT the library to read from EIS
+# IMPORT the library to read from EII
 from util.util import Util
 import cfgmgr.config_manager as cfg
-import eis.msgbus as mb
+import eii.msgbus as mb
 import coloredlogs
 
 coloredlogs.install()
@@ -102,7 +102,7 @@ class VideoProfiler:
         # Initializing monitor_mode related variables
         if self.monitor_mode:
             self.monitor_mode_settings = config_dict['monitor_mode_settings']
-            logger.info('Please ensure EIS containers are '
+            logger.info('Please ensure EII containers are '
                         'running with PROFILING_MODE set to true')
             self.ingestion_appname = appname_dict["ingestion_appname"]
             self.analytics_appname = appname_dict["analytics_appname"]
@@ -133,9 +133,9 @@ class VideoProfiler:
         self.VI_time_to_push_to_queue = 0.0
         self.e2e = 0.0
 
-    def eisSubscriber(self):
+    def eiiSubscriber(self):
         """ To subscribe over
-        EISMessagebus. """
+        EIIMessagebus. """
         msgbus = mb.MsgbusContext(self.msgbus_config)
         subscriber = msgbus.new_subscriber(self.topic)
         if self.monitor_mode:
@@ -150,6 +150,7 @@ class VideoProfiler:
         elif self.fps_mode:
             while not self.done_receiving:
                 md, fr = subscriber.recv()
+                print("REcevieed")
                 self.calculate_fps()
                 # Discarding both the meta-data & frame
                 del md
@@ -368,7 +369,7 @@ def thread_runner(msgbus_config, topics_list, config_dict, appname_dict):
     """
     fps_app = VideoProfiler(msgbus_config, topics_list,
                             config_dict, appname_dict)
-    fps_app.eisSubscriber()
+    fps_app.eiiSubscriber()
 
 
 if __name__ == "__main__":

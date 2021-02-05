@@ -29,7 +29,7 @@ import queue
 import threading
 import imagestore_client
 import argparse
-import eis.msgbus as mb
+import eii.msgbus as mb
 import common
 import os
 

@@ -12,7 +12,7 @@
             {
                 "Name": "default",
                 "Type": "zmq_ipc",
-                "EndPoint": "/EIS/sockets",
+                "EndPoint": "/EII/sockets",
                 "Topics": [
                     "camera1_stream"
                 ],

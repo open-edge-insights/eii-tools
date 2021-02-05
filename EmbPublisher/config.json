@@ -20,7 +20,7 @@
           "topic-pfx3",
           "topic-pfx4"
         ],
-        "BrokerAppName" : "EISZmqBroker",
+        "BrokerAppName" : "ZmqBroker",
         "brokered": true
       }
     ]

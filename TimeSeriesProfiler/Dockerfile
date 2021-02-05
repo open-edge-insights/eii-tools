@@ -20,13 +20,13 @@
 
 # Dockerfile for TimeSeriesProfiler
 
-ARG EIS_VERSION
-FROM ia_eisbase:${EIS_VERSION} as eisbase
+ARG EII_VERSION
+FROM ia_eiibase:${EII_VERSION} as eiibase
 LABEL description="TimeSeriesProfiler image"
 
-FROM ia_common:${EIS_VERSION} as common
+FROM ia_common:${EII_VERSION} as common
 
-FROM eisbase
+FROM eiibase
 
 COPY --from=common ${GO_WORK_DIR}/common/libs ${PY_WORK_DIR}/libs
 COPY --from=common ${GO_WORK_DIR}/common/util ${PY_WORK_DIR}/util
@@ -42,7 +42,7 @@ RUN apt-get remove -y wget && \
     apt-get remove curl && \
     apt-get autoremove -y
 
-RUN mkdir /EIS/out/
+RUN mkdir /EII/out/
 
 COPY ./timeseries_profiler.py ./timeseries_profiler.py
 

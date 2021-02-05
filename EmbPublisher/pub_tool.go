@@ -23,8 +23,8 @@ SOFTWARE.
 package main
 
 import (
-	eiscfgmgr "ConfigMgr/eisconfigmgr"
-	eismsgbus "EISMessageBus/eismsgbus"
+	eiicfgmgr "ConfigMgr/eiiconfigmgr"
+	eiimsgbus "EIIMessageBus/eiimsgbus"
 	"encoding/json"
 	"fmt"
 	"sync"
@@ -35,7 +35,7 @@ var wg sync.WaitGroup
 
 func main() {
 
-	configmgr, err := eiscfgmgr.ConfigManager()
+	configmgr, err := eiicfgmgr.ConfigManager()
 	if err != nil {
 		fmt.Printf("Config Manager initialization failed...")
 		return
@@ -72,7 +72,7 @@ func main() {
 	}
 
 	msg_file := "./datafiles/" + appConfig["msg_file"].(string)
-	msg, err := eismsgbus.ReadJsonConfig(msg_file)
+	msg, err := eiimsgbus.ReadJsonConfig(msg_file)
 	if err != nil {
 		fmt.Printf("-- Failed to parse config: %v\n", err)
 		return
@@ -105,7 +105,7 @@ func publisher_function(config map[string]interface{}, topic string, buffer []by
 	defer wg.Done()
 
 	fmt.Printf("-- Initializing message bus context:%v\n", config)
-	client, err := eismsgbus.NewMsgbusClient(config)
+	client, err := eiimsgbus.NewMsgbusClient(config)
 	if err != nil {
 		fmt.Printf("-- Error initializing message bus context: %v\n", err)
 		return

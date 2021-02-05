@@ -25,14 +25,14 @@ Steps for running a benchmarking test case:
 3. Run execute_test.sh with the desired benchmarking config:
     ```
     USAGE:
-        ./execute_test.sh TEST_DIR STREAMS SLEEP PCM_HOME [EIS_HOME]
+        ./execute_test.sh TEST_DIR STREAMS SLEEP PCM_HOME [EII_HOME]
 
     WHERE:
         TEST_DIR  - The absolute path to directory containing services.yml for the services to be tested, and the config.json and docker-compose.yml for VI and VA if applicable.
         STREAMS   - The number of streams (1, 2, 4, 8, 16)
         SLEEP     - The number of seconds to wait after the containers come up
         PCM_HOME  - The absolute path to the PCM repository where pcm.x is built
-        EIS_HOME - [Optional] The absolute path to EIS home directory, if running from a non-default location
+        EII_HOME - [Optional] The absolute path to EII home directory, if running from a non-default location
     ```
    For example:
     ```sh

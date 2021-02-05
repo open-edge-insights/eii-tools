@@ -29,10 +29,10 @@ import datetime
 import threading
 import gc
 from distutils.util import strtobool
-# IMPORT the library to read from EIS
+# IMPORT the library to read from EII
 from util.util import Util
 import cfgmgr.config_manager as cfg
-import eis.msgbus as mb
+import eii.msgbus as mb
 
 # Dict to store sps mode results
 avg_sps_per_topic = {}
@@ -64,7 +64,7 @@ class TimeSeriesCalculator:
         # Initializing monitor_mode related variables
         if self.monitor_mode:
             self.monitor_mode_settings = config_dict['monitor_mode_settings']
-            logger.info('Please ensure EIS containers are '
+            logger.info('Please ensure EII containers are '
                         'running with PROFILING_MODE set to true')
         if config_dict['total_number_of_samples'] is (-1):
             if self.monitor_mode:
@@ -98,9 +98,9 @@ class TimeSeriesCalculator:
         # Initializing variables related to profiling
         self.e2e = 0.0
 
-    def eisSubscriber(self):
+    def eiiSubscriber(self):
         """ To subscribe over
-        EISMessagebus. """
+        EIIMessagebus. """
 
         mode = self.msgbus_cfg["type"]
         if (not self.devMode and mode == "zmq_tcp"):
@@ -348,7 +348,7 @@ def threadRunner(topics_list, msgbus_cfg, config_dict):
     tsc_app = TimeSeriesCalculator(topics_list, msgbus_cfg,
                                    config_dict)
 
-    tsc_app.eisSubscriber()
+    tsc_app.eiiSubscriber()
 
 
 if __name__ == "__main__":

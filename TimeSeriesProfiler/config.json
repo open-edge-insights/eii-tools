@@ -15,10 +15,10 @@
             {
                 "Name": "default",
                 "Type": "zmq_tcp",
-                "EndPoint": "127.0.0.1:65034",
+                "EndPoint": "127.0.0.1:65032",
                 "PublisherAppName": "InfluxDBConnector",
                 "Topics": [
-                    "point_classifier_results"
+                    "rfc_results"
                 ]
             }
         ]

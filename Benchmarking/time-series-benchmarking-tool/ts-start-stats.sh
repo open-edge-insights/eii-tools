@@ -25,7 +25,7 @@
 ACTUAL_DATA_DIR=$1
 SLEEP=$2
 PCM_HOME=$3
-EIS_HOME="../../.."
+EII_HOME="../../.."
 
 function notice(){
 	echo "# --------------------------------------------------------------" 2>&1 | tee -a ${LOG_FILE}

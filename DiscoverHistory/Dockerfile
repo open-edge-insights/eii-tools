@@ -20,14 +20,14 @@
 
 # Dockerfile for DiscoverHistory tool
 
-ARG EIS_VERSION
+ARG EII_VERSION
 ARG DOCKER_REGISTRY
-FROM ${DOCKER_REGISTRY}ia_eisbase:${EIS_VERSION} as eisbase
+FROM ${DOCKER_REGISTRY}ia_eiibase:${EII_VERSION} as eiibase
 LABEL description="DiscoverHistory image"
 
-FROM ${DOCKER_REGISTRY}ia_common:${EIS_VERSION} as common
+FROM ${DOCKER_REGISTRY}ia_common:${EII_VERSION} as common
 
-FROM eisbase
+FROM eiibase
 
 COPY --from=common ${GO_WORK_DIR}/common/libs ${PY_WORK_DIR}/libs
 COPY --from=common ${GO_WORK_DIR}/common/util ${PY_WORK_DIR}/util

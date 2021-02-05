@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-export PYTHONPATH=$PYTHONPATH:../../:../../common/libs/EISMessageBus:../../common
+export PYTHONPATH=$PYTHONPATH:../../:../../common/libs/EIIMessageBus:../../common
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
 # Env variables to be set for communicating with ETCD

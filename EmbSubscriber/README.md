@@ -2,7 +2,7 @@
 
 EmbSubscriber subscribes message coming from a publisher.It subscribes to messagebus topic to get the data.
     
-## EIS pre-requisites
+## EII pre-requisites
 1.  EmbSubscriber expects a set of config, interfaces & public private keys to be present in ETCD as a pre-requisite.
     To achieve this, please ensure an entry for EmbSubscriber with its relative path from [IEdgeInsights](../../) directory is set in the time-series.yml file present in [build](../../build) directory. An example has been provided below:
     ```sh
@@ -16,9 +16,9 @@ EmbSubscriber subscribes message coming from a publisher.It subscribes to messag
 
 2. With the above pre-requisite done, please run the below command:
     ```sh
-        python3 eis_builder.py -f ./time-series.yml
+        python3.6 builder.py -f usecases/time-series.yml
     ```
 
 ## Running EmbSubscriber
 
-1. Refer [provision/README.md](../../README.md) to provision, build and run the tool along with the EIS time-series recipe/stack.
+1. Refer [provision/README.md](../../README.md) to provision, build and run the tool along with the EII time-series recipe/stack.
