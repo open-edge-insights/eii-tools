@@ -25,6 +25,66 @@
     ```
 
 
+
+## EIS TimeSeriesProfiler modes
+
+    By default the EIS TimeSeriesProfiler supports two modes, which are 'sps' & 'monitor' mode.
+
+1. SPS mode
+
+    Enabled by setting the 'mode' key in [config](./config.json) to 'sps', this mode calculates the samples
+    per second of any EIS module by subscribing to that module's respective stream.
+    ```sh
+        "mode": "sps"
+    ```
+
+2. Monitor mode
+
+    Enabled by setting the 'mode' key in [config](./config.json) to 'monitor', this mode calculates average & per sample stats
+
+    Refer the below exmaple config where TimeSeriesProfiler is used in monitor mode.
+
+    ```javascript
+        "config": {
+        "mode": "monitor",
+        "monitor_mode_settings": {
+                                    "display_metadata": false,
+                                    "per_sample_stats":false,
+                                    "avg_stats": true
+                                },
+        "total_number_of_samples" : 5,
+        "export_to_csv" : false
+    }
+    ```
+
+    ```sh
+        "mode": "monitor"
+    ```
+
+    The stats to be displayed by the tool in monitor_mode can be set in the monitor_mode_settings key of [config.json](config.json).
+    1. 'display_metadata': Displays the raw meta-data with timestamps associated with every sample.
+    2. 'per_sample_stats': Continously displays the per sample metrics of every sample.
+    3. 'avg_stats': Continously displays the average metrics of every sample.
+
+  > **Note:**
+  > * Pre-requisite for running in profiling or monitor mode: Time series containers should be running with PROFILING_MODE set to **true** in [.env](../../build/.env)
+  > * For running TimeSeriesProfiler in SPS mode, it is recommended to keep PROFILING_MODE set to false in [.env](../../build/.env) for better performance.
+
+## EIS TimeSeriesProfiler configurations
+
+1. total_number_of_samples
+
+    If mode is set to 'sps', the average SPS is calculated for the number of samples set by this variable.
+    If mode is set to 'monitor', the average stats is calculated for the number of samples set by this variable.
+    Setting it to (-1) will run the profiler forever unless terminated by stopping container TimeSeriesProfiler manually.
+    total_number_of_samples should never be set as (-1) for 'sps' mode.
+
+2. export_to_csv
+
+    Setting this switch to **true** exports csv files for the results obtained in TimeSeriesProfiler. For monitor_mode, runtime stats printed in the csv
+    are based on the the following precdence: avg_stats, per_sample_stats, display_metadata.
+
+
 ## Running TimeSeriesProfiler
 
 1. Pre-requisite :
