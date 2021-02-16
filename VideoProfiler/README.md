@@ -92,61 +92,6 @@ module.
     Setting this switch to **true** exports csv files for the results obtained in VideoProfiler. For monitor_mode, runtime stats printed in the csv
     are based on the the following precdence: avg_stats, per_frame_stats, display_metadata.
 
-## Pre-requisites for running VideoProfiler for CSL use case
-
-The following pre-requisites are to be met for running VideoProfiler for CSL use case:
-
-1. Ensure the **ETCD_HOST** & **ETCD_CLIENT_PORT** in [env.sh](env.sh) are set to connect to the ETCD server running on different node. Also, ensure **ETCD_PREFIX** is set to the required value.
-
-2. Make sure to set required permissions to csl certificates
-
-    ```sh
-        sudo chmod -R 755 ../../build/provision/Certificates/
-    ```
-    Note : This step is required everytime provisioning is done.
-    Caution: This step will make the certs insecure. Please do not do it on a production machine.
-
-3. Ensure you are using the below certs in [env.sh](env.sh):
-
-    ```sh
-        export CONFIGMGR_CERT=../../build/provision/Certificates/csl/cert.pem
-        export CONFIGMGR_KEY=../../build/provision/Certificates/csl/client.key
-        export CONFIGMGR_CACERT=../../build/provision/Certificates/csl/cacert.pem
-    ```
-
-4. To get the HOST & PORT numbers of the required publisher, run this command from the CSL client node where the container is running:
-
-    ```sh
-        docker inspect <container_id>
-    ```
-
-    The required HOST & PORT can be found in the **Env** section of the **config json** from the available output of the above command. Given below is an example of one such instance for VideoAnalytics:
-
-    ```sh
-        "VIDEOANALYTICS_091CA571_D3F8_4923_9700_4883C8BD6621_SERVICE_HOST=10.102.151.221"
-        "VIDEOANALYTICS_091CA571_D3F8_4923_9700_4883C8BD6621_PORT_29170_TCP=tcp://10.102.151.221:29170"
-    ```
-
-    We can infer from the above output that HOST is **10.102.151.221** and PORT is **29170**.
-
-5. Ensure the correct HOST and PORT numbers are specified in [config](config.json) for connecting to a particular stream of any Publisher. Given below is an example for connecting to CSL VideoAnalytics running on a different node:
-
-    ```sh
-        "interfaces": {
-            "Subscribers": [
-                {
-                    "Name": "default",
-                    "Type": "zmq_tcp",
-                    "EndPoint": "10.102.151.221:29170",
-                    "PublisherAppName": "VideoAnalytics",
-                    "Topics": [
-                        "camera1_stream_results"
-                    ]
-                }
-            ]
-        }
-    ```
-
 ## Installing Video Profiler requirements
 
 1. To install EIS libs on bare-metal, follow the [README](../../common/README.md) of eis_libs_installer.
