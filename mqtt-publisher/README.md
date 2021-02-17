@@ -46,10 +46,9 @@ Simple Python temperature sensor simulator.
 	./build.sh && ./publisher.sh --temperature 10:30 --pressure 10:30 --humidity 10:30 --topic_temp <temperature topic> --topic_pres <pressure topic> --topic_humd <humidity topic>
    ```
 
-  It is possible to publish more than one sensor data into single topic, in that case, same topic name needs to be given for that sensor data. 
+  It is possible to publish more than one sensor data into single topic, in that case, same topic name needs to be given for that sensor data.
 
-   * For DiscoveryCreek usecase (publishes data from csv row by row)
-     ```sh
+   * For publishing data from csv row by row:
      $ ./build.sh && ./publisher_csv.sh
      ```
      To publish in deatched mode:
