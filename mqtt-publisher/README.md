@@ -48,7 +48,7 @@ Simple Python temperature sensor simulator.
 
   It is possible to publish more than one sensor data into single topic, in that case, same topic name needs to be given for that sensor data. 
 
-   * For DiscoveryCreek usecase (publishes data from csv row by row)
+   * For publishing data from csv row by row:
      ```sh
      $ ./build.sh && ./publisher_csv.sh
      ```
