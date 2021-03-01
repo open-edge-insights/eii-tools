@@ -44,7 +44,8 @@ def make_pipeline(pfs_config_map, config_table):
     """
     gstreamer_pipeline = config_table["plugin_name"] + " "
     if "device_serial_number" in config_table:
-        gstreamer_pipeline += "serial=" + config_table["device_serial_number"] + " "
+        gstreamer_pipeline += "serial=" + \
+                              config_table["device_serial_number"] + " "
     video_raw = ""
     if "mono" in pfs_config_map["pixel-format"]:
         pfs_config_map["pixel-format"] = "mono8"
@@ -126,7 +127,7 @@ def etcd_config(ca_cert, root_key, root_cert):
 
     if(len(port) == 0):
         port = "2379"
-    
+
     try:
         if ca_cert is None and root_key is None and root_cert is None:
             etcd = etcd3.client(host=hostname, port=port)

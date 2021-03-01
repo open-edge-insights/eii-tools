@@ -43,6 +43,7 @@ HOST = 'localhost'
 PORT = 1883
 PROCS = []
 
+
 def g_tick(period=1):
     """generate the tick
     """
@@ -86,7 +87,8 @@ def parse_args():
     a_p.add_argument('--sampling_rate', default=SAMPLING_RATE, type=float,
                      help='Data Sampling Rate')
     a_p.add_argument('--streams', default=1, type=int,
-                      help='Number of MQTT streams to send. This should correspond to the number of brokers running')
+                     help='Number of MQTT streams to send. This should '
+                          'correspond to the number of brokers running')
     return a_p.parse_args()
 
 
@@ -130,6 +132,7 @@ def stream_csv(mqttc, topic, subsample, sampling_rate, filename):
     print('{} Done! {} rows served in {}'.format(
         filename, row_served, time.time() - target_start_time))
 
+
 def send_json_cb(instance_id, host, port, topic, data, qos):
     client = mqtt.Client(str(instance_id))
     client.on_disconnect = on_disconnect
@@ -147,8 +150,6 @@ def send_json_cb(instance_id, host, port, topic, data, qos):
         client.loop_stop()
 
 
-
-
 def publish_json(mqttc, topic, path, qos, argsinterval, streams, host, port):
     """ Publish the JSON file
     """
@@ -159,7 +160,7 @@ def publish_json(mqttc, topic, path, qos, argsinterval, streams, host, port):
         with open(file) as fpd:
             data.append(fpd.read())
     print("Publishing json files to mqtt in loop")
-    if streams == 1: 
+    if streams == 1:
         while True:
             t_s = time.time()
             for value in data:
@@ -171,12 +172,14 @@ def publish_json(mqttc, topic, path, qos, argsinterval, streams, host, port):
                 time.sleep(1)
     else:
         for i in range(0, streams):
-            PROCS.append(Process(target=send_json_cb, args=(i, host, port, topic, data, qos)))
+            PROCS.append(Process(target=send_json_cb, args=(i, host, port,
+                                                            topic, data, qos)))
             PROCS[i].start()
-            
+
 
 def update_topic(args_dict, topics, topic_data):
-    """Update topics with different kind of data
+    """
+    Update topics with different kind of data
     """
     updated_topics = {}
     topic_dict = {key: value for key, value in topics.items()
@@ -188,10 +191,16 @@ def update_topic(args_dict, topics, topic_data):
             updated_topics[value] = [key]
     return updated_topics
 
+
 def on_disconnect(client, userdata, rc):
-    print ("MQTT disconnected:\nclient: ",client,"\n userdata: ",userdata,"\n rc: ",rc)
+    print("MQTT disconnected:\nclient: ", client, "\n userdata: ", userdata,
+          "\n rc: ", rc)
+
+
 def on_connect(client, userdata, flags, rc):
-    print ("MQTT Connected:\nclient: ",client,"\n userdata: ",userdata,"\n rc: ",rc)
+    print("MQTT Connected:\nclient: ", client, "\n userdata: ", userdata,
+          "\n rc: ", rc)
+
 
 def main():
     """Main method
@@ -254,6 +263,7 @@ def main():
         else:
             for i in range(0, args.streams):
                 PROCS[i].close()
+
 
 if __name__ == '__main__':
     main()

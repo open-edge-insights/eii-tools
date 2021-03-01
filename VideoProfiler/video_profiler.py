@@ -130,6 +130,7 @@ class VideoProfiler:
         self.total_records = dict()
 
         # Initializing variables related to profiling
+        self.VI_time_to_push_to_queue = 0.0
         self.e2e = 0.0
 
     def eisSubscriber(self):
@@ -176,7 +177,7 @@ class VideoProfiler:
             # VI-VA enabled scenario
             per_frame_stats['VI_to_VA_and_zmq_wait_diff'] = \
                 metadata[self.analytics_appname + '_subscriber_ts'] -\
-                metadata[self.ingestion_appname +  '_publisher_ts']
+                metadata[self.ingestion_appname + '_publisher_ts']
             per_frame_stats['VA_to_profiler_and_zmq_wait_diff'] = \
                 metadata['ts_vp_sub'] -\
                 metadata[self.analytics_appname + '_publisher_ts']
@@ -197,19 +198,20 @@ class VideoProfiler:
                 if va_temp is not None and vi_temp is not None:
                     break
             if vi_temp is not None:
-                per_frame_stats['VI_UDF_input_queue_time_to_push_and_spent_diff'] =\
-                    metadata[vi_temp + self.ingestion_appname + '_first_entry'] -\
-                    metadata['ts_filterQ_entry']
-            if self.analytics_appname + '_subscriber_blocked_ts' in metadata and\
-               va_temp is not None:
+                first_entry = vi_temp + self.ingestion_appname + '_first_entry'
+                vi_udf_push = 'VI_UDF_input_queue_time_to_push_and_spent_diff'
+                per_frame_stats[vi_udf_push] =\
+                    metadata[first_entry] - metadata['ts_filterQ_entry']
+
+            blocked_ts = self.analytics_appname + '_subscriber_blocked_ts'
+            subscriber_ts = self.analytics_appname + '_subscriber_ts'
+            first_entry = va_temp + self.analytics_appname + '_first_entry'
+            if blocked_ts in metadata and va_temp is not None:
                 per_frame_stats['VA_UDF_input_queue_time_spent_diff'] =\
-                    metadata[va_temp + self.analytics_appname + '_first_entry'] -\
-                    metadata[self.analytics_appname + '_subscriber_blocked_ts']
-            elif self.analytics_appname + '_subscriber_ts' in metadata and\
-                 va_temp is not None:
+                    metadata[first_entry] - metadata[blocked_ts]
+            elif subscriber_ts in metadata and va_temp is not None:
                 per_frame_stats['VA_UDF_input_queue_time_spent_diff'] =\
-                    metadata[va_temp + self.analytics_appname + '_first_entry'] -\
-                    metadata[self.analytics_appname + '_subscriber_ts']
+                    metadata[first_entry] - metadata[subscriber_ts]
 
         return per_frame_stats
 
@@ -400,9 +402,11 @@ if __name__ == "__main__":
         "analytics_appname": ""
     }
     # Fetching ingestion_appname & analytics_appname from config
-    appname_dict["ingestion_appname"] = config_dict['monitor_mode_settings']['ingestion_appname']
+    appname_dict["ingestion_appname"] = \
+        config_dict['monitor_mode_settings']['ingestion_appname']
     if 'analytics_appname' in config_dict['monitor_mode_settings']:
-        appname_dict["analytics_appname"] = config_dict['monitor_mode_settings']['analytics_appname']
+        appname_dict["analytics_appname"] = \
+            config_dict['monitor_mode_settings']['analytics_appname']
     else:
         appname_dict["analytics_appname"] = ""
 
@@ -430,11 +434,13 @@ if __name__ == "__main__":
                 appname_dict["analytics_appname"] = publisher_name
                 # Modify ingestion_appname
                 if bool(re.search(r'\d', appname_dict["ingestion_appname"])):
-                    appname_dict["ingestion_appname"] = re.sub(r'\d+', str(index+1),
-                                                         appname_dict["ingestion_appname"])
+                    appname_dict["ingestion_appname"] = \
+                        re.sub(r'\d+', str(index+1),
+                               appname_dict["ingestion_appname"])
                 # For handling corner case of ingestion_appname first instance
                 else:
-                    appname_dict["ingestion_appname"] = appname_dict["ingestion_appname"] + str(index+1)
+                    appname_dict["ingestion_appname"] = \
+                        appname_dict["ingestion_appname"] + str(index+1)
             # For VI only scenario
             elif "Ingestion" in publisher_name:
                 appname_dict["ingestion_appname"] = publisher_name

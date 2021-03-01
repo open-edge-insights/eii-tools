@@ -70,11 +70,12 @@ class TimeSeriesCalculator:
             if self.monitor_mode:
                 # Set total number of samples to infinity
                 self.total_number_of_samples = float('inf')
-                logger.warning('Total number of samples set to infinity. Please '
-                               'stop the time series profiler container to exit.')
+                logger.warning('Total number of samples set to infinity. '
+                               'Please stop the time series profiler '
+                               'container to exit.')
             elif self.sps_mode:
-                logger.error(
-                    "total_number_of_samples should never be set as (-1) for 'sps' mode. Exiting..")
+                logger.error("total_number_of_samples should never be set as"
+                             " (-1) for 'sps' mode. Exiting..")
                 os._exit(1)
 
         else:
@@ -87,8 +88,6 @@ class TimeSeriesCalculator:
         # Initializing msgbus related variables
         self.msgbus_cfg = msgbus_cfg
         self.topic = topics_list[0]
-
-
         self.devMode = dev_mode
         self.sample_count = 0
         self.start_time = 0.0
@@ -161,7 +160,8 @@ class TimeSeriesCalculator:
     def prepare_per_sample_stats(self, records):
         """ Method to calculate per sample time metrics
 
-        :param records: dict of time spent in time series pipeline for different component
+        :param records: dict of time spent in time series pipeline
+        for different component
         :type records: dict
         """
 
@@ -195,7 +195,8 @@ class TimeSeriesCalculator:
                 'ts_idbconn_pub_queue_entry'])
 
         # time taken in influxdbconnector to spssub
-        per_sample_stats['idbconn_to_profiler_diff'] = int(records['ts_profiler_entry']) - \
+        per_sample_stats['idbconn_to_profiler_diff'] = \
+            int(records['ts_profiler_entry']) - \
             int(records['ts_idbconn_pub_exit'])
 
         # time taken in mqtt publisher to idbconn
@@ -207,6 +208,7 @@ class TimeSeriesCalculator:
             'ts_idbconn_pub_exit']) - int(records['ts_influx_entry'])
 
         return per_sample_stats
+
     def prepare_avg_stats(self, per_sample_stats):
         """ Method to calculate average metrics
             for the pipeline
@@ -226,7 +228,6 @@ class TimeSeriesCalculator:
                     self.total_records[temp + '_total'] +\
                     per_sample_stats[temp + '_diff']
 
-
         self.e2e += per_sample_stats["e2e"]
         avg_e2e = self.e2e / self.sample_count
 
@@ -235,7 +236,8 @@ class TimeSeriesCalculator:
             if '_total' in key:
                 temp = key.split("_total")[0]
                 avg_stats[temp + '_avg'] =\
-                    int(self.total_records[temp + '_total']) / self.sample_count
+                    int(self.total_records[temp + '_total']) / \
+                    self.sample_count
 
         avg_stats["avg_e2e"] = avg_e2e
         avg_stats.pop('e2e_avg', None)
@@ -246,7 +248,8 @@ class TimeSeriesCalculator:
 
         :param metadata: data recieved from msgbus
         :type metadata: dict
-        :param records: dict of time spent in time series pipeline for different component
+        :param records: dict of time spent in time series pipeline
+         for different component
         :type records: dict
         """
         self.sample_count += 1
@@ -279,7 +282,8 @@ class TimeSeriesCalculator:
                 if self.monitor_mode_settings['display_metadata']:
                     logger.info(f'Meta data is: {metadata}')
             elif self.monitor_mode_settings['per_sample_stats']:
-                # If only per_sample_stats is true, write per_sample_stats to csv
+                # If only per_sample_stats is true,
+                # write per_sample_stats to csv
                 # and print metadata if its key is set to true
                 if self.start_subscribing:
                     csv_writer.writerow(per_sample_stats.keys())
@@ -339,7 +343,6 @@ class TimeSeriesCalculator:
             return
 
 
-
 def threadRunner(topics_list, msgbus_cfg, config_dict):
     """ To run TimeSeriesCalculator for each topic """
     tsc_app = TimeSeriesCalculator(topics_list, msgbus_cfg,
@@ -383,8 +386,9 @@ if __name__ == "__main__":
         sub_ctx = ctx.get_subscriber_by_index(index)
         msgbus_cfg = sub_ctx.get_msgbus_config()
         topics_list = sub_ctx.get_topics()
-        thread = threading.Thread(target=threadRunner, args=(topics_list, msgbus_cfg,
-                                  config_dict,))
+        thread = threading.Thread(target=threadRunner, args=(topics_list,
+                                                             msgbus_cfg,
+                                                             config_dict,))
 
         threads.append(thread)
         thread.start()
@@ -406,7 +410,8 @@ if __name__ == "__main__":
                     writer.writerow(csv_columns)
                     for key, value in monitor_mode_results.items():
                         writer.writerow([key, value])
-                logger.info('Check TSP_Results.csv file inside build dir for results...')
+                logger.info('Check TSP_Results.csv file '
+                            'inside build dir for results...')
             if config_dict['mode'] == 'sps':
                 # Generating excel sheet for SPS mode
                 with open('./out/SPS_Results.csv', 'w') as csv_file:
@@ -414,7 +419,8 @@ if __name__ == "__main__":
                     writer.writerow(csv_columns)
                     for key, value in avg_sps_per_topic.items():
                         writer.writerow([key, value])
-                logger.info('Check SPS_Results.csv file inside build dir for results...')
+                logger.info('Check SPS_Results.csv file '
+                            'inside build dir for results...')
         except IOError:
             logger.error("I/O error")
     else:
