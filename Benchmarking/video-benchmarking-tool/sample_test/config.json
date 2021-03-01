@@ -17,7 +17,7 @@
                     "camera1_stream"
                 ],
                 "AllowedClients": [
-                    "VideoAnalytics", "Visualizer", "WebVisualizer", "TLSRemoteAgent", "RestDataExport"
+                    "VideoAnalytics", "Visualizer", "WebVisualizer", "TLSRemoteAgent", "RestDataExport","VideoProfiler"
                 ]
             }
         ]

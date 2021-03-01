@@ -18,52 +18,55 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-
-# Dockerfile for emb_publisher
+# Dockerfile for cpp_publisher
 ARG EII_VERSION
 ARG DOCKER_REGISTRY
 ARG UBUNTU_IMAGE_VERSION
+ARG CMAKE_BUILD_TYPE
+ARG RUN_TESTS
 ARG ARTIFACTS="/artifacts"
 FROM ${DOCKER_REGISTRY}ia_common:$EII_VERSION as common
 FROM ${DOCKER_REGISTRY}ia_eiibase:${EII_VERSION} as builder
-LABEL description="Emb Publisher image"
+LABEL description="SWTriggerUtility image"
 
-WORKDIR ${GOPATH}/src/IEdgeInsights
+WORKDIR /app
+
+ARG ARTIFACTS
+RUN mkdir $ARTIFACTS
+
 ARG CMAKE_INSTALL_PREFIX
 ENV CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
 COPY --from=common ${CMAKE_INSTALL_PREFIX}/include ${CMAKE_INSTALL_PREFIX}/include
 COPY --from=common ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib
-COPY --from=common /eii/common/util/util.go common/util/util.go
-COPY --from=common ${GOPATH}/src ${GOPATH}/src
-COPY --from=common /eii/common/libs/EIIMessageBus/go/EIIMessageBus $GOPATH/src/EIIMessageBus
-COPY --from=common /eii/common/libs/ConfigMgr/go/ConfigMgr $GOPATH/src/ConfigMgr
+COPY --from=common /eii/common/cmake ./common/cmake
+COPY --from=common /eii/common/libs ./common/libs
 
-COPY ./*.go ./
-COPY datafiles ./datafiles
+ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${CMAKE_INSTALL_PREFIX}/lib
 
-ENV PATH="$PATH:/usr/local/go/bin" \
-    PKG_CONFIG_PATH="$PKG_CONFIG_PATH:${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" \
-    LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${CMAKE_INSTALL_PREFIX}/lib"
+COPY . SWTriggerUtility/
 
-# These flags are needed for enabling security while compiling and linking with cpuidcheck in golang
-ENV CGO_CFLAGS="$CGO_FLAGS -I ${CMAKE_INSTALL_PREFIX}/include -O2 -D_FORTIFY_SOURCE=2 -Werror=format-security -fstack-protector-strong -fPIC" \
-    CGO_LDFLAGS="$CGO_LDFLAGS -L${CMAKE_INSTALL_PREFIX}/lib -z noexecstack -z relro -z now"
-
-ARG ARTIFACTS
-RUN mkdir $ARTIFACTS && \
-    go build -o $ARTIFACTS/pub_tool ./*.go
-RUN mv datafiles $ARTIFACTS/
+RUN cd SWTriggerUtility/ && \
+    rm -rf build/ && \
+    mkdir build/ && \
+    cd build/ && \
+    cmake -DCMAKE_INSTALL_INCLUDEDIR=${CMAKE_INSTALL_PREFIX}/include -DCMAKE_INSTALL_PREFIX=$CMAKE_INSTALL_PREFIX -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} .. && \
+    make
+RUN cp SWTriggerUtility/build/sw_trigger_utility $ARTIFACTS/
 
 FROM ubuntu:$UBUNTU_IMAGE_VERSION as runtime
+ARG EII_UID
+ARG EII_USER_NAME
+RUN useradd -r -u ${EII_UID} -G video ${EII_USER_NAME}
+
 ARG ARTIFACTS
-
 WORKDIR /app
-
 ARG CMAKE_INSTALL_PREFIX
 ENV CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
-COPY --from=builder ${CMAKE_INSTALL_PREFIX}/lib .local/lib
+COPY --from=builder ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib
 COPY --from=builder $ARTIFACTS .
 
-ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:/app/.local/lib
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:${CMAKE_INSTALL_PREFIX}/lib
+
 HEALTHCHECK NONE
-ENTRYPOINT ["./pub_tool"]
+
+ENTRYPOINT ["./sw_trigger_utility"]

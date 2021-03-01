@@ -21,7 +21,7 @@
 version: '3.6'
 
 services:
-  ## Define telegraf service
+  ## Define timeseries profiler service
   ia_timeseries_profiler:
     depends_on:
       - ia_common
@@ -32,6 +32,9 @@ services:
         EII_VERSION: ${EII_VERSION}
         EII_UID: ${EII_UID}
         DOCKER_REGISTRY: ${DOCKER_REGISTRY}
+        EII_USER_NAME: ${EII_USER_NAME}
+        UBUNTU_IMAGE_VERSION: ${UBUNTU_IMAGE_VERSION}
+        CMAKE_INSTALL_PREFIX: ${EII_INSTALL_PATH}
     container_name: ia_timeseries_profiler
     hostname: ia_timeseries_profiler
     network_mode: host
@@ -48,7 +51,7 @@ services:
       ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
       ETCD_PREFIX: ${ETCD_PREFIX}
     volumes:
-      - ".:/EII/out"
+      - ".:/app/out"
     secrets:
       - ca_etcd
       - etcd_TimeSeriesProfiler_cert

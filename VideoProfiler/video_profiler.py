@@ -110,7 +110,7 @@ class VideoProfiler:
             # Set total number of frames to infinity
             self.total_frames = float('inf')
             logger.warning('Total number of frames set to infinity. Please '
-                           'use Ctrl+C to exit.')
+                           'stop the video profiler container to exit.')
         else:
             self.total_frames = \
                 config_dict['total_number_of_frames']
@@ -263,10 +263,10 @@ class VideoProfiler:
         csv_writer = None
         if self.start_subscribing and self.export_to_csv:
             # File to write meta-data at runtime
-            csv_file = open('video_profiler_runtime_stats.csv', 'w')
+            csv_file = open('./out/video_profiler_runtime_stats.csv', 'w')
             csv_writer = csv.writer(csv_file)
         elif self.export_to_csv:
-            csv_file = open('video_profiler_runtime_stats.csv', 'a')
+            csv_file = open('./out/video_profiler_runtime_stats.csv', 'a')
             csv_writer = csv.writer(csv_file)
 
         if self.export_to_csv:
@@ -302,8 +302,8 @@ class VideoProfiler:
             if self.monitor_mode_settings['display_metadata']:
                 logger.info(f'Meta data is: {metadata}')
             if self.monitor_mode_settings['per_frame_stats']:
-                logger.info(f'Per frame stats '
-                            'in miliseconds: {per_frame_stats}')
+                logger.info(
+                    f'Per frame stats in miliseconds: {per_frame_stats}')
             if self.monitor_mode_settings['avg_stats']:
                 logger.info(f'Frame avg stats in milliseconds: {avg_value}')
 
@@ -467,7 +467,7 @@ if __name__ == "__main__":
         try:
             if config_dict['mode'] == 'monitor':
                 # Generating excel sheet for monitor_mode
-                with open('VP_Results.csv', 'w') as csv_file:
+                with open('./out/VP_Results.csv', 'w') as csv_file:
                     writer = csv.writer(csv_file)
                     writer.writerow(csv_columns)
                     for key, value in avg_fps_per_topic.items():
@@ -475,15 +475,17 @@ if __name__ == "__main__":
                     writer.writerow('\n')
                     for key, value in monitor_mode_results.items():
                         writer.writerow([key, value])
-                logger.info('Check VP_Results.csv file for results...')
+                logger.info('Check VP_Results.csv file'
+                            'inside build dir for results...')
             if config_dict['mode'] == 'fps':
                 # Generating excel sheet for FPS mode
-                with open('FPS_Results.csv', 'w') as csv_file:
+                with open('./out/FPS_Results.csv', 'w') as csv_file:
                     writer = csv.writer(csv_file)
                     writer.writerow(csv_columns)
                     for key, value in avg_fps_per_topic.items():
                         writer.writerow([key, value])
-                logger.info('Check FPS_Results.csv file for results...')
+                logger.info('Check FPS_Results.csv file'
+                            'inside build dir for results...')
         except IOError:
             logger.error("I/O error")
     else:

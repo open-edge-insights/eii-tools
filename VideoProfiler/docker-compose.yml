@@ -21,25 +21,43 @@
 version: '3.6'
 
 services:
+  ## Define video profiler service
   ia_video_profiler:
     depends_on:
-        - ia_eiibase
-    image: ${DOCKER_REGISTRY}ia_eiibase:${EII_VERSION}
+      - ia_common
+    build:
+      context: $PWD/../tools/VideoProfiler
+      dockerfile: $PWD/../tools/VideoProfiler/Dockerfile
+      args:
+        EII_VERSION: ${EII_VERSION}
+        EII_UID: ${EII_UID}
+        DOCKER_REGISTRY: ${DOCKER_REGISTRY}
+        EII_USER_NAME: ${EII_USER_NAME}
+        UBUNTU_IMAGE_VERSION: ${UBUNTU_IMAGE_VERSION}
+        CMAKE_INSTALL_PREFIX: ${EII_INSTALL_PATH}
     container_name: ia_video_profiler
     hostname: ia_video_profiler
     network_mode: host
+    image: ${DOCKER_REGISTRY}ia_video_profiler:${EII_VERSION}
+    restart: "no"
+    ipc: "none"
     environment:
-      CertType: "zmq"
-      CONTEXT: $PWD/../tools/VideoProfiler
+      AppName: "VideoProfiler"
+      CertType: "pem,zmq"
       DEV_MODE: ${DEV_MODE}
+      no_proxy: ${eii_no_proxy},${ETCD_HOST}
+      NO_PROXY: ${eii_no_proxy},${ETCD_HOST}
       ETCD_HOST: ${ETCD_HOST}
       ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
-      no_proxy: ${NO_PROXY},${eii_no_proxy},${ETCD_HOST}
-      AppName: "VideoProfiler"
+      ETCD_PREFIX: ${ETCD_PREFIX}
+    volumes:
+      - ".:/app/out"
+      - "vol_eii_socket:${SOCKET_DIR}"
     secrets:
       - ca_etcd
       - etcd_VideoProfiler_cert
       - etcd_VideoProfiler_key
+
 
 secrets:
   etcd_VideoProfiler_cert:

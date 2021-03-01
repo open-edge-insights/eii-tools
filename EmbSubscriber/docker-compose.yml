@@ -31,6 +31,8 @@ services:
       args:
         EII_VERSION: ${EII_VERSION}
         DOCKER_REGISTRY: ${DOCKER_REGISTRY}
+        UBUNTU_IMAGE_VERSION: ${UBUNTU_IMAGE_VERSION}
+        CMAKE_INSTALL_PREFIX: ${EII_INSTALL_PATH}
     image: ${DOCKER_REGISTRY}ia_emb_subscriber:${EII_VERSION}
     container_name: ia_emb_subscriber
     hostname: ia_emb_subscriber

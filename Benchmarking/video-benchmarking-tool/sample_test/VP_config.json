@@ -16,7 +16,7 @@
             {
                 "Name": "default",
                 "Type": "zmq_ipc",
-                "EndPoint": "/opt/intel/eii/sockets",
+                "EndPoint": "/EII/sockets",
                 "PublisherAppName": "VideoIngestion",
                 "Topics": [
                     "camera1_stream"

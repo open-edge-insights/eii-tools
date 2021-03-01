@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Dockerfile for DiscoverHistory
+# Dockerfile for VideoProfiler
 
 ARG EII_VERSION
 ARG DOCKER_REGISTRY
@@ -30,7 +30,7 @@ FROM ${DOCKER_REGISTRY}ia_eiibase:$EII_VERSION as base
 FROM ${DOCKER_REGISTRY}ia_common:$EII_VERSION as common
 
 FROM base as builder
-LABEL description="DiscoverHistory image"
+LABEL description="VideoProfiler image"
 
 
 ARG ARTIFACTS
@@ -40,7 +40,8 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip3 install --user -r requirements.txt
 
-COPY src/ .
+COPY video_profiler.py .
+RUN mv video_profiler.py $ARTIFACTS
 
 FROM ubuntu:$UBUNTU_IMAGE_VERSION as runtime
 
@@ -49,11 +50,8 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends software-properties-common && \
     add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
-    apt-get install -y --no-install-recommends libsm6 \
-                                               libxext6 \
-                                               libxrender1 \
-                                               python3.6 \
-                                               python3-distutils && \
+    apt-get install -y --no-install-recommends python3.6 \
+                                               python3-distutils  && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -69,13 +67,13 @@ ENV PYTHONPATH $PYTHONPATH:/app/.local/lib/python3.6/site-packages:/app
 COPY --from=common ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib
 COPY --from=common /eii/common/util/*.py util/
 COPY --from=common /root/.local/lib .local/lib
-COPY --from=builder /app .
+COPY --from=builder $ARTIFACTS .
 COPY --from=builder /root/.local/lib .local/lib
-
+RUN mkdir /app/out/
 RUN chown -R ${EII_UID} .local/lib/python3.6
 
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:${CMAKE_INSTALL_PREFIX}/lib
 ENV PATH $PATH:/app/.local/bin
 
 HEALTHCHECK NONE
-ENTRYPOINT [ "python3.6", "main.py" ]
+ENTRYPOINT ["python3.6", "video_profiler.py"]

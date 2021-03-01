@@ -9,9 +9,9 @@ module.
 ## EII Video Profiler pre-requisites
 
 1. VideoProfiler expects a set of config, interfaces & public private keys to be present in ETCD as a pre-requisite.
-    To achieve this, please ensure an entry for VideoProfiler with its relative path from [IEdgeInsights](../../) directory is set in any of the .yml files present in [build](../../build) directory. An example has been provided below:
+    To achieve this, please ensure an entry for VideoProfiler with its relative path from [IEdgeInsights](../../) directory is set in any of the .yml files present in [build/usecases](../../build/usecases) directory. An example has been provided below:
     ```sh
-        AppName:
+        AppContexts:
         - VideoIngestion
         - VideoAnalytics
         - tools/VideoProfiler
@@ -92,25 +92,9 @@ module.
     Setting this switch to **true** exports csv files for the results obtained in VideoProfiler. For monitor_mode, runtime stats printed in the csv
     are based on the the following precdence: avg_stats, per_frame_stats, display_metadata.
 
-## Installing Video Profiler requirements
-
-1. To install EII libs on bare-metal, follow the [README](../../common/README.md) of eii_libs_installer.
-
-2. Run this command to install the requirements of Video Profiler
-
-    ```sh
-        pip3 install -r requirements.txt
-    ```
-
-3. Set the required env by running the below command.
-
-    ```sh
-        source ./env.sh
-    ```
-
 ## Running Video Profiler
 
-1. Set environment variables accordingly in [config.json](config.json) & [env.sh](env.sh).
+1. Set environment variables accordingly in [config.json](config.json).
 
 2. Set the required output stream/streams and appropriate stream config in [config.json](config.json) file.
 
@@ -126,8 +110,6 @@ module.
     *  This step is required everytime publisher is restarted in IPC mode.
 
        Caution: This step will make the streams insecure. Please do not do it on a production machine.
-
-    * Since VideoProfiler is a baremetal tool please ensure that the socket directory path of the host system i.e. `/opt/intel/eii/sockets` is provided as the EndPoint for VideoProfiler interface with IPC mode.
 
     * Refer the below VideoProfiler interface example to subscribe to PyMultiClassificationIngestion CutomUDF results in fps mode.
 
@@ -147,23 +129,15 @@ module.
         },
       ```
 
-5. If using Video Profiler in PROD mode, make sure to set required permissions to certificates.
+5. Refer [provision/README.md](../../README.md) to provision, build and run the tool along with the EII video-streaming recipe/stack.
+
+6. Run the following command to see the logs:
 
     ```sh
-        sudo chmod -R 755 ../../build/provision/Certificates
-    ```
-    Note : This step is required everytime provisioning is done.
-    Caution: This step will make the certs insecure. Please do not do it on a production machine.
-
-6. If using VideoProfiler in DEV mode, please ensure you have commented out the variables defining the certs path and uncomment the variables initializing the certs path to empty strings in [env.sh](env.sh)
-
-7. Run the below command to start the Video Profiler.
-
-    ```sh
-        python3.6 video_profiler.py
+        docker logs -f ia_video_profiler
     ```
 
-8. The runtime stats of Video Profiler if enabled with export_to_csv switch can be found at [video_profiler_runtime_stats](video_profiler_runtime_stats.csv)
+7. The runtime stats of Video Profiler if enabled with export_to_csv switch can be found at [video_profiler_runtime_stats](video_profiler_runtime_stats.csv)
 
   > **Note:**
   > * `poll_interval` option in the VideoIngestion [config](../../VideoIngestion/config.json) sets the delay(in seconds)

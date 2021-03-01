@@ -9,9 +9,9 @@
 ## EII pre-requisites
 
 1. TimeSeriesProfiler expects a set of config, interfaces & public private keys to be present in ETCD as a pre-requisite.
-    To achieve this, please ensure an entry for TimeSeriesProfiler with its relative path from [IEdgeInsights](../../) directory is set in the time-series.yml file present in [build](../../build) directory. An example has been provided below:
+    To achieve this, please ensure an entry for TimeSeriesProfiler with its relative path from [IEdgeInsights](../../) directory is set in the time-series.yml file present in [build/usecases](../../build/usecases) directory. An example has been provided below:
     ```sh
-        AppName:
+        AppContexts:
         - Grafana
         - InfluxDBConnector
         - Kapacitor
@@ -22,6 +22,7 @@
 2. With the above pre-requisite done, please run the below command:
     ```sh
         python3.6 builder.py -f usecases/time-series.yml
+        python3 builder.py -f ./usecases/time-series.yml
     ```
 
 

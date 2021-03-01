@@ -170,7 +170,6 @@ run_logged cp -rv ${TEST_DIR}/config.json ${EII_HOME}/VideoIngestion/benchmarkin
 # --------------------------------------------------------------
 notice "Configuring the VideoProfiler"
 run_logged cp -rvf ${TEST_DIR}/VP_config.json ${EII_HOME}/tools/VideoProfiler/config.json
-run_logged cp -v ${EII_HOME}/tools/Benchmarking/video-benchmarking-tool/vp_stats.sh ${EII_HOME}/tools/VideoProfiler/vp_stats.sh
 
 pushd "${EII_HOME}/build"
 run_logged python3 builder.py -f services.yml -d benchmarking -v $STREAMS
@@ -204,15 +203,6 @@ top -b -i -o %CPU  | tee -a "${ACTUAL_DATA_DIR}/stat.top" &
 
 
 # --------------------------------------------------------------
-# Run the VideoProfiler tool until it captures N Frames
-# --------------------------------------------------------------
-notice "Polling framerate average over ${FRAMES} frames."
-pushd "${EII_HOME}/tools/VideoProfiler/"
-./vp_stats.sh 
-popd
-run_logged mv ${EII_HOME}/tools/VideoProfiler/FPS_Results.csv ${ACTUAL_DATA_DIR}/FPS_Results.csv
-
-# --------------------------------------------------------------
 # kill all tasks and wait for processes to finish
 # --------------------------------------------------------------
 notice "Stopping statistics collection"
@@ -225,9 +215,16 @@ run_logged wait
 
 notice "Test Complete"
 pushd "${EII_HOME}/build/"
+while [[ $(docker ps -a | grep ia_video_profiler | grep Exited | wc -l) -ne 1 ]]; do
+        echo "video profiler is running..sleep for 10s"
+        sleep 10
+done
+
+# Storing video profiler log into file
+docker logs ia_video_profiler >& ${ACTUAL_DATA_DIR}/profiler_output.log
 run_logged docker-compose down
 popd
-
+run_logged mv ${EII_HOME}/build/FPS_Results.csv ${ACTUAL_DATA_DIR}/FPS_Results.csv
 # --------------------------------------------------------------
 # Post-process results
 # --------------------------------------------------------------

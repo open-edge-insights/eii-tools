@@ -34,6 +34,9 @@ services:
         EII_VERSION: ${EII_VERSION}
         EII_UID: ${EII_UID}
         DOCKER_REGISTRY: ${DOCKER_REGISTRY}
+        EII_USER_NAME: ${EII_USER_NAME}
+        UBUNTU_IMAGE_VERSION: ${UBUNTU_IMAGE_VERSION}
+        CMAKE_INSTALL_PREFIX: ${EII_INSTALL_PATH}
     container_name: ia_discover_history
     hostname: ia_discover_history
     network_mode: host

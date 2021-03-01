@@ -21,17 +21,45 @@
 version: '3.6'
 
 services:
+  ## Define SWTriggerUtility service
   ia_sw_trigger_utility:
     depends_on:
-        - ia_eiibase
-    image: ${DOCKER_REGISTRY}ia_eiibase:${EII_VERSION}
+      - ia_common
+    build:
+      context: $PWD/../tools/SWTriggerUtility
+      dockerfile: $PWD/../tools/SWTriggerUtility/Dockerfile
+      args:
+        EII_VERSION: ${EII_VERSION}
+        EII_UID: ${EII_UID}
+        DOCKER_REGISTRY: ${DOCKER_REGISTRY}
+        EII_USER_NAME: ${EII_USER_NAME}
+        UBUNTU_IMAGE_VERSION: ${UBUNTU_IMAGE_VERSION}
+        CMAKE_INSTALL_PREFIX: ${EII_INSTALL_PATH}
     container_name: ia_sw_trigger_utility
     hostname: ia_sw_trigger_utility
     network_mode: host
+    image: ${DOCKER_REGISTRY}ia_sw_trigger_utility:${EII_VERSION}
+    restart: "no"
+    ipc: "none"
+    command: []
     environment:
-      CertType: "zmq"
-      CONTEXT: $PWD/../tools/SWTriggerUtility
-      DEV_MODE: ${DEV_MODE}
-      no_proxy: ${NO_PROXY},${eii_no_proxy},${ETCD_HOST}
       AppName: "SWTriggerUtility"
+      CertType: "zmq"
+      DEV_MODE: ${DEV_MODE}
+      no_proxy: ${eii_no_proxy},${ETCD_HOST}
+      NO_PROXY: ${eii_no_proxy},${ETCD_HOST}
+      ETCD_HOST: ${ETCD_HOST}
+      ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
+      ETCD_PREFIX: ${ETCD_PREFIX}
+      interface_name: "default"
+    secrets:
+      - ca_etcd
+      - etcd_SWTriggerUtility_cert
+      - etcd_SWTriggerUtility_key
 
+
+secrets:
+  etcd_SWTriggerUtility_cert:
+    file: provision/Certificates/SWTriggerUtility/SWTriggerUtility_client_certificate.pem
+  etcd_SWTriggerUtility_key:
+    file: provision/Certificates/SWTriggerUtility/SWTriggerUtility_client_key.pem

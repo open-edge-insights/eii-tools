@@ -1,4 +1,4 @@
-AppName:
+AppContexts:
 - VideoIngestion
 - EtcdUI
 - tools/VideoProfiler
