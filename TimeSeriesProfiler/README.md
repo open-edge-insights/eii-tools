@@ -1,12 +1,12 @@
-# EIS TimeSeriesProfiler
+# EII TimeSeriesProfiler
 
-1. This module calculates the SPS(samples per second) of any EIS time-series modules based on the stream published by that respective module.
+1. This module calculates the SPS(samples per second) of any EII time-series modules based on the stream published by that respective module.
 2. This module calculates the average e2e time for every sample data to process and it's breakup. The e2e time end to end time required
    for a metric from mqtt-publisher to TimeSeriesProfiler (mqtt-publisher->telegraf->influx->kapacitor->influx->influxdbconnector->
    TimeSeriesProfiler)
 
 
-## EIS pre-requisites
+## EII pre-requisites
 
 1. TimeSeriesProfiler expects a set of config, interfaces & public private keys to be present in ETCD as a pre-requisite.
     To achieve this, please ensure an entry for TimeSeriesProfiler with its relative path from [IEdgeInsights](../../) directory is set in the time-series.yml file present in [build](../../build) directory. An example has been provided below:
@@ -21,7 +21,7 @@
 
 2. With the above pre-requisite done, please run the below command:
     ```sh
-        python3 eis_builder.py -f ./time-series.yml
+        python3 eii_builder.py -f ./time-series.yml
     ```
 
 
@@ -87,10 +87,10 @@
    ```
     [udf.functions.rfc]
       prog = "python3.7"
-      args = ["-u", "/EIS/udfs/rfc_classifier.py"]
+      args = ["-u", "/EII/udfs/rfc_classifier.py"]
       timeout = "60s"
       [udf.functions.rfc.env]
-         PYTHONPATH = "/EIS/go/src/github.com/influxdata/kapacitor/udf/agent/py/"
+         PYTHONPATH = "/EII/go/src/github.com/influxdata/kapacitor/udf/agent/py/"
    ```
   keep **[config.json](./config.json)** file as following:
 ```
@@ -125,15 +125,15 @@
 
 3. Set the required output stream/streams and appropriate stream config in [config.json](config.json) file.
 
-4. If using TimeSeriesProfiler in IPC mode, make sure to set required permissions to socket file created in `EIS_INSTALL_PATH`
+4. If using TimeSeriesProfiler in IPC mode, make sure to set required permissions to socket file created in `EII_INSTALL_PATH`
 
     ```sh
-        sudo chmod -R 777 /opt/intel/eis/sockets
+        sudo chmod -R 777 /opt/intel/eii/sockets
     ```
     > **NOTE**: This step is required everytime publisher is restarted in IPC mode.
     > Caution: This step will make the streams insecure. Please do not do it on a production machine.
 
-5. Refer [provision/README.md](../../README.md) to provision, build and run the tool along with the EIS time-series recipe/stack.
+5. Refer [provision/README.md](../../README.md) to provision, build and run the tool along with the EII time-series recipe/stack.
 
 6. Run the following command to see the logs:
 

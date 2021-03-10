@@ -4,30 +4,30 @@ services:
 
   emb_publisher:
     depends_on:
-      - ia_eisbase
+      - ia_eiibase
       - ia_common
-      - ia_eis_zmq_broker
+      - ia_eii_zmq_broker
     build:
       context: $PWD/../tools/EmbPublisher
       dockerfile: $PWD/../tools/EmbPublisher/Dockerfile
       args:
-        EIS_VERSION: ${EIS_VERSION}
+        EII_VERSION: ${EII_VERSION}
         DOCKER_REGISTRY: ${DOCKER_REGISTRY}
-    image: ${DOCKER_REGISTRY}emb_publisher:${EIS_VERSION}
+    image: ${DOCKER_REGISTRY}emb_publisher:${EII_VERSION}
     container_name: emb_publisher
     hostname: emb_publisher
     network_mode: host
-    user: ${EIS_UID}
+    user: ${EII_UID}
     environment:
       AppName: "EmbPublisher"
       DEV_MODE: ${DEV_MODE}
-      no_proxy: ${eis_no_proxy},${ETCD_HOST}
+      no_proxy: ${eii_no_proxy},${ETCD_HOST}
       ETCD_HOST: ${ETCD_HOST}
       ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
       ETCD_PREFIX: ${ETCD_PREFIX}
       CertType: "zmq"
     volumes:
-      - "vol_eis_socket:${SOCKET_DIR}"
+      - "vol_eii_socket:${SOCKET_DIR}"
     secrets:
       - ca_etcd
       - etcd_EmbPublisher_cert

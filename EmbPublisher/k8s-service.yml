@@ -24,7 +24,7 @@ metadata:
   labels:
     app: embpublisher
   name: deployment-emb-publisher
-  namespace: eis
+  namespace: eii
 
 spec:
   replicas: 1
@@ -38,11 +38,11 @@ spec:
     spec:
       containers:
       - name: emb-publisher
-        image: ${DOCKER_REGISTRY}emb_publisher:${EIS_VERSION}
+        image: ${DOCKER_REGISTRY}emb_publisher:${EII_VERSION}
         securityContext:
           privileged: true
         volumeMounts:
-        - name: eis-socket
+        - name: eii-socket
           mountPath: ${SOCKET_DIR}
         - name: "ca-cert"
           mountPath: /run/secrets/ca_etcd
@@ -59,7 +59,7 @@ spec:
         - name: PROFILING_MODE
           value: '${PROFILING_MODE}'
         - name: no_proxy
-          value: '${eis_no_proxy},${ETCD_HOST}'
+          value: '${eii_no_proxy},${ETCD_HOST}'
         - name: ETCD_HOST
           value: etcd
         - name: ETCD_CLIENT_PORT
@@ -81,13 +81,13 @@ spec:
         - name: PUBLISHER_TestPub_TYPE
           value: "zmq_tcp"
         - name: PUBLISHER_TestPub_ENDPOINT
-          value: "eiszmqbroker:60514"
+          value: "eiizmqbroker:60514"
 
 
       volumes:
-      - name: eis-socket
+      - name: eii-socket
         hostPath:
-          path: ${EIS_INSTALL_PATH}/sockets
+          path: ${EII_INSTALL_PATH}/sockets
       - name: "ca-cert"
         secret:
           secretName: ca-etcd

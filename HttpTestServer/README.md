@@ -2,7 +2,7 @@
 
 HttpTestServer runs a simple HTTP Test server with security being optional.
 
-* To install EIS libs on bare-metal, follow the [README](../../common/README.md) of eis_libs_installer.
+* To install EII libs on bare-metal, follow the [README](../../common/README.md) of eii_libs_installer.
 
 * To Run rest data export test application without Kubernetes setup
 

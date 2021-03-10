@@ -24,7 +24,7 @@
 from datetime import datetime
 import json
 import argparse
-import eis.msgbus as mb
+import eii.msgbus as mb
 import os
 import logging
 import cv2

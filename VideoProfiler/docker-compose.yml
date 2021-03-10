@@ -23,8 +23,8 @@ version: '3.6'
 services:
   ia_video_profiler:
     depends_on:
-        - ia_eisbase
-    image: ${DOCKER_REGISTRY}ia_eisbase:${EIS_VERSION}
+        - ia_eiibase
+    image: ${DOCKER_REGISTRY}ia_eiibase:${EII_VERSION}
     container_name: ia_video_profiler
     hostname: ia_video_profiler
     network_mode: host
@@ -34,7 +34,7 @@ services:
       DEV_MODE: ${DEV_MODE}
       ETCD_HOST: ${ETCD_HOST}
       ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
-      no_proxy: ${NO_PROXY},${eis_no_proxy},${ETCD_HOST}
+      no_proxy: ${NO_PROXY},${eii_no_proxy},${ETCD_HOST}
       AppName: "VideoProfiler"
     secrets:
       - ca_etcd

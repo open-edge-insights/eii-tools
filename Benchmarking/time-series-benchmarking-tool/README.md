@@ -37,14 +37,14 @@ Steps for running a benchmarking test case:
 3. Run execute test to execute the time series test case.Before running following command, make sure that "export_to_csv" value in **[TimeSeriesProfiler config.json](../../TimeSeriesProfiler/config.json)** is set to "True":
    ```
 	USAGE:
-	  ./execute_test.sh TEST_DIR STREAMS SLEEP PCM_HOME [EIS_HOME]
+	  ./execute_test.sh TEST_DIR STREAMS SLEEP PCM_HOME [EII_HOME]
 
 	WHERE:
 	  TEST_DIR  - Directory containing services.yml and config files for influx, telegraf, and kapacitor
 	  STREAMS   - The number of streams (1, 2, 4, 8, 16)
 	  SLEEP     - The number of seconds to wait after the containers come up
           PCM_HOME  - The absolute path to the PCM repository where pcm.x is built
-          [EIS_HOME] - [Optional] Absolut path to EIS home directory, if running from a non-default location
+          [EII_HOME] - [Optional] Absolut path to EII home directory, if running from a non-default location
    ```
    For example:
     ```sh

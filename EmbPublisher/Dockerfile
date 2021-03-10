@@ -20,21 +20,21 @@
 
 
 # Dockerfile for emb_publisher
-ARG EIS_VERSION
+ARG EII_VERSION
 ARG DOCKER_REGISTRY
-FROM ${DOCKER_REGISTRY}ia_eisbase:$EIS_VERSION as eisbase
+FROM ${DOCKER_REGISTRY}ia_eiibase:$EII_VERSION as eiibase
 
 WORKDIR ${GO_WORK_DIR}
 
-FROM ${DOCKER_REGISTRY}ia_common:$EIS_VERSION as common
+FROM ${DOCKER_REGISTRY}ia_common:$EII_VERSION as common
 
-FROM eisbase
+FROM eiibase
 
 COPY --from=common ${GO_WORK_DIR}/common/libs ${GO_WORK_DIR}/common/libs
 COPY --from=common ${GO_WORK_DIR}/common/util ${GO_WORK_DIR}/common/util
 COPY --from=common /usr/local/lib /usr/local/lib
 COPY --from=common /usr/local/include /usr/local/include
-COPY --from=common ${GO_WORK_DIR}/../EISMessageBus ${GO_WORK_DIR}/../EISMessageBus
+COPY --from=common ${GO_WORK_DIR}/../EIIMessageBus ${GO_WORK_DIR}/../EIIMessageBus
 COPY --from=common ${GO_WORK_DIR}/../ConfigMgr ${GO_WORK_DIR}/../ConfigMgr
 
 COPY ./*.go ./
@@ -43,4 +43,4 @@ COPY datafiles ./datafiles
 
 RUN go build -o ${GO_WORK_DIR}/pub_tool ./*.go
 
-ENTRYPOINT ["/EIS/go/src/IEdgeInsights/pub_tool"]
+ENTRYPOINT ["/EII/go/src/IEdgeInsights/pub_tool"]

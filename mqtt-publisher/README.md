@@ -8,13 +8,13 @@ Simple Python temperature sensor simulator.
     ```sh
     $ ./broker.sh <port>
     ```
-    **NOTE:** To run the broker for EIS TimeSeries Analytics usecase:
+    **NOTE:** To run the broker for EII TimeSeries Analytics usecase:
     ```sh
     $ ./broker.sh 1883
     ```
 
 2. Build and run the MQTT publisher docker container
-   * For EIS TimeSeries Analytics usecase, 
+   * For EII TimeSeries Analytics usecase, 
     To publish temperature data to default topic:
      ```sh
      $./build.sh && ./publisher_temp.sh

@@ -29,12 +29,12 @@
 #include <iostream>
 #include <unistd.h>
 
-#include <eis/msgbus/msgbus.h>
-#include <eis/msgbus/msg_envelope.h>
-#include <eis/utils/logger.h>
-#include <eis/utils/json_config.h>
-#include <eis/utils/config.h>
-#include "eis/config_manager/config_mgr.hpp"
+#include <eii/msgbus/msgbus.h>
+#include <eii/msgbus/msg_envelope.h>
+#include <eii/utils/logger.h>
+#include <eii/utils/json_config.h>
+#include <eii/utils/config.h>
+#include "eii/config_manager/config_mgr.hpp"
 
 
 #define SLEEP_DURATION_SECONDS 120
@@ -52,7 +52,7 @@
     } \
 }
 
-using namespace eis::config_manager;
+using namespace eii::config_manager;
 
 enum SwTrigger {
         START_INGESTION,
@@ -292,7 +292,7 @@ class SwTriggerUtility {
         }
 
         /**
-        * Function to send the SW trigger from this utility to EIS VI app
+        * Function to send the SW trigger from this utility to EII VI app
         * to START_INGESTION/STOP_INGESTION.
         * @param: trig - Enum to decide what type of SW trigger is to be sent based on user's
         *  selection in commandline interface.

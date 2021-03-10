@@ -24,10 +24,10 @@ README FOR DISCOVER HISTORY TOOL
  4. Provide the required query to be passed on to InfluxDB.
  5. With the above pre-requisite done, please run the below to command:
     ```sh
-        python3 eis_builder.py -f ./video-streaming-storage.yml
+        python3 eii_builder.py -f ./video-streaming-storage.yml
     ```
- 6. Set the output directory variable at SAVE_PATH=/tmp/eis_history in file [build/.env](../../build/.env).
- 7. Refer [main EIS README.md](../../README.md) to provision, build and run the tool along with the EIS video-streaming-storage recipe/stack.
+ 6. Set the output directory variable at SAVE_PATH=/tmp/eii_history in file [build/.env](../../build/.env).
+ 7. Refer [main EII README.md](../../README.md) to provision, build and run the tool along with the EII video-streaming-storage recipe/stack.
  8. Check imagestore and influxdbconnector services are running.
  9. In the provided "SAVE_PATH", you will find data & frames directory.
     (Note: if img_handle is part of select statement , then only frames
@@ -47,8 +47,8 @@ to
     DEV_MODE=true
  ```
 
-### NOTE:Building the base images like ia_common, ia_eisbase are must in cases if this tool isn't run on the same node where EIS is running.
-### Please ensure that the base images i.e. ia_common and ia_eisbase are present on the node where this tool is run.
+### NOTE:Building the base images like ia_common, ia_eiibase are must in cases if this tool isn't run on the same node where EII is running.
+### Please ensure that the base images i.e. ia_common and ia_eiibase are present on the node where this tool is run.
 
 # List of sample select queries #
 
@@ -64,13 +64,13 @@ to
     This query will return all the records from the current time, going back upto last 1 hour.
 
 ## TO RUN THE TOOL IN zmq_ipc MODE
-Please make sure to change the content of [config.json](DiscoverHistory/config/eis_config.json) . Modify the same in "Servers" interface in config.json file of ImageStore and InfluxDBConnector. 
+Please make sure to change the content of [config.json](DiscoverHistory/config/eii_config.json) . Modify the same in "Servers" interface in config.json file of ImageStore and InfluxDBConnector. 
 
 to
 ```
     {
         "type": "zmq_ipc",
-        "EndPoint": "/EIS/sockets"
+        "EndPoint": "/EII/sockets"
     }
 ```
 

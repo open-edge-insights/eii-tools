@@ -1,10 +1,10 @@
 ### About tool
-- This tool acts as a brokered publisher of EIS messagebus.
-- Telegaf's eis messagebus input plugin acts as a subscriber to the EIS broker.
+- This tool acts as a brokered publisher of EII messagebus.
+- Telegaf's eii messagebus input plugin acts as a subscriber to the EII broker.
 
 ### How to integrate this tool with video/timeseries use case.
-- In 'time-series.yml'/'video-streaming.yml' file, please add 'EISZmqBroker' and 'tools/EmbPublisher' components.
-- Use the modifiled  'time-series.yml'/'video-streaming.yml' file as an argument while generating the docker-compose.yml file using the 'eis_builder.py' utility.
+- In 'time-series.yml'/'video-streaming.yml' file, please add 'EIIZmqBroker' and 'tools/EmbPublisher' components.
+- Use the modifiled  'time-series.yml'/'video-streaming.yml' file as an argument while generating the docker-compose.yml file using the 'eii_builder.py' utility.
 - Follow usual provisioning and starting process.
 
 ### Configuration of the tool.
@@ -32,7 +32,7 @@ Let us look at the sample configuration
           "topic-pfx3",
           "topic-pfx4"
         ],
-        "BrokerAppName" : "EISZmqBroker",
+        "BrokerAppName" : "EIIZmqBroker",
         "brokered": true
       }
     ]

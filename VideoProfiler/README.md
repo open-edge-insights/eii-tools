@@ -1,12 +1,12 @@
-# EIS Video Profiler
+# EII Video Profiler
 
 This tool can be used to determine the complete metrics involved in the entire Video pipeline by
 measuring the time difference between every component of the pipeline and checking for Queue blockages
 at every component thereby determining the fast or slow components of the whole pipeline.
-It can also be used to calculate the FPS of any EIS modules based on the stream published by that respective
+It can also be used to calculate the FPS of any EII modules based on the stream published by that respective
 module.
 
-## EIS Video Profiler pre-requisites
+## EII Video Profiler pre-requisites
 
 1. VideoProfiler expects a set of config, interfaces & public private keys to be present in ETCD as a pre-requisite.
     To achieve this, please ensure an entry for VideoProfiler with its relative path from [IEdgeInsights](../../) directory is set in any of the .yml files present in [build](../../build) directory. An example has been provided below:
@@ -19,17 +19,17 @@ module.
 
 2. With the above pre-requisite done, please run the below to command:
     ```sh
-        python3 eis_builder.py -f ./video-streaming.yml
+        python3 eii_builder.py -f ./video-streaming.yml
     ```
 
-## EIS Video Profiler modes
+## EII Video Profiler modes
 
-    By default the EIS Video Profiler supports two modes, which are 'fps' & 'monitor' mode.
+    By default the EII Video Profiler supports two modes, which are 'fps' & 'monitor' mode.
 
 1. FPS mode
 
     Enabled by setting the 'mode' key in [config](./config.json) to 'fps', this mode calculates the frames
-    per second of any EIS module by subscribing to that module's respective stream.
+    per second of any EII module by subscribing to that module's respective stream.
     ```sh
         "mode": "fps"
     ```
@@ -73,11 +73,11 @@ module.
   > * Pre-requisite for running in profiling or monitor mode: VI/VA should be running with PROFILING_MODE set to **true** in [.env](../../build/.env)
   > * For running Video Profiler in FPS mode, it is recommended to keep PROFILING_MODE set to false in [.env](../../build/.env) for better performance.
 
-## EIS Video Profiler configurations
+## EII Video Profiler configurations
 
 1. dev_mode
 
-    Setting this to false enables secure communication with the EIS stack. User must ensure this switch is in sync with DEV_MODE in [.env](../../build/.env)
+    Setting this to false enables secure communication with the EII stack. User must ensure this switch is in sync with DEV_MODE in [.env](../../build/.env)
     With PROD mode enabled, the path for the certs mentioned in [config](./config.json) can be changed by the user to point to the required certs.
 
 2. total_number_of_frames
@@ -94,7 +94,7 @@ module.
 
 ## Installing Video Profiler requirements
 
-1. To install EIS libs on bare-metal, follow the [README](../../common/README.md) of eis_libs_installer.
+1. To install EII libs on bare-metal, follow the [README](../../common/README.md) of eii_libs_installer.
 
 2. Run this command to install the requirements of Video Profiler
 
@@ -119,7 +119,7 @@ module.
 4. If using Video Profiler in IPC mode, make sure to set required permissions to socket file created in SOCKET_DIR in [build/.env](../../build/.env).
 
     ```sh
-        sudo chmod -R 777 /opt/intel/eis/sockets
+        sudo chmod -R 777 /opt/intel/eii/sockets
     ```
     **Note:**
 
@@ -127,7 +127,7 @@ module.
 
        Caution: This step will make the streams insecure. Please do not do it on a production machine.
 
-    * Since VideoProfiler is a baremetal tool please ensure that the socket directory path of the host system i.e. `/opt/intel/eis/sockets` is provided as the EndPoint for VideoProfiler interface with IPC mode.
+    * Since VideoProfiler is a baremetal tool please ensure that the socket directory path of the host system i.e. `/opt/intel/eii/sockets` is provided as the EndPoint for VideoProfiler interface with IPC mode.
 
     * Refer the below VideoProfiler interface example to subscribe to PyMultiClassificationIngestion CutomUDF results in fps mode.
 
@@ -135,7 +135,7 @@ module.
         "/VideoProfiler/interfaces": {
             "Subscribers": [
                 {
-                    "EndPoint": "/opt/intel/eis/sockets",
+                    "EndPoint": "/opt/intel/eii/sockets",
                     "Name": "default",
                     "PublisherAppName": "PyMultiClassificationIngestion",
                     "Topics": [
@@ -182,7 +182,7 @@ module.
       In case multiple UDFs are used, the FPS UDF is required to be added as the last UDF.
   > * In case running this tool with VI & VA in two different nodes, same time needs to be set in both the nodes.
 
-## Optimizing EIS Video pipeline by analysing Video Profiler results
+## Optimizing EII Video pipeline by analysing Video Profiler results
 
 1. VI ingestor/UDF input queue is blocked, consider reducing ingestion rate.
 
@@ -215,11 +215,11 @@ module.
 
 ## Benchmarking with multi instance config
 
-1. EIS supports multi instance config generation for benchmarking purposes. This can be acheived by running the [eis_builder.py](../../build/eis_builder.py) with certain parameters, please refer to the **Multi instance config generation** section of **EIS Pre-Requisites** in [README](../../README.md) for more details.
+1. EII supports multi instance config generation for benchmarking purposes. This can be acheived by running the [eii_builder.py](../../build/eii_builder.py) with certain parameters, please refer to the **Multi instance config generation** section of **EII Pre-Requisites** in [README](../../README.md) for more details.
 
-2. For running VideoProfiler for multiple streams, run the eis_builder with the **-v** flag provided the pre-requisites mentioned above are done. Given below is an example for generating **6** streams config:
+2. For running VideoProfiler for multiple streams, run the eii_builder with the **-v** flag provided the pre-requisites mentioned above are done. Given below is an example for generating **6** streams config:
     ```sh
-        python3 eis_builder.py -f ./video-streaming.yml -v 6
+        python3 eii_builder.py -f ./video-streaming.yml -v 6
     ```
 
   > **Note:**

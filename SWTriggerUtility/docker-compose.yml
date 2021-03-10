@@ -23,8 +23,8 @@ version: '3.6'
 services:
   ia_sw_trigger_utility:
     depends_on:
-        - ia_eisbase
-    image: ${DOCKER_REGISTRY}ia_eisbase:${EIS_VERSION}
+        - ia_eiibase
+    image: ${DOCKER_REGISTRY}ia_eiibase:${EII_VERSION}
     container_name: ia_sw_trigger_utility
     hostname: ia_sw_trigger_utility
     network_mode: host
@@ -32,6 +32,6 @@ services:
       CertType: "zmq"
       CONTEXT: $PWD/../tools/SWTriggerUtility
       DEV_MODE: ${DEV_MODE}
-      no_proxy: ${NO_PROXY},${eis_no_proxy},${ETCD_HOST}
+      no_proxy: ${NO_PROXY},${eii_no_proxy},${ETCD_HOST}
       AppName: "SWTriggerUtility"
 

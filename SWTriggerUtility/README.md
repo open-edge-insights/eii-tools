@@ -7,7 +7,7 @@ This utility is used for invoking various software trigger features of VideoInge
 
 ## Installing Software Trigger Utility requirements
 
-1. To install EIS libs on bare-metal, follow the [README](../../common/README.md) of eis_libs_installer.
+1. To install EII libs on bare-metal, follow the [README](../../common/README.md) of eii_libs_installer.
 
 ## Software Trigger Utilily pre-requisites
 
@@ -22,27 +22,27 @@ SWTriggerUtility expects a set of config, interfaces & public private keys to be
 
     * Run the below command to generate config required for SWTriggerUtility
     ```sh
-        $ cd  <EIS-working-directory>/IEdgeInsights/build
-        $ python3 eis_builder.py -f ./video-streaming.yml
+        $ cd  <EII-working-directory>/IEdgeInsights/build
+        $ python3 eii_builder.py -f ./video-streaming.yml
     ```
 
 * Run the below steps to load the data to ETCD
 
     ```sh
-        $ cd  <EIS-working-directory>/IEdgeInsights/build/provision
-        $ sudo ./provision_eis.sh ../docker-compose.yml
+        $ cd  <EII-working-directory>/IEdgeInsights/build/provision
+        $ sudo ./provision_eii.sh ../docker-compose.yml
     ```
 * Run the below step to set the required env variables to communicate with ETCD
 
   ```sh
-      $ cd  <EIS-working-directory>/IEdgeInsights/tools/SWTriggerUtility
+      $ cd  <EII-working-directory>/IEdgeInsights/tools/SWTriggerUtility
       $ source ./env.sh
   ```
 
-* Since provisioning will stop the EIS services run the below command to start them
+* Since provisioning will stop the EII services run the below command to start them
 
    ```sh
-       $ cd <EIS-working-directory>/IEdgeInsights/build/
+       $ cd <EII-working-directory>/IEdgeInsights/build/
        $ docker-compose up -d
    ```
 
@@ -75,12 +75,12 @@ SWTriggerUtility expects a set of config, interfaces & public private keys to be
 
 ### Prod mode support :
 
-1. EIS services should be running in prod by setting `DEV_MODE=false` in [build/.env](../../build/.env)
+1. EII services should be running in prod by setting `DEV_MODE=false` in [build/.env](../../build/.env)
 
 2. If using SWTrigger Utility in PROD mode, make sure to set required permissions to certificates.
 
    ```sh
-       $ sudo chmod -R 755 <EIS-working-directory>/IEdgeInsights/build/provision/Certificates
+       $ sudo chmod -R 755 <EII-working-directory>/IEdgeInsights/build/provision/Certificates
    ```
     **Note:** This step is required everytime provisioning is done.
     **Caution:** This step will make the certs insecure. Please do not do it on a production machine.
@@ -91,20 +91,20 @@ SWTriggerUtility expects a set of config, interfaces & public private keys to be
 4. Run the below step to source the env variable
 
     ```sh
-        $ cd <EIS-working-directory>/IEdgeInsights/tools/SWTriggerUtility
+        $ cd <EII-working-directory>/IEdgeInsights/tools/SWTriggerUtility
         $ source ./env.sh
     ```
 
 ### Dev mode support :
 
-1. EIS services should be running in dev mode by setting `DEV_MODE=true` in [build/.env](../../build/.env)
+1. EII services should be running in dev mode by setting `DEV_MODE=true` in [build/.env](../../build/.env)
 
 2. Make the field `DEV_MODE=TRUE` in env.sh of tools/SWTriggerUtility
 
 3. Run the below step to source the env variable
 
     ```sh
-        $ cd <EIS-working-directory>/IEdgeInsights/tools/SWTriggerUtility
+        $ cd <EII-working-directory>/IEdgeInsights/tools/SWTriggerUtility
         $ source ./env.sh
     ```
 ## Usage of Software Trigger Utility:
@@ -147,4 +147,4 @@ Note: In the above example, VideoIngestion starts then does ingestion for 
 
 * In order to send SNAPSHOT trigger, ensure that the ingestion is stopped. In case START_INGESTION trigger is sent previously then stop the ingestion using the STOP_INGESTION trigger.
 
-* If running SWTriggerUtility with multi instance wherein there are multiple VideoIngestion services, one can connect to the required VideoIngestion service by using the respective name of the interface mentioned in [eis_config.json](../../build/provision/config/eis_config.json). The name of the interface can be specified in the **interface_name** env in [env.sh](env.sh). Eg: If user wants to connect to **VideoIngestion1**, the **interface_name** would be **default1** & **default2** for **VideoIngestion2** etc.,
+* If running SWTriggerUtility with multi instance wherein there are multiple VideoIngestion services, one can connect to the required VideoIngestion service by using the respective name of the interface mentioned in [eii_config.json](../../build/provision/config/eii_config.json). The name of the interface can be specified in the **interface_name** env in [env.sh](env.sh). Eg: If user wants to connect to **VideoIngestion1**, the **interface_name** would be **default1** & **default2** for **VideoIngestion2** etc.,

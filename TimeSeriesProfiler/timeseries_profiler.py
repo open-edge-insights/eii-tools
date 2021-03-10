@@ -29,10 +29,10 @@ import datetime
 import threading
 import gc
 from distutils.util import strtobool
-# IMPORT the library to read from EIS
+# IMPORT the library to read from EII
 from util.util import Util
 import cfgmgr.config_manager as cfg
-import eis.msgbus as mb
+import eii.msgbus as mb
 
 avg_records = {}
 
@@ -65,9 +65,9 @@ class TimeSeriesCalculator:
         self.total_records['total_mqtt_to_idbconn'] = '0'
         self.total_records['total_influx_to_idbconn'] = '0'
 
-    def eisSubscriber(self):
+    def eiiSubscriber(self):
         """ To subscribe over
-        EISMessagebus. """
+        EIIMessagebus. """
 
         mode = self.msgbus_cfg["type"]
         if (not self.devMode and mode == "zmq_tcp"):
@@ -264,7 +264,7 @@ def threadRunner(topic, msgbus_cfg, dev_mode, total_number_of_samples):
     tsc_app = TimeSeriesCalculator(topic, msgbus_cfg,
                                    dev_mode, total_number_of_samples)
 
-    tsc_app.eisSubscriber()
+    tsc_app.eiiSubscriber()
 
 
 if __name__ == "__main__":
