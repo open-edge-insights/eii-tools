@@ -150,7 +150,6 @@ class VideoProfiler:
         elif self.fps_mode:
             while not self.done_receiving:
                 md, fr = subscriber.recv()
-                print("REcevieed")
                 self.calculate_fps()
                 # Discarding both the meta-data & frame
                 del md

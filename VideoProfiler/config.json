@@ -8,18 +8,18 @@
                                     "per_frame_stats":false,
                                     "avg_stats": true                                
                                 },
-        "total_number_of_frames" : 300,
-        "export_to_csv" : true
+        "total_number_of_frames" : 1000,
+        "export_to_csv" : false
     },
     "interfaces": {
         "Subscribers": [
             {
                 "Name": "default",
-                "Type": "zmq_ipc",
-                "EndPoint": "/opt/intel/eii/sockets",
-                "PublisherAppName": "VideoIngestion",
+                "Type": "zmq_tcp",
+                "EndPoint": "127.0.0.1:65013",
+                "PublisherAppName": "VideoAnalytics",
                 "Topics": [
-                    "camera1_stream"
+                    "camera1_stream_results"
                 ]
             }
         ]
