@@ -131,7 +131,7 @@ notice "Generating test configuration files"
 run_logged cp -v ${TEST_DIR}/services.yml ${EII_HOME}/build/services.yml
 
 pushd "${EII_HOME}/build"
-run_logged python3 eii_builder.py -f services.yml
+run_logged python3 builder.py -f services.yml
 popd
 
 # --------------------------------------------------------------
@@ -139,7 +139,7 @@ popd
 # --------------------------------------------------------------
 notice "Provisioning cluster"
 pushd "${EII_HOME}/build/provision/"
-run_logged ./provision_eii.sh ../docker-compose.yml
+run_logged ./provision.sh ../docker-compose.yml
 popd
 
 # --------------------------------------------------------------

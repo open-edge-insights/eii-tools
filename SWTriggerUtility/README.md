@@ -23,14 +23,14 @@ SWTriggerUtility expects a set of config, interfaces & public private keys to be
     * Run the below command to generate config required for SWTriggerUtility
     ```sh
         $ cd  <EII-working-directory>/IEdgeInsights/build
-        $ python3 eii_builder.py -f ./video-streaming.yml
+        $ python3 builder.py -f ./video-streaming.yml
     ```
 
 * Run the below steps to load the data to ETCD
 
     ```sh
         $ cd  <EII-working-directory>/IEdgeInsights/build/provision
-        $ sudo ./provision_eii.sh ../docker-compose.yml
+        $ sudo ./provision.sh ../docker-compose.yml
     ```
 * Run the below step to set the required env variables to communicate with ETCD
 

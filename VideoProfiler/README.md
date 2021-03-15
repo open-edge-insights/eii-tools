@@ -19,7 +19,7 @@ module.
 
 2. With the above pre-requisite done, please run the below to command:
     ```sh
-        python3 eii_builder.py -f ./video-streaming.yml
+        python3 builder.py -f ./video-streaming.yml
     ```
 
 ## EII Video Profiler modes
@@ -215,11 +215,11 @@ module.
 
 ## Benchmarking with multi instance config
 
-1. EII supports multi instance config generation for benchmarking purposes. This can be acheived by running the [eii_builder.py](../../build/eii_builder.py) with certain parameters, please refer to the **Multi instance config generation** section of **EII Pre-Requisites** in [README](../../README.md) for more details.
+1. EII supports multi instance config generation for benchmarking purposes. This can be acheived by running the [builder.py](../../build/builder.py) with certain parameters, please refer to the **Multi instance config generation** section of **EII Pre-Requisites** in [README](../../README.md) for more details.
 
-2. For running VideoProfiler for multiple streams, run the eii_builder with the **-v** flag provided the pre-requisites mentioned above are done. Given below is an example for generating **6** streams config:
+2. For running VideoProfiler for multiple streams, run the builder with the **-v** flag provided the pre-requisites mentioned above are done. Given below is an example for generating **6** streams config:
     ```sh
-        python3 eii_builder.py -f ./video-streaming.yml -v 6
+        python3 builder.py -f ./video-streaming.yml -v 6
     ```
 
   > **Note:**

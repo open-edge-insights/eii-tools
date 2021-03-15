@@ -6,7 +6,7 @@ services:
     depends_on:
       - ia_eiibase
       - ia_common
-      - ia_eii_zmq_broker
+      - ia_zmq_broker
     build:
       context: $PWD/../tools/EmbPublisher
       dockerfile: $PWD/../tools/EmbPublisher/Dockerfile

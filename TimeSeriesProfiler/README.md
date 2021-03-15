@@ -21,7 +21,7 @@
 
 2. With the above pre-requisite done, please run the below command:
     ```sh
-        python3 eii_builder.py -f ./time-series.yml
+        python3 builder.py -f ./time-series.yml
     ```
 
 

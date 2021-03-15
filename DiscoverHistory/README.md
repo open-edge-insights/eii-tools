@@ -24,7 +24,7 @@ README FOR DISCOVER HISTORY TOOL
  4. Provide the required query to be passed on to InfluxDB.
  5. With the above pre-requisite done, please run the below to command:
     ```sh
-        python3 eii_builder.py -f ./video-streaming-storage.yml
+        python3 builder.py -f ./video-streaming-storage.yml
     ```
  6. Set the output directory variable at SAVE_PATH=/tmp/eii_history in file [build/.env](../../build/.env).
  7. Refer [main EII README.md](../../README.md) to provision, build and run the tool along with the EII video-streaming-storage recipe/stack.

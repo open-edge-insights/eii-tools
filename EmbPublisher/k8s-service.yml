@@ -81,7 +81,7 @@ spec:
         - name: PUBLISHER_TestPub_TYPE
           value: "zmq_tcp"
         - name: PUBLISHER_TestPub_ENDPOINT
-          value: "eiizmqbroker:60514"
+          value: "zmqbroker:60514"
 
 
       volumes:
