@@ -20,4 +20,4 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-docker exec -ti mosquitto mosquitto_sub -h 127.0.0.1 -v -t '#'
+docker exec -ti mosquitto_$1 mosquitto_sub -h 127.0.0.1 -v -t '#'

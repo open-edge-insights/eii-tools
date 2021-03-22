@@ -72,5 +72,12 @@ Simple Python temperature sensor simulator.
 3. If one wish to see the messages going over MQTT, run the
    subscriber with the following command:
    ```sh
-   $ ./subscriber.sh
+   $ ./subscriber.sh <port>
    ```
+   Example:
+   If Broker runs at port 1883, to run subscriber use following command:
+
+   ```sh
+   $ ./subscriber.sh 1883
+   ```
+
