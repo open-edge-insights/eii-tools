@@ -64,7 +64,7 @@ to
     This query will return all the records from the current time, going back upto last 1 hour.
 
 ## TO RUN THE TOOL IN zmq_ipc MODE
-Please make sure to change the content of [config.json](DiscoverHistory/config/eii_config.json) . Modify the same in "Servers" interface in config.json file of ImageStore and InfluxDBConnector. 
+Please make sure to change the content of [config.json](DiscoverHistory/config.json) . Modify the same in "Servers" interface in config.json file of ImageStore and InfluxDBConnector. 
 
 to
 ```
