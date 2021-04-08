@@ -18,7 +18,19 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-FROM python:3.7-slim
+FROM ubuntu:18.04
+
+# Setting python dev env
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends software-properties-common && \
+    add-apt-repository ppa:deadsnakes/ppa && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends python3.6 \
+                                               python3-setuptools \
+                                               python3-pip && \
+    python3.6 -m pip install -U pip && \
+    ln -sf /usr/bin/pip /usr/bin/pip3
+
 COPY requirements.txt /
 RUN pip3 install -r requirements.txt
 COPY publisher.py /
