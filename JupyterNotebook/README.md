@@ -60,13 +60,13 @@ It works along with the [jupyter_connector](../../common/video/udfs/python/jupyt
 3. Run the following command to see the logs:
 
     ```sh
-        docker logs -f ia_jupyter_connector
+        docker logs -f ia_jupyter_notebook
     ```
 
 4. Copy paste the below URL in a browser and copy paste the token provided in the logs if requested:
 
     ```sh
-        http://127.0.0.1:8889
+        http://127.0.0.1:8888
     ```
 
 5. Once the Jupyter Notebook service is launched in the browser, run the [main.ipynb](main.ipynb) file visible in the list of files available.
