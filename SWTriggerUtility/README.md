@@ -86,7 +86,7 @@ SWTriggerUtility expects a set of config, interfaces & public private keys to be
     **Caution:** This step will make the certs insecure. Please do not do it on a production machine.
 
 
-3. Make the field `DEV_MODE=FALSE` in env.sh of tools/SWTriggerUtility
+3. Comment lines 33-36 and uncomment the lines 27-30 in [env.sh](./env.sh) for running in PROD mode.
 
 4. Run the below step to source the env variable
 
@@ -97,9 +97,9 @@ SWTriggerUtility expects a set of config, interfaces & public private keys to be
 
 ### Dev mode support :
 
-1. EII services should be running in dev mode by setting `DEV_MODE=true` in [build/.env](../../build/.env)
+1. EII services should be running in dev mode by setting `DEV_MODE=true` in [build/.env](../../build/.env).
 
-2. Make the field `DEV_MODE=TRUE` in env.sh of tools/SWTriggerUtility
+2. Uncomment lines 33-36 and comment the lines 27-30 in [env.sh](./env.sh) for running in DEV mode.
 
 3. Run the below step to source the env variable
 
@@ -107,6 +107,7 @@ SWTriggerUtility expects a set of config, interfaces & public private keys to be
         $ cd <EII-working-directory>/IEdgeInsights/tools/SWTriggerUtility
         $ source ./env.sh
     ```
+
 ## Usage of Software Trigger Utility:
 
 Software trigger utility can be used in following ways:

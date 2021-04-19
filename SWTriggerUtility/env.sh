@@ -22,10 +22,19 @@
 
 # env variables to communicate with ETCD
 export AppName="SWTriggerUtility"
+
+# Comment out below 4 lines if running in DEV mode
 export DEV_MODE="FALSE"
 export CONFIGMGR_CERT="../../../build/provision/Certificates/SWTriggerUtility/SWTriggerUtility_client_certificate.pem"
 export CONFIGMGR_KEY="../../../build/provision/Certificates/SWTriggerUtility/SWTriggerUtility_client_key.pem"
 export CONFIGMGR_CACERT="../../../build/provision/Certificates/ca/ca_certificate.pem"
+
+# Uncomment below 4 lines if running in DEV mode
+# export DEV_MODE="TRUE"
+# export CONFIGMGR_CERT=""
+# export CONFIGMGR_KEY=""
+# export CONFIGMGR_CACERT=""
+
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 export no_proxy=$no_proxy,127.0.0.1
 # The name of the interface to be fetched
