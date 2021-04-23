@@ -41,7 +41,6 @@ services:
     image: ${DOCKER_REGISTRY}ia_jupyter_notebook:${EII_VERSION}
     container_name: ia_jupyter_notebook
     hostname: ia_jupyter_notebook
-    network_mode: host
     restart: unless-stopped
     security_opt:
     - no-new-privileges
@@ -54,13 +53,15 @@ services:
       AppName: "JupyterNotebook"
       DEV_MODE: ${DEV_MODE}
       PROFILING_MODE: ${PROFILING_MODE}
-      no_proxy: ${eii_no_proxy},${RTSP_CAMERA_IP},${ETCD_HOST}
+      no_proxy: ${RTSP_CAMERA_IP},${ETCD_HOST}
       ETCD_HOST: ${ETCD_HOST}
       ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
       ETCD_PREFIX: ${ETCD_PREFIX}
 
       # Provisioning related variable
       CertType: "zmq"
+    networks:
+      - eii
     volumes:
       - "vol_eii_socket:${SOCKET_DIR}"
     privileged: true

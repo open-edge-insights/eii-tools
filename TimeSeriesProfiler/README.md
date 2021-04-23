@@ -165,7 +165,7 @@
             {
                 "Name": "default",
                 "Type": "zmq_tcp",
-                "EndPoint": "127.0.0.1:65032",
+                "EndPoint": "ia_influxdbconnector:65032",
                 "PublisherAppName": "InfluxDBConnector",
                 "Topics": [
                     "rfc_results"

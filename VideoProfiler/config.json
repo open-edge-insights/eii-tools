@@ -16,7 +16,7 @@
             {
                 "Name": "default",
                 "Type": "zmq_tcp",
-                "EndPoint": "127.0.0.1:65013",
+                "EndPoint": "ia_video_analytics:65013",
                 "PublisherAppName": "VideoAnalytics",
                 "Topics": [
                     "camera1_stream_results"

@@ -8,7 +8,7 @@
              {
                  "Name": "default",
                  "Type": "zmq_tcp",
-                 "EndPoint": "127.0.0.1:66013",
+                 "EndPoint": "ia_video_ingestion:64013",
                  "ServerAppName": "VideoIngestion"
              }
          ]

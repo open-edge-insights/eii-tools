@@ -4,19 +4,7 @@ HttpTestServer runs a simple HTTP Test server with security being optional.
 
 * To install EII libs on bare-metal, follow the [README](../../common/README.md) of eii_libs_installer.
 
-* To Run rest data export test application without Kubernetes setup
-
-    1. Generate the Certificate required to run the Http Test Server using the following command
-    ```
-    $ ./generate_testserver_cert.sh 127.0.0.1
-    ```
-
-    2. To run the HttpTestServer
-    ```
-    $ cd IEdgeInsights/tools/HttpTestServer
-    $ go run TestServer.go --dev_mode <true/false> --host <address of server> --port <port of server>
-    ```
-* To Run rest data export test application with the Kubernetes setup
+* To Run rest data export test application
 
     1. Generate the Certificate required to run the Http Test Server using the following command
     ```

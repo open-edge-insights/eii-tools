@@ -20,15 +20,16 @@ services:
     image: ${DOCKER_REGISTRY}emb_publisher:${EII_VERSION}
     container_name: emb_publisher
     hostname: emb_publisher
-    network_mode: host
     environment:
       AppName: "EmbPublisher"
       DEV_MODE: ${DEV_MODE}
-      no_proxy: ${eii_no_proxy},${ETCD_HOST}
+      no_proxy: ${ETCD_HOST}
       ETCD_HOST: ${ETCD_HOST}
       ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
       ETCD_PREFIX: ${ETCD_PREFIX}
       CertType: "zmq"
+    networks:
+      - eii
     volumes:
       - "vol_eii_socket:${SOCKET_DIR}"
     secrets:

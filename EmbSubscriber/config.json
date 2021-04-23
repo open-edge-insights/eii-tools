@@ -6,7 +6,7 @@
         "Name": "TestSub",
         "PublisherAppName": "Telegraf",
         "Type": "zmq_tcp",
-        "EndPoint": "127.0.0.1:65077",
+        "EndPoint": "ia_telegraf:65077",
         "Topics": [
           "*"
         ]

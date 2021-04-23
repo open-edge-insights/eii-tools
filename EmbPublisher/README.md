@@ -25,7 +25,7 @@ Let us look at the sample configuration
         "AllowedClients": [
           "*"
         ],
-        "EndPoint": "127.0.0.1:8765",
+        "EndPoint": "ia_zmq_broker:60514",
         "Topics": [
           "topic-pfx1",
           "topic-pfx2",

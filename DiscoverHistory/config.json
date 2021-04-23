@@ -8,13 +8,13 @@
                 "Name": "InfluxDBConnector",
                 "ServerAppName": "InfluxDBConnector",
                 "Type": "zmq_tcp",
-                "EndPoint": "127.0.0.1:65145"
+                "EndPoint": "ia_influxdbconnector:65145"
             },
             {
                 "Name": "ImageStore",
                 "ServerAppName": "ImageStore",
                 "Type": "zmq_tcp",
-                "EndPoint": "127.0.0.1:5669"
+                "EndPoint": "ia_imagestore:5669"
             }
         ]
     }

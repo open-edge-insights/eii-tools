@@ -37,7 +37,6 @@ services:
         CMAKE_INSTALL_PREFIX: ${EII_INSTALL_PATH}
     container_name: ia_sw_trigger_utility
     hostname: ia_sw_trigger_utility
-    network_mode: host
     image: ${DOCKER_REGISTRY}ia_sw_trigger_utility:${EII_VERSION}
     restart: "no"
     ipc: "none"
@@ -46,12 +45,14 @@ services:
       AppName: "SWTriggerUtility"
       CertType: "zmq"
       DEV_MODE: ${DEV_MODE}
-      no_proxy: ${eii_no_proxy},${ETCD_HOST}
-      NO_PROXY: ${eii_no_proxy},${ETCD_HOST}
+      no_proxy: ${ETCD_HOST}
+      NO_PROXY: ${ETCD_HOST}
       ETCD_HOST: ${ETCD_HOST}
       ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
       ETCD_PREFIX: ${ETCD_PREFIX}
       interface_name: "default"
+    networks:
+      - eii
     secrets:
       - ca_etcd
       - etcd_SWTriggerUtility_cert

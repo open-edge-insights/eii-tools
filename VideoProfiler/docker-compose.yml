@@ -37,7 +37,6 @@ services:
         CMAKE_INSTALL_PREFIX: ${EII_INSTALL_PATH}
     container_name: ia_video_profiler
     hostname: ia_video_profiler
-    network_mode: host
     image: ${DOCKER_REGISTRY}ia_video_profiler:${EII_VERSION}
     restart: "no"
     ipc: "none"
@@ -45,11 +44,13 @@ services:
       AppName: "VideoProfiler"
       CertType: "pem,zmq"
       DEV_MODE: ${DEV_MODE}
-      no_proxy: ${eii_no_proxy},${ETCD_HOST}
-      NO_PROXY: ${eii_no_proxy},${ETCD_HOST}
+      no_proxy: ${ETCD_HOST}
+      NO_PROXY: ${ETCD_HOST}
       ETCD_HOST: ${ETCD_HOST}
       ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
       ETCD_PREFIX: ${ETCD_PREFIX}
+    networks:
+      - eii
     volumes:
       - ".:/app/out"
       - "vol_eii_socket:${SOCKET_DIR}"
