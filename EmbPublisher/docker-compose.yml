@@ -12,6 +12,8 @@ services:
       dockerfile: $PWD/../tools/EmbPublisher/Dockerfile
       args:
         EII_VERSION: ${EII_VERSION}
+        EII_UID: ${EII_UID}
+        EII_USER_NAME: ${EII_USER_NAME}
         DOCKER_REGISTRY: ${DOCKER_REGISTRY}
         UBUNTU_IMAGE_VERSION: ${UBUNTU_IMAGE_VERSION}
         CMAKE_INSTALL_PREFIX: ${EII_INSTALL_PATH}
@@ -19,7 +21,6 @@ services:
     container_name: emb_publisher
     hostname: emb_publisher
     network_mode: host
-    user: ${EII_UID}
     environment:
       AppName: "EmbPublisher"
       DEV_MODE: ${DEV_MODE}

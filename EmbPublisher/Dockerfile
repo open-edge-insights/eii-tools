@@ -56,6 +56,10 @@ RUN mv datafiles $ARTIFACTS/
 
 FROM ubuntu:$UBUNTU_IMAGE_VERSION as runtime
 ARG ARTIFACTS
+ARG EII_UID
+ARG EII_USER_NAME
+RUN groupadd $EII_USER_NAME -g $EII_UID && \
+    useradd -r -u $EII_UID -g $EII_USER_NAME $EII_USER_NAME
 
 WORKDIR /app
 
@@ -65,5 +69,6 @@ COPY --from=builder ${CMAKE_INSTALL_PREFIX}/lib .local/lib
 COPY --from=builder $ARTIFACTS .
 
 ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:/app/.local/lib
+USER $EII_USER_NAME
 HEALTHCHECK NONE
 ENTRYPOINT ["./pub_tool"]

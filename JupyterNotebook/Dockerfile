@@ -57,7 +57,8 @@ WORKDIR /app
 
 ARG EII_UID
 ARG EII_USER_NAME
-RUN adduser --quiet --disabled-password ${EII_USER_NAME}
+RUN groupadd $EII_USER_NAME -g $EII_UID && \
+    useradd -r -u $EII_UID -g $EII_USER_NAME $EII_USER_NAME
 
 ARG ARTIFACTS
 ARG CMAKE_INSTALL_PREFIX
@@ -72,6 +73,7 @@ RUN chown -R ${EII_UID} .local/lib/python3.6
 
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:${CMAKE_INSTALL_PREFIX}/lib
 ENV PATH $PATH:/app/.local/bin
+USER $EII_USER_NAME
 
 HEALTHCHECK NONE
 ENTRYPOINT ["jupyter", "notebook", "--allow-root"]

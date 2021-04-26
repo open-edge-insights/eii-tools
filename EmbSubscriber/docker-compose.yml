@@ -30,6 +30,8 @@ services:
       dockerfile: $PWD/../tools/EmbSubscriber/Dockerfile
       args:
         EII_VERSION: ${EII_VERSION}
+        EII_UID: ${EII_UID}
+        EII_USER_NAME: ${EII_USER_NAME}
         DOCKER_REGISTRY: ${DOCKER_REGISTRY}
         UBUNTU_IMAGE_VERSION: ${UBUNTU_IMAGE_VERSION}
         CMAKE_INSTALL_PREFIX: ${EII_INSTALL_PATH}
@@ -37,7 +39,6 @@ services:
     container_name: ia_emb_subscriber
     hostname: ia_emb_subscriber
     network_mode: host
-    user: ${EII_UID}
     environment:
       AppName: "EmbSubscriber"
       DEV_MODE: ${DEV_MODE}

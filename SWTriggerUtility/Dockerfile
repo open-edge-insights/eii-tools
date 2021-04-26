@@ -56,7 +56,8 @@ RUN cp SWTriggerUtility/build/sw_trigger_utility $ARTIFACTS/
 FROM ubuntu:$UBUNTU_IMAGE_VERSION as runtime
 ARG EII_UID
 ARG EII_USER_NAME
-RUN useradd -r -u ${EII_UID} -G video ${EII_USER_NAME}
+RUN groupadd $EII_USER_NAME -g $EII_UID && \
+    useradd -r -u $EII_UID -g $EII_USER_NAME $EII_USER_NAME
 
 ARG ARTIFACTS
 WORKDIR /app
@@ -66,6 +67,7 @@ COPY --from=builder ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib
 COPY --from=builder $ARTIFACTS .
 
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:${CMAKE_INSTALL_PREFIX}/lib
+USER $EII_USER_NAME
 
 HEALTHCHECK NONE
 
