@@ -55,7 +55,7 @@ It works along with the [jupyter_connector](../../common/video/udfs/python/jupyt
         }
     ```
 
-2. Refer [provision/README.md](../../README.md) to provision, build and run the tool along with the EII recipe/stack.
+2. Refer [IEdgeInsights/README.md](../../README.md) to provision, build and run the tool along with the EII recipe/stack.
 
 3. Run the following command to see the logs:
 
