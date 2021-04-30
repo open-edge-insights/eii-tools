@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-FROM python:3.7-slim
+FROM python:3.8-slim
 COPY requirements.txt /
 RUN pip3 install -r requirements.txt
 COPY publisher.py /

@@ -20,7 +20,7 @@ It works along with the [jupyter_connector](../../common/video/udfs/python/jupyt
 
 2. With the above pre-requisite done, please run the below command:
     ```sh
-        python3.6 builder.py -f usecases/video-streaming.yml
+        python3 builder.py -f usecases/video-streaming.yml
     ```
 
 ## Running Jupyter Notebook

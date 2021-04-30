@@ -50,8 +50,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends software-properties-common && \
     add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
-    apt-get install -y --no-install-recommends python3.6 \
-                                               python3-distutils  && \
+    apt-get install -y --no-install-recommends python3-distutils  && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -64,18 +63,18 @@ RUN groupadd $EII_USER_NAME -g $EII_UID && \
 
 ARG ARTIFACTS
 ARG CMAKE_INSTALL_PREFIX
-ENV PYTHONPATH $PYTHONPATH:/app/.local/lib/python3.6/site-packages:/app
+ENV PYTHONPATH $PYTHONPATH:/app/.local/lib/python3.8/site-packages:/app
 COPY --from=common ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib
 COPY --from=common /eii/common/util/*.py util/
 COPY --from=common /root/.local/lib .local/lib
 COPY --from=builder $ARTIFACTS .
 COPY --from=builder /root/.local/lib .local/lib
 RUN mkdir /app/out/
-RUN chown -R ${EII_UID} .local/lib/python3.6
+RUN chown -R ${EII_UID} .local/lib/python3.8
 
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:${CMAKE_INSTALL_PREFIX}/lib
 ENV PATH $PATH:/app/.local/bin
 USER $EII_USER_NAME
 
 HEALTHCHECK NONE
-ENTRYPOINT ["python3.6", "video_profiler.py"]
+ENTRYPOINT ["python3", "video_profiler.py"]

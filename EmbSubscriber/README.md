@@ -16,7 +16,7 @@ EmbSubscriber subscribes message coming from a publisher.It subscribes to messag
 
 2. With the above pre-requisite done, please run the below command:
     ```sh
-        python3.6 builder.py -f usecases/time-series.yml
+        python3 builder.py -f usecases/time-series.yml
     ```
 
 ## Running EmbSubscriber

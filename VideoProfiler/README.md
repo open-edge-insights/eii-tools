@@ -19,7 +19,7 @@ module.
 
 2. With the above pre-requisite done, please run the below to command:
     ```sh
-        python3.6 builder.py -f usecases/video-streaming.yml
+        python3 builder.py -f usecases/video-streaming.yml
     ```
 
 ## EII Video Profiler modes
@@ -193,7 +193,7 @@ module.
 
 2. For running VideoProfiler for multiple streams, run the builder with the **-v** flag provided the pre-requisites mentioned above are done. Given below is an example for generating **6** streams config:
     ```sh
-        python3.6 builder.py -f usecases/video-streaming.yml -v 6
+        python3 builder.py -f usecases/video-streaming.yml -v 6
     ```
 
   > **Note:**
