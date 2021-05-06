@@ -42,6 +42,11 @@ Before executing the tool make sure following steps are executed:-
     ```
 3. Install the dependencies:
 
+    **Note**: It is highly recommended that you use a python virtual environment to
+    install the python packages, so that the system python installation doesn't
+    get altered. Details on setting up and using python virtual environment can
+    be found here: https://www.geeksforgeeks.org/python-virtual-environment/
+
     ```sh
     $ pip3 install -r requirements.txt
     ```
