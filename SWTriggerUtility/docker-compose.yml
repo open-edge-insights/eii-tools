@@ -40,7 +40,6 @@ services:
     image: ${DOCKER_REGISTRY}ia_sw_trigger_utility:${EII_VERSION}
     restart: "no"
     ipc: "none"
-    command: []
     environment:
       AppName: "SWTriggerUtility"
       CertType: "zmq"

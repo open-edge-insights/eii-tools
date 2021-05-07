@@ -71,4 +71,4 @@ USER $EII_USER_NAME
 
 HEALTHCHECK NONE
 
-ENTRYPOINT ["./sw_trigger_utility"]
+ENTRYPOINT ["sleep","infinity"]

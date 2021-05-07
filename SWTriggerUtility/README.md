@@ -38,70 +38,50 @@ SWTriggerUtility expects a set of config, interfaces & public private keys to be
 
 ## Usage of Software Trigger Utility:
 
+By default the SW Trigger Utility container will not execute anything and one needs to interact with the running container to generate the trigger commands. Make sure VI service is up and ready to process the commands from the utility.
+
 Software trigger utility can be used in following ways:
 
 1: "START INGESTION" -> "Allows ingestion for default time (120 seconds being default)" -> "STOP INGESTION"
-    * command is set to [] in [docker-compose.yml](./docker-compose.yml) file for default behaviour. please follow the below commands:
+
     ```sh
-        $ cd  <EII-working-directory>/IEdgeInsights/build
-        $ python3 builder.py -f usecases/video-streaming.yml
-        $ docker-compose up -d
+        cd  <EII-working-directory>/IEdgeInsights/build
+        docker exec ia_sw_trigger_utility ./sw_trigger_utility
     ```
+
 2: "START INGESTION" -> "Allows ingestion for user defined time (configurable time in seconds)" -> "STOP INGESTION"
-    * Modify command section of [docker-compose.yml](./docker-compose.yml) file as following:
-    ```
-    command: ["300"]
-    ```
-    * please follow the below commands:
+
     ```sh
-        $ cd  <EII-working-directory>/IEdgeInsights/build
-        $ python3 builder.py -f usecases/video-streaming.yml
-        $ docker-compose up -d
+        cd  <EII-working-directory>/IEdgeInsights/build
+        docker exec ia_sw_trigger_utility ./sw_trigger_utility 300
     ```
-Note: In the above example, VideoIngestion starts then does ingestion for 300 seconds then stops ingestion after 300 seconds & cycle repeqats for number of cycles configured in the config.json.
+    **Note**: In the above example, VideoIngestion starts then does ingestion for 300 seconds then stops ingestion after 300 seconds & cycle repeats for number of cycles configured in the config.json.
 
 
 3: Selectively send START_INGESTION software trigger:
-    * Modify command section of [docker-compose.yml](./docker-compose.yml) file as following:
-    ```
-    command: ["START_INGESTION"]
-    ```
-    * please follow the below commands:
+
     ```sh
-        $ cd  <EII-working-directory>/IEdgeInsights/build
-        $ python3 builder.py -f usecases/video-streaming.yml
-        $ docker-compose up -d
+        cd  <EII-working-directory>/IEdgeInsights/build
+        docker exec ia_sw_trigger_utility ./sw_trigger_utility START_INGESTION
     ```
 
 4: Selectively send STOP_INGESTION software trigger:
-    * Modify command section of [docker-compose.yml](./docker-compose.yml) file as following:
-    ```
-    command: ["STOP_INGESTION"]
-    ```
-    * please follow the below commands:
+
     ```sh
-        $ cd  <EII-working-directory>/IEdgeInsights/build
-        $ python3 builder.py -f usecases/video-streaming.yml
-        $ docker-compose up -d
+        cd  <EII-working-directory>/IEdgeInsights/build
+        docker exec ia_sw_trigger_utility ./sw_trigger_utility STOP_INGESTION
     ```
 
 5: Selectively send SNAPSHOT software trigger:
-    * Modify command section of [docker-compose.yml](./docker-compose.yml) file as following:
-    ```
-    command: ["SNAPSHOT"]
-    ```
-    * please follow the below commands:
+
     ```sh
-        $ cd  <EII-working-directory>/IEdgeInsights/build
-        $ python3 builder.py -f usecases/video-streaming.yml
-        $ docker-compose up -d
+        cd  <EII-working-directory>/IEdgeInsights/build
+        docker exec ia_sw_trigger_utility ./sw_trigger_utility SNAPSHOT
     ```
 > **Note**:  
 
 * If duplicate START_INGESTION or STOP_INGESTION sw_triggers are sent by client by mistake then the VI is capable  of catching these duplicates & responds back to client conveying that duplicate triggers were sent & requets to send proper sw_triggers. 
 
 * In order to send SNAPSHOT trigger, ensure that the ingestion is stopped. In case START_INGESTION trigger is sent previously then stop the ingestion using the STOP_INGESTION trigger.
-
-* In order to perform successive operation like SNAPSHOT trigger, User needs to restart "ia_sw_trigger_utility" container.
 
 * If running SWTriggerUtility with multi instance wherein there are multiple VideoIngestion services, one can connect to the required VideoIngestion service by using the respective name of the interface mentioned in [eii_config.json](../../build/provision/config/eii_config.json). The name of the interface can be specified in the **interface_name** env in [docker-compose.yml](docker-compose.yml). Eg: If user wants to connect to **VideoIngestion1**, the **interface_name** would be **default1** & **default2** for **VideoIngestion2** etc.,
