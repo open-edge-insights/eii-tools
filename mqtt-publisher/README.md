@@ -4,72 +4,50 @@ Simple Python temperature sensor simulator.
 ## Usage
 > **NOTE:** This assumes you have already installed and configured Docker.
 
-1. Run the broker (Use `docker ps` to see if the broker has started successfully as the container starts in detached mode)
-    ```sh
-    $ ./broker.sh <port>
-    ```
-    **NOTE:** To run the broker for EII TimeSeries Analytics usecase:
-    ```sh
-    $ ./broker.sh 1883
-    ```
-
-2. Build and run the MQTT publisher docker container
-   * For EII TimeSeries Analytics usecase, 
-    To publish temperature data to default topic:
-     ```sh
-     $./build.sh && ./publisher_temp.sh
-     ```
-    To start publisher docker container in detached mode:
-     ```sh
-     $./build.sh && ./publisher_temp.sh --detached_mode true
-     ```
-
-    To publish temperature and humidity data together:
-     ```sh
-     $./build.sh && ./publisher_temp_humidity.sh
-     ```
-    To start publisher docker container in detached mode:
-     ```sh
-     $./build.sh && ./publisher_temp_humidity.sh --detached_mode true
-     ```
-
-**Note**: To publish multiple sensor data(temperature, pressure, humidity) to default topic(temperature/simulated/0,pressure/simulated/0,humidity/simulated/0),using following command:
+1. Building and bringing up the tool
+   - Add an entry for mqtt-publisher as 'tools/mqtt-publisher' in either 'time-series.yml' or 'all.yml' file in [build/usecases](../../build/usecases) directory.
+   - Use [builder.py](../../build/builder.py) utility with the modified 'time-series.yml' or 'all.yml' file as an argument. Example:
    ```sh
-	$./build.sh && ./publisher.sh --temperature 10:30 --pressure 10:30 --humidity 10:30 
+   $ cd [WORKDIR]/IEdgeInsigths/build
+   $ python3 builder.py -f usecases/time-series.yml
    ```
-   To publish multiple sensor data in detached mode:
+   - Provision, build and bring up the EII stack by following in the steps in the [README](../../README.md).
+
+**Note** By default the tool publishes temperature data. If the user wants to publish other data, he/she needs to modify the command option in "ia_mqtt_publisher" service in  [build/docker-compose.yml](../../build/docker-compose.yml) accordingly and restart the container using `docker-compose restart ia_mqtt_publisher` command from the build directory.
+
+   * To publish temperature data to default topic, command option by default is set to:
    ```sh
-   $./build.sh && ./publisher.sh --temperature 10:30 --pressure 10:30 --humidity 10:30 --detached_mode true
+    ["--temperature", "10:30"]
    ```
-   To publish differnt topic instead of default topic:
+
+   * To publish temperature and humidity data together, change the command option to:
    ```sh
-	./build.sh && ./publisher.sh --temperature 10:30 --pressure 10:30 --humidity 10:30 --topic_temp <temperature topic> --topic_pres <pressure topic> --topic_humd <humidity topic>
+   ["--temperature", "10:30", "--humidity", "10:30", "--topic_humd", "'temperature/simulated/0'"]
+   ```
+
+   * To publish multiple sensor data(temperature, pressure, humidity) to default topic(temperature/simulated/0, pressure/simulated/0, humidity/simulated/0),change the command option to:
+   ```sh
+	["--temperature", "10:30", "--pressure", "10:30", "--humidity", "10:30"] 
+   ```
+
+   * To publish differnt topic instead of default topic, change the command option to:
+   ```sh
+	["--temperature", "10:30", "--pressure", "10:30", "--humidity", "10:30", "--topic_temp", <temperature topic>, "--topic_pres", <pressure topic>, "--topic_humd", <humidity topic>]
    ```
 
   It is possible to publish more than one sensor data into single topic, in that case, same topic name needs to be given for that sensor data. 
 
-   * For publishing data from csv row by row:
+   * For publishing data from csv row by row, change the command option to:
      ```sh
-     $ ./build.sh && ./publisher_csv.sh
+     ["--csv", "demo_datafile.csv", "--sampling_rate", "10", "--subsample", "1"]
      ```
-     To publish in deatched mode:
-     ```sh
-     $ ./build.sh && ./publisher_csv.sh --detached_mode true
-     ```
-     One can also change filename, topic, sampling rate and subsample parameters in the publisher_csv.sh script.
 
-   * To publish JSON files (to test random forest UDF)
+   * To publish JSON files (to test random forest UDF), change the command option to:
      ```sh
-     $ ./build.sh && ./publisher_json.sh
+     ["--topic", "test/rfc_data", "--json", "'./json_files/\*.json'", "--streams", "1"]
      ```
-     To publish JSON files (to test random forest UDF) in detached mode:
-     ```sh
-     $ ./build.sh && ./publisher_json.sh --detached_mode true
-     ```
-     One can also change filename, topic in the publisher_json.sh script.
 
-
-3. If one wish to see the messages going over MQTT, run the
+2. If one wish to see the messages going over MQTT, run the
    subscriber with the following command:
    ```sh
    $ ./subscriber.sh <port>

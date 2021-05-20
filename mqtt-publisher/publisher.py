@@ -58,7 +58,7 @@ def parse_args():
     """Parse command line arguments.
     """
     a_p = argparse.ArgumentParser()
-    a_p.add_argument('--host', default='localhost', help='MQTT broker host')
+    a_p.add_argument('--host', default='ia_mqtt_broker', help='MQTT broker host')
     a_p.add_argument('--port', default=1883, type=int,
                      help='MQTT broker port')
     a_p.add_argument('--qos', default=1, type=int, help='MQTT publish qos')
