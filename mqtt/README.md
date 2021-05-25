@@ -5,7 +5,16 @@ Simple Python temperature sensor simulator.
 > **NOTE:** This assumes you have already installed and configured Docker.
 
 1. Building and bringing up the tool
-   - Add an entry for mqtt-publisher as 'tools/mqtt-publisher' in either 'time-series.yml' or 'all.yml' file in [build/usecases](../../build/usecases) directory.
+   - Run the broker (Use `docker ps` to see if the broker has started successfully as the container starts in detached mode)
+    ```sh
+    $ ./broker.sh <port>
+    ```
+    **NOTE:** To run the broker for EII TimeSeries Analytics usecase:
+    ```sh
+    $ ./broker.sh 1883
+    ```
+
+   - Add an entry for publisher as 'tools/mqtt/publisher' in either 'time-series.yml' or 'all.yml' file in [build/usecases](../../build/usecases) directory.
    - Use [builder.py](../../build/builder.py) utility with the modified 'time-series.yml' or 'all.yml' file as an argument. Example:
    ```sh
    $ cd [WORKDIR]/IEdgeInsigths/build

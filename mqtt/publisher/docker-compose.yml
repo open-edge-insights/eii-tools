@@ -23,11 +23,9 @@ version: '3.6'
 services:
   ## Define mqtt publisher service
   ia_mqtt_publisher:
-    depends_on:
-        - ia_mqtt_broker
     build:
-      context: $PWD/../tools/mqtt-publisher
-      dockerfile: $PWD/../tools/mqtt-publisher/Dockerfile
+      context: $PWD/../tools/mqtt/publisher
+      dockerfile: $PWD/../tools/mqtt/publisher/Dockerfile
     container_name: ia_mqtt_publisher
     hostname: ia_mqtt_publisher
     image:  ${DOCKER_REGISTRY}ia_mqtt_publisher:${EII_VERSION}
@@ -40,15 +38,3 @@ services:
     networks:
       - eii
     command: ["--temperature", "10:30"]
-  
-  ## Define mqtt broker service
-  ia_mqtt_broker:
-    container_name: ia_mqtt_broker
-    hostname: ia_mqtt_broker
-    image: trafex/alpine-mosquitto:1.6.0
-    restart: unless-stopped
-    ipc: "none"
-    networks:
-      - eii
-    ports:
-      - "1883:1883"

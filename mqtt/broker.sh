@@ -20,30 +20,5 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Preparing the command line argument to pass to common.sh
-# when only "--deatched_mode true" is passed to this script, and
-# delete the --detached_mode args with shift.
-if [ "$#" -eq 2 ]; then
-    ARGS=$@
-    if [[ "$ARGS" =~ "detached_mode" ]]; then
-        while [ $# -ne 0 ] ; do
-            case "$1" in
-                --detached_mode)
-                    detached_mode=$2 ; shift 2;;
-        esac
-        done
-    fi
-fi
+docker run --rm -d -p $1:$1 --name ia_mqtt_broker --net eii trafex/alpine-mosquitto:1.6.0
 
-# Once the args become zero in the above step, (in case of --detached_mode true only)
-# checking if detached mode args is present, if it is there calling the
-# common.sh with detached mode or else calling without detached mode
-if [ $# -eq 0 ]; then
-    if [ ! -z "$detached_mode" ];then
-        ./publisher.sh --detached_mode true --topic test/rfc_data --json "./json_files/\*.json" --streams 1
-    else
-        ./publisher.sh --topic test/rfc_data --json "./json_files/\*.json" --streams 1
-    fi
-else
-    ./publisher.sh --topic test/rfc_data --json "./json_files/\*.json" $@
-fi
