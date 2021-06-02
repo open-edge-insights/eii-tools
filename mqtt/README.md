@@ -31,7 +31,7 @@ Simple Python temperature sensor simulator.
 
    * To publish temperature and humidity data together, change the command option to:
    ```sh
-   ["--temperature", "10:30", "--humidity", "10:30", "--topic_humd", "'temperature/simulated/0'"]
+   ["--temperature", "10:30", "--humidity", "10:30", "--topic_humd", "temperature/simulated/0"]
    ```
 
    * To publish multiple sensor data(temperature, pressure, humidity) to default topic(temperature/simulated/0, pressure/simulated/0, humidity/simulated/0),change the command option to:
