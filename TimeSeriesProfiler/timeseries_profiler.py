@@ -66,7 +66,7 @@ class TimeSeriesCalculator:
             self.monitor_mode_settings = config_dict['monitor_mode_settings']
             logger.info('Please ensure EII containers are '
                         'running with PROFILING_MODE set to true')
-        if config_dict['total_number_of_samples'] is (-1):
+        if config_dict['total_number_of_samples'] == (-1):
             if self.monitor_mode:
                 # Set total number of samples to infinity
                 self.total_number_of_samples = float('inf')
