@@ -81,10 +81,16 @@ func main() {
 	buffer, err := json.Marshal(msg)
 
 	if err != nil {
-		fmt.Printf("-- Failed to Marshal teh message : %v\n", err)
+		fmt.Printf("-- Failed to Marshal the message : %v\n", err)
 		return
 	} else {
 		fmt.Printf("-- message size is: %v\n", len(buffer))
+	}
+
+	var msgData map[string]interface{}
+	if err := json.Unmarshal(buffer, &msgData); err != nil {
+		fmt.Printf("-- Failed to Unmarshal the message : %v\n", err)
+		return
 	}
 
 	topics, err := pubctx.GetTopics()
@@ -95,13 +101,13 @@ func main() {
 
 	for _, tpName := range topics {
 		wg.Add(1)
-		go publisher_function(config, tpName, buffer, intval, itr)
+		go publisher_function(config, tpName, msgData, intval, itr)
 	}
 
 	wg.Wait()
 }
 
-func publisher_function(config map[string]interface{}, topic string, buffer []byte, intval time.Duration, itr int64) {
+func publisher_function(config map[string]interface{}, topic string, msgData map[string]interface{}, intval time.Duration, itr int64) {
 	defer wg.Done()
 
 	fmt.Printf("-- Initializing message bus context:%v\n", config)
@@ -122,7 +128,7 @@ func publisher_function(config map[string]interface{}, topic string, buffer []by
 
 	for it := int64(0); it < itr; it++ {
 		fmt.Printf("Topic Name:%v, Itr Num:%v\n", topic, it)
-		err = publisher.Publish(buffer)
+		err = publisher.Publish(msgData)
 		if err != nil {
 			fmt.Printf("-- Failed to publish message: %v\n", err)
 			return
