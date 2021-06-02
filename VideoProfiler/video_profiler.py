@@ -106,7 +106,7 @@ class VideoProfiler:
                         'running with PROFILING_MODE set to true')
             self.ingestion_appname = appname_dict["ingestion_appname"]
             self.analytics_appname = appname_dict["analytics_appname"]
-        if config_dict['total_number_of_frames'] is (-1):
+        if config_dict['total_number_of_frames'] == (-1):
             # Set total number of frames to infinity
             self.total_frames = float('inf')
             logger.warning('Total number of frames set to infinity. Please '

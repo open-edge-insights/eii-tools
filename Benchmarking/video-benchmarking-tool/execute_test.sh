@@ -188,7 +188,8 @@ popd
 # --------------------------------------------------------------
 notice "Starting containers"
 pushd "${EII_HOME}/build"
-run_logged docker-compose up --build -d
+run_logged docker-compose -f docker-compose-build.yml build
+run_logged docker-compose up -d
 #${PCM_HOME}/pcm.x 2>&1 | tee -a "${ACTUAL_DATA_DIR}/output.pcm" &
 run_logged sleep $SLEEP
 popd

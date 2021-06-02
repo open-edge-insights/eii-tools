@@ -74,7 +74,10 @@ RUN chown -R ${EII_UID} .local/lib/python3.8
 
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:${CMAKE_INSTALL_PREFIX}/lib
 ENV PATH $PATH:/app/.local/bin
-USER $EII_USER_NAME
+
+# Re-enable this when VideoIngestion/VideoAnalytics
+# are made to run with $EII_USER_NAME
+# USER $EII_USER_NAME
 
 HEALTHCHECK NONE
 ENTRYPOINT ["python3", "video_profiler.py"]
