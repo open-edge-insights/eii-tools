@@ -50,6 +50,7 @@ RUN apt-get update && \
     add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
     apt-get install -y --no-install-recommends libsm6 \
+					       libgl1-mesa-glx \
                                                libxext6 \
                                                libxrender1 \
                                                python3-distutils && \
