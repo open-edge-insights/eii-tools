@@ -53,7 +53,7 @@ Simple Python temperature sensor simulator.
 
    * To publish JSON files (to test random forest UDF), change the command option to:
      ```sh
-     ["--topic", "test/rfc_data", "--json", "'./json_files/\*.json'", "--streams", "1"]
+     ["--topic", "test/rfc_data", "--json", "./json_files/*.json", "--streams", "1"]
      ```
 
 2. If one wish to see the messages going over MQTT, run the
