@@ -18,14 +18,7 @@ It works along with the [jupyter_connector](../../common/video/udfs/python/jupyt
         - tools/JupyterNotebook
     ```
 
-2. With the above pre-requisite done, please run the below command:
-    ```sh
-        python3 builder.py -f usecases/video-streaming.yml
-    ```
-
-## Running Jupyter Notebook
-
-1. Ensure the [jupyter_connector](../../common/video/udfs/python/jupyter_connector.py) UDF is enabled in the config of either **VideoIngestion** or **VideoAnalytics** to be connected to JupyterNotebook. An example has been provided here for connecting **VideoIngestion** to **JupyterNotebook**, the config to be changed being present at [config.json](../../VideoIngestion/config.json):
+2. Ensure the [jupyter_connector](../../common/video/udfs/python/jupyter_connector.py) UDF is enabled in the config of either **VideoIngestion** or **VideoAnalytics** to be connected to JupyterNotebook. An example has been provided here for connecting **VideoIngestion** to **JupyterNotebook**, the config to be changed being present at [config.json](../../VideoIngestion/config.json):
     ```javascript
         {
             "config": {
@@ -55,6 +48,14 @@ It works along with the [jupyter_connector](../../common/video/udfs/python/jupyt
         }
     ```
 
+
+## Running Jupyter Notebook
+
+1. With the above pre-requisite done, please run the below command:
+    ```sh
+        python3 builder.py -f usecases/video-streaming.yml
+    ```
+
 2. Refer [IEdgeInsights/README.md](../../README.md) to provision, build and run the tool along with the EII recipe/stack.
 
 3. Run the following command to see the logs:
@@ -63,7 +64,7 @@ It works along with the [jupyter_connector](../../common/video/udfs/python/jupyt
         docker logs -f ia_jupyter_notebook
     ```
 
-4. Copy paste the below URL in a browser and copy paste the token provided in the logs if requested:
+4. Copy paste the below URL in a browser (please use only this URL and not the others mentioned in logs) and copy paste the token provided in the logs if requested:
 
     ```sh
         http://127.0.0.1:8888
@@ -74,5 +75,7 @@ It works along with the [jupyter_connector](../../common/video/udfs/python/jupyt
 6. The process method of [udf_template.ipynb](udf_template.ipynb) file available in the list of files can be altered and re-run to experiment and test the UDF.
 
 7. If any parameters are to be sent to the custom udf by the user, they can be added in the **jupyter_connector** UDF config provided to either **VideoIngestion** or **VideoAnalytics** and can be accessed in the [udf_template.ipynb](udf_template.ipynb) constructor in the **udf_config** parameter which is a dict containing all these parameters. A sample UDF for reference has been provided at [pcb_filter.py](../../common/video/udfs/python/pcb/pcb_filter.py).
+
+**Note**: After altering/creating a new udf, run main.ipynb  and restart **VideoIngestion** or **VideoAnalytics** with which you have enabled jupyter notebook service.
 
 8. Once the user is satisfied with the functionality of the UDF, the udf can be saved/exported by clicking on the **Download as** option and selecting **(.py)** option. The downloaded udf can then be directly used by placing it in the [../../common/video/udfs/python](../../common/video/udfs/python) directory or can be integrated and used with **CustomUDFs**.
