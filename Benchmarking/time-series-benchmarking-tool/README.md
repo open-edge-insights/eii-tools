@@ -8,32 +8,16 @@ If you do not have PCM on your system, those values will be blank in the output.
 
 Steps for running a benchmarking test case:
 
-1. Start 1 broker for every data stream you want to send with the publisher in step #2:
+1. Configure **[TimeSeriesProfiler config.json](../../TimeSeriesProfiler/config.json)** file to recieve rfc_results according to **[TimeSeriesProfiler README.md](../../TimeSeriesProfiler/README.md)**.
 
-    ```sh
-    $ cd ../../mqtt-publisher/
-    $ ./broker.sh <port> &
-    ```
+2. change the "command" option in MQTT publisher **[docker-compose.yml](../../mqtt/publisher/docker-compose.yml) to:
+     ```sh
+     ["--topic", "test/rfc_data", "--json", "./json_files/*.json", "--streams", "<streams>"]
+     ```
    For example:
-   ```sh
-    $ cd ../../mqtt-publisher/
-    $ ./broker.sh 1883 &
-    $ ./broker.sh 1884 &
-   ```
-
-2. Build and run MQTT publisher:
-    ```sh
-     $ cd ../../mqtt-publisher/
-     $ ./build.sh
-     $ ./publisher_json.sh --streams <streams>
-    ```
-   For example:
-    ```sh
-     $ cd ../../mqtt-publisher/
-     $ ./build.sh
-     $ ./publisher_json.sh --streams 2
-    ```
-
+     ```sh
+     ["--topic", "test/rfc_data", "--json", "./json_files/*.json", "--streams", "1"]
+     ```
 3. Run execute test to execute the time series test case.Before running following command, make sure that "export_to_csv" value in **[TimeSeriesProfiler config.json](../../TimeSeriesProfiler/config.json)** is set to "True":
    ```
 	USAGE:

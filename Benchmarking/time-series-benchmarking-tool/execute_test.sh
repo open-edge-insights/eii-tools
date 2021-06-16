@@ -142,12 +142,18 @@ pushd "${EII_HOME}/build/provision/"
 run_logged ./provision.sh ../docker-compose.yml
 popd
 
+notice "Running mqtt broker on 1883 port"
+pushd "${EII_HOME}/tools/mqtt"
+run_logged ./broker.sh 1883
+popd
+
 # --------------------------------------------------------------
 # Launch
 # --------------------------------------------------------------
 notice "Starting containers"
 pushd "${EII_HOME}/build"
-run_logged docker-compose up --build -d
+run_logged docker-compose -f docker-compose-build.yml build
+run_logged docker-compose up -d
 run_logged sleep 10
 popd
 
@@ -176,7 +182,7 @@ run_logged "./aggregateresults.sh" "${ACTUAL_DATA_DIR}" "${STREAMS}" "${DATETIME
 #sed -e "s/\r//g" ${ACTUAL_DATA_DIR}/output.csv > ${ACTUAL_DATA_DIR}/final_output.csv
 
 # copying Time series profiler avg Results into ACTUAL_DATA_DIR
-cp "${EII_HOME}/build/SPS_Results.csv" "${ACTUAL_DATA_DIR}"
+cp "/opt/intel/eii/TimeSeriesProfiler/SPS_Results.csv" "${ACTUAL_DATA_DIR}"
 
 # --------------------------------------------------------------
 # Post-process complete

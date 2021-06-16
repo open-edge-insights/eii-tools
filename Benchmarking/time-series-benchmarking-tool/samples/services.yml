@@ -3,3 +3,4 @@ AppContexts:
 - Kapacitor
 - Telegraf
 - tools/TimeSeriesProfiler
+- tools/mqtt/publisher
