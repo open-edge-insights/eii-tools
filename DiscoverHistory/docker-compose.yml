@@ -53,14 +53,20 @@ services:
     networks:
       - eii
     volumes:
-      - "${SAVE_PATH}:/output"
+      - "vol_history_data:/output"
       - "${EII_INSTALL_PATH}/sockets:${SOCKET_DIR}"
     secrets:
       - ca_etcd
       - etcd_DiscoverHistory_cert
       - etcd_DiscoverHistory_key
 
-
+volumes:
+  vol_history_data:
+    driver: local
+    driver_opts:
+      type: local
+      o: bind
+      device: ${EII_INSTALL_PATH}/eii_history
 secrets:
   etcd_DiscoverHistory_cert:
     file: provision/Certificates/DiscoverHistory/DiscoverHistory_client_certificate.pem
