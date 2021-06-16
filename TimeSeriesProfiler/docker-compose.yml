@@ -52,11 +52,18 @@ services:
     networks:
       - eii
     volumes:
-      - ".:/app/out"
+      - "vol_timeseries_profiler_data:/app/out"
     secrets:
       - ca_etcd
       - etcd_TimeSeriesProfiler_cert
       - etcd_TimeSeriesProfiler_key
+volumes:
+  vol_timeseries_profiler_data:
+    driver: local
+    driver_opts:
+      type: local
+      o: bind
+      device: ${EII_INSTALL_PATH}/TimeSeriesProfiler
 
 
 secrets:

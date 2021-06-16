@@ -65,7 +65,8 @@ COPY --from=common ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib
 COPY --from=common /eii/common/util/*.py util/
 COPY --from=common /root/.local/lib .local/lib
 COPY --from=builder $ARTIFACTS .
-RUN mkdir /app/out/
+RUN mkdir /app/out/ && \
+    chown ${EII_UID} /app/out/
 RUN chown -R ${EII_UID} .local/lib/python3.8
 
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:${CMAKE_INSTALL_PREFIX}/lib
