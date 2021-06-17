@@ -34,7 +34,7 @@ SWTriggerUtility expects a set of config, interfaces & public private keys to be
 
 1. EII services can be running in prod or dev mode by setting `DEV_MODE` value accordingly in [build/.env](../../build/.env)
 
-2. Refer [provision/README.md](../../README.md) to provision, build and run the tool along with the EII video-streaming recipe/stack.
+2. Refer [IEdgeInsights/README.md](../../README.md) to provision, build and run the tool along with the EII video-streaming recipe/stack. Also, note that the same yml file to which the **SWTriggerUtility** entry was added in [pre-requisites](#software-trigger-utilily-pre-requisites) has to be selected while running [builder](../../build/builder.py).
 
 ## Usage of Software Trigger Utility:
 

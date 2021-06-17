@@ -225,7 +225,7 @@ done
 docker logs ia_video_profiler >& ${ACTUAL_DATA_DIR}/profiler_output.log
 run_logged docker-compose down
 popd
-run_logged mv ${EII_HOME}/build/FPS_Results.csv ${ACTUAL_DATA_DIR}/FPS_Results.csv
+run_logged mv /opt/intel/eii/tools_output/FPS_Results.csv ${ACTUAL_DATA_DIR}/FPS_Results.csv
 # --------------------------------------------------------------
 # Post-process results
 # --------------------------------------------------------------

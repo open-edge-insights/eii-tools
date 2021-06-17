@@ -19,9 +19,12 @@
 # SOFTWARE.
 
 version: '3.6'
+
 services:
+## Define VideoIngestion service
   ia_video_ingestion:
     depends_on:
+      - ia_video_common
       - ia_openvino_base
     build:
       context: $PWD/../VideoIngestion
@@ -33,11 +36,18 @@ services:
         # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
         CMAKE_BUILD_TYPE: "Release"
         CMAKE_INSTALL_PREFIX: ${EII_INSTALL_PATH}
-        DOCKER_REGISTRY: ${DOCKER_REGISTRY}
+        OPENVINO_IMAGE: ${OPENVINO_IMAGE}
+        RUN_TESTS: "OFF"
     image: ${DOCKER_REGISTRY}openedgeinsights/ia_video_ingestion:${EII_VERSION}
     container_name: ia_video_ingestion
     hostname: ia_video_ingestion
     restart: unless-stopped
+    security_opt:
+    - no-new-privileges
+    healthcheck:
+      test: ["CMD-SHELL", "exit", "0"]
+      interval: 5m
+    ipc: "none"
     environment:
       AppName: "VideoIngestion"
       DEV_MODE: ${DEV_MODE}
@@ -46,37 +56,38 @@ services:
       ETCD_HOST: ${ETCD_HOST}
       ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
       ETCD_PREFIX: ${ETCD_PREFIX}
+      # Setting GENICAM value to the respective camera/GenTL producer which needs to be used
+      GENICAM: "Matrix_Vision"
+      # Setting the GST log levels
+      # The env variable will set WARNING level 2 for gencamsrc plugin and none for other plugins
+      GST_DEBUG: "0,gencamsrc:2"
+      # Provisioning related variable
       CertType: "zmq"
+    ports:
+      - 64013:64013
     networks:
       - eii
     volumes:
-      - "/dev:/dev"
       - "vol_eii_socket:${SOCKET_DIR}"
       - "/var/tmp:/var/tmp"
     privileged: true
+
     devices:
-      - "/dev/dri"
-      - "/dev/:/dev/"
+      # Following devices under /dev filesystem will be needed based on usecase
+      # dri - GPU
+      # ion - VPU
+      # USB camera devices
+      # Selective mount can be done for deployment
+      - "/dev/dri:/dev/dri"
+      - "/dev/ion:/dev/ion"
+      - "/dev/bus/usb: /dev/bus/usb"
     secrets:
       - ca_etcd
       - etcd_VideoIngestion_cert
       - etcd_VideoIngestion_key
 
-
-volumes:
-  vol_eii_socket:
-    driver: local
-    driver_opts:
-      type: local
-      o: bind
-      device: ${EII_INSTALL_PATH}/sockets
-
 secrets:
-  ca_etcd:
-    file: provision/Certificates/ca/ca_certificate.pem
-
   etcd_VideoIngestion_cert:
     file: provision/Certificates/VideoIngestion/VideoIngestion_client_certificate.pem
   etcd_VideoIngestion_key:
     file: provision/Certificates/VideoIngestion/VideoIngestion_client_key.pem
-
