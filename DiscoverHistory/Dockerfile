@@ -72,7 +72,8 @@ COPY --from=common /eii/common/util/*.py util/
 COPY --from=common /root/.local/lib .local/lib
 COPY --from=builder /app .
 COPY --from=builder /root/.local/lib .local/lib
-
+RUN mkdir -p /output && \
+    chown -R ${EII_UID} /output
 RUN chown -R ${EII_UID} .local/lib/python3.8
 
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:${CMAKE_INSTALL_PREFIX}/lib

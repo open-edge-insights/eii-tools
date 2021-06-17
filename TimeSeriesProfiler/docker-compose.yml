@@ -63,7 +63,7 @@ volumes:
     driver_opts:
       type: local
       o: bind
-      device: ${EII_INSTALL_PATH}/TimeSeriesProfiler
+      device: ${EII_INSTALL_PATH}/tools_output
 
 
 secrets:
