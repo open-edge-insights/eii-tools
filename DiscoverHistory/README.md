@@ -28,7 +28,7 @@ README FOR DISCOVER HISTORY TOOL
     ```
  6. Refer [main EII README.md](../../README.md) to provision, build and run the tool along with the EII video-streaming-storage recipe/stack.
  7. Check imagestore and influxdbconnector services are running.
- 8. You will find data & frames directories at "/opt/intel/eii/eii_history".
+ 8. You will find data & frames directories at "/opt/intel/eii/tools_output".
     (Note: if img_handle is part of select statement , then only frames
     directory will be created)
  9. Use ETCDUI to change the query in configuration. Please run below command to start container with new configuration:
