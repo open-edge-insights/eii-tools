@@ -25,8 +25,8 @@ ARG UBUNTU_IMAGE_VERSION
 ARG CMAKE_BUILD_TYPE
 ARG RUN_TESTS
 ARG ARTIFACTS="/artifacts"
-FROM ${DOCKER_REGISTRY}ia_common:$EII_VERSION as common
-FROM ${DOCKER_REGISTRY}ia_eiibase:${EII_VERSION} as builder
+FROM ia_common:$EII_VERSION as common
+FROM ia_eiibase:${EII_VERSION} as builder
 LABEL description="SWTriggerUtility image"
 
 WORKDIR /app

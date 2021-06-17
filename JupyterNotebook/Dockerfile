@@ -26,8 +26,8 @@ ARG ARTIFACTS="/artifacts"
 ARG UBUNTU_IMAGE_VERSION
 ARG EII_UID
 ARG EII_USER_NAME
-FROM ${DOCKER_REGISTRY}ia_eiibase:$EII_VERSION as base
-FROM ${DOCKER_REGISTRY}ia_common:$EII_VERSION as common
+FROM ia_eiibase:$EII_VERSION as base
+FROM ia_common:$EII_VERSION as common
 
 FROM base as builder
 LABEL description="Jupyter Notebook image"
