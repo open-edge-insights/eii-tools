@@ -79,3 +79,6 @@ It works along with the [jupyter_connector](../../common/video/udfs/python/jupyt
 **Note**: After altering/creating a new udf, run main.ipynb  and restart **VideoIngestion** or **VideoAnalytics** with which you have enabled jupyter notebook service.
 
 8. Once the user is satisfied with the functionality of the UDF, the udf can be saved/exported by clicking on the **Download as** option and selecting **(.py)** option. The downloaded udf can then be directly used by placing it in the [../../common/video/udfs/python](../../common/video/udfs/python) directory or can be integrated and used with **CustomUDFs**.
+
+  > **Note:**
+  > * JupyterNotebook is not to be used with **CustomUDFs** like **GVASafetyGearIngestion** since they are specific to certain usecases only. Instead, the VideoIngestion pipeline can be modified to use GVA ingestor pipeline and config can be modifed to use **jupyter_connector** UDF.
