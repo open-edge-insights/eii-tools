@@ -34,8 +34,20 @@ SWTriggerUtility expects a set of config, interfaces & public private keys to be
 
 1. EII services can be running in prod or dev mode by setting `DEV_MODE` value accordingly in [build/.env](../../build/.env)
 
-2. Refer [IEdgeInsights/README.md](../../README.md) to provision, build and run the tool along with the EII video-streaming recipe/stack. Also, note that the same yml file to which the **SWTriggerUtility** entry was added in [pre-requisites](#software-trigger-utilily-pre-requisites) has to be selected while running [builder](../../build/builder.py).
+2. Execute builder.py script:
+   ```sh
+   $ cd [WORKDIR]/IEdgeInsights/build/
+   $ python3 builder.py -f usecases/video-streaming.yml
+   ```
 
+   **NOTE**: The same yml file to which the **SWTriggerUtility** entry was added in [pre-requisites](#software-trigger-utilily-pre-requisites) has to be selected while running [builder](../../build/builder.py)
+
+3. Run provisioning step as below:
+
+   ```sh
+   $ cd [WORKDIR]/IEdgeInsights/build/provision
+   $ sudo -E ./provision.sh  ../docker-compose.yml
+   ```
 ## Usage of Software Trigger Utility:
 
 By default the SW Trigger Utility container will not execute anything and one needs to interact with the running container to generate the trigger commands. Make sure VI service is up and ready to process the commands from the utility.
@@ -45,15 +57,15 @@ Software trigger utility can be used in following ways:
 1: "START INGESTION" -> "Allows ingestion for default time (120 seconds being default)" -> "STOP INGESTION"
 
     ```sh
-        cd  <EII-working-directory>/IEdgeInsights/build
-        docker exec ia_sw_trigger_utility ./sw_trigger_utility
+    $ cd [WORKDIR]/IEdgeInsights/build
+    $ docker exec ia_sw_trigger_utility ./sw_trigger_utility
     ```
 
 2: "START INGESTION" -> "Allows ingestion for user defined time (configurable time in seconds)" -> "STOP INGESTION"
 
     ```sh
-        cd  <EII-working-directory>/IEdgeInsights/build
-        docker exec ia_sw_trigger_utility ./sw_trigger_utility 300
+    $ cd [WORKDIR]/IEdgeInsights/build
+    $ docker exec ia_sw_trigger_utility ./sw_trigger_utility 300
     ```
     **Note**: In the above example, VideoIngestion starts then does ingestion for 300 seconds then stops ingestion after 300 seconds & cycle repeats for number of cycles configured in the config.json.
 
@@ -61,22 +73,22 @@ Software trigger utility can be used in following ways:
 3: Selectively send START_INGESTION software trigger:
 
     ```sh
-        cd  <EII-working-directory>/IEdgeInsights/build
-        docker exec ia_sw_trigger_utility ./sw_trigger_utility START_INGESTION
+    $ cd [WORKDIR]/IEdgeInsights/build
+    $ docker exec ia_sw_trigger_utility ./sw_trigger_utility START_INGESTION
     ```
 
 4: Selectively send STOP_INGESTION software trigger:
 
     ```sh
-        cd  <EII-working-directory>/IEdgeInsights/build
-        docker exec ia_sw_trigger_utility ./sw_trigger_utility STOP_INGESTION
+    $ cd [WORKDIR]/IEdgeInsights/build
+    $ docker exec ia_sw_trigger_utility ./sw_trigger_utility STOP_INGESTION
     ```
 
 5: Selectively send SNAPSHOT software trigger:
 
     ```sh
-        cd  <EII-working-directory>/IEdgeInsights/build
-        docker exec ia_sw_trigger_utility ./sw_trigger_utility SNAPSHOT
+    $ cd [WORKDIR]/IEdgeInsights/build
+    $ docker exec ia_sw_trigger_utility ./sw_trigger_utility SNAPSHOT
     ```
 > **Note**:  
 
