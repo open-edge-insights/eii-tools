@@ -49,6 +49,7 @@ services:
       ETCD_HOST: ${ETCD_HOST}
       ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
       ETCD_PREFIX: ${ETCD_PREFIX}
+      EII_INSTALL_PATH: ${EII_INSTALL_PATH}
     networks:
       - eii
     volumes:

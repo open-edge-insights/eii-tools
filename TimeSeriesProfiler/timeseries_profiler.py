@@ -411,8 +411,8 @@ if __name__ == "__main__":
                     for key, value in monitor_mode_results.items():
                         writer.writerow([key, value])
                 logger.info('Check TSP_Results.csv file '
-                            'in /opt/intel/eii/tools_output dir '
-                            'for results...')
+                            'in {}/tools_output dir for results...'
+                            .format(os.environ["EII_INSTALL_PATH"]))
             if config_dict['mode'] == 'sps':
                 # Generating excel sheet for SPS mode
                 with open('./out/SPS_Results.csv', 'w') as csv_file:
@@ -421,8 +421,8 @@ if __name__ == "__main__":
                     for key, value in avg_sps_per_topic.items():
                         writer.writerow([key, value])
                 logger.info('Check SPS_Results.csv file '
-                            'in /opt/intel/eii/tools_output dir '
-                            'for results...')
+                            'in {}/tools_output dir for results...'
+                            .format(os.environ["EII_INSTALL_PATH"]))
         except IOError:
             logger.error("I/O error")
     else:
