@@ -73,17 +73,13 @@ RUN chown -R ${EII_UID} .local/lib/python3.8
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:${CMAKE_INSTALL_PREFIX}/lib
 ENV PATH $PATH:/app/.local/bin
 
-# This is currently disabled to support IPC mode of
-# message transfer between JupyterNotebook connector
-# and VideoIngestion & VideoAnalytics
-
 # This is required since JupyterNotebook expects
 # a /home/$EII_USER_NAME/.local/share/jupyter to be present
-# RUN mkdir -p /home/$EII_USER_NAME/.local/share/jupyter && \
-#     chown -R $EII_USER_NAME:$EII_USER_NAME /home/$EII_USER_NAME/.local/share/jupyter
+RUN mkdir -p /home/$EII_USER_NAME/.local/share/jupyter && \
+    chown -R $EII_USER_NAME:$EII_USER_NAME /home/$EII_USER_NAME/.local/share/jupyter
 
-# USER $EII_USER_NAME
+USER $EII_USER_NAME
 
 HEALTHCHECK NONE
 
-ENTRYPOINT ["jupyter", "notebook", "--ip=\"0.0.0.0\"", "--allow-root"]
+ENTRYPOINT ["jupyter", "notebook", "--ip=\"0.0.0.0\""]
