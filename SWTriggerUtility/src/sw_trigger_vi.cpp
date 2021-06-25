@@ -176,12 +176,7 @@ class SwTriggerUtility {
 
                 read_etcd_config(app_config);
 
-                char* interface_name = getenv("interface_name");
-                if (interface_name == NULL) {
-                    // Defaulting to the name default if env not set
-                    interface_name = "default";
-                }
-                ClientCfg* client_ctx = ch->getClientByName(interface_name);
+                ClientCfg* client_ctx = ch->getClientByIndex(0);
                 config_t* config = client_ctx->getMsgBusConfig();
 
                 config_value_t* interface_value = client_ctx->getInterfaceValue("Name");

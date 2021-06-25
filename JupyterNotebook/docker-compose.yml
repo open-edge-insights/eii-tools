@@ -37,7 +37,7 @@ services:
         DOCKER_REGISTRY: ${DOCKER_REGISTRY}
         UBUNTU_IMAGE_VERSION: ${UBUNTU_IMAGE_VERSION}
         CMAKE_INSTALL_PREFIX: ${EII_INSTALL_PATH}
-        RUN_TESTS: "OFF"
+        OPENVINO_IMAGE: ${OPENVINO_IMAGE}
     image: ${DOCKER_REGISTRY}ia_jupyter_notebook:${EII_VERSION}
     container_name: ia_jupyter_notebook
     hostname: ia_jupyter_notebook

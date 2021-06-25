@@ -21,11 +21,10 @@
 # Dockerfile for Jupyter Notebook
 
 ARG EII_VERSION
-ARG DOCKER_REGISTRY
 ARG ARTIFACTS="/artifacts"
-ARG UBUNTU_IMAGE_VERSION
 ARG EII_UID
 ARG EII_USER_NAME
+ARG OPENVINO_IMAGE
 FROM ia_eiibase:$EII_VERSION as base
 FROM ia_common:$EII_VERSION as common
 
@@ -35,22 +34,13 @@ LABEL description="Jupyter Notebook image"
 ARG ARTIFACTS
 WORKDIR /app
 
-COPY . .
+COPY requirements.txt .
 RUN pip3 install --user -r requirements.txt
 
-FROM ubuntu:$UBUNTU_IMAGE_VERSION as runtime
+COPY . .
 
-# Setting python dev env
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends software-properties-common && \
-    add-apt-repository ppa:deadsnakes/ppa && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends libsm6 \
-                                               libxext6 \
-                                               libfontconfig1 \
-                                               libxrender1 \
-                                               python3-distutils && \
-    rm -rf /var/lib/apt/lists/*
+FROM ${OPENVINO_IMAGE} AS runtime
+USER root
 
 WORKDIR /app
 
@@ -82,4 +72,4 @@ USER $EII_USER_NAME
 
 HEALTHCHECK NONE
 
-ENTRYPOINT ["jupyter", "notebook", "--ip=\"0.0.0.0\""]
+ENTRYPOINT ["./start_jupyter.sh"]

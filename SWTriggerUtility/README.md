@@ -95,5 +95,3 @@ Software trigger utility can be used in following ways:
 * If duplicate START_INGESTION or STOP_INGESTION sw_triggers are sent by client by mistake then the VI is capable  of catching these duplicates & responds back to client conveying that duplicate triggers were sent & requets to send proper sw_triggers. 
 
 * In order to send SNAPSHOT trigger, ensure that the ingestion is stopped. In case START_INGESTION trigger is sent previously then stop the ingestion using the STOP_INGESTION trigger.
-
-* If running SWTriggerUtility with multi instance wherein there are multiple VideoIngestion services, one can connect to the required VideoIngestion service by using the respective name of the interface mentioned in [eii_config.json](../../build/provision/config/eii_config.json). The name of the interface can be specified in the **interface_name** env in [docker-compose.yml](docker-compose.yml). Eg: If user wants to connect to **VideoIngestion1**, the **interface_name** would be **default1** & **default2** for **VideoIngestion2** etc.,

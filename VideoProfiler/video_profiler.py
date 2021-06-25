@@ -476,7 +476,8 @@ if __name__ == "__main__":
                     for key, value in monitor_mode_results.items():
                         writer.writerow([key, value])
                 logger.info('Check VP_Results.csv file'
-                            'inside build dir for results...')
+                            'in {}/tools_output dir for results...'
+                            .format(os.environ["EII_INSTALL_PATH"]))
             if config_dict['mode'] == 'fps':
                 # Generating excel sheet for FPS mode
                 with open('./out/FPS_Results.csv', 'w') as csv_file:
@@ -485,7 +486,8 @@ if __name__ == "__main__":
                     for key, value in avg_fps_per_topic.items():
                         writer.writerow([key, value])
                 logger.info('Check FPS_Results.csv file'
-                            'inside build dir for results...')
+                            'in {}/tools_output dir for results...'
+                            .format(os.environ["EII_INSTALL_PATH"]))
         except IOError:
             logger.error("I/O error")
     else:
