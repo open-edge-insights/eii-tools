@@ -182,7 +182,7 @@ run_logged "./aggregateresults.sh" "${ACTUAL_DATA_DIR}" "${STREAMS}" "${DATETIME
 #sed -e "s/\r//g" ${ACTUAL_DATA_DIR}/output.csv > ${ACTUAL_DATA_DIR}/final_output.csv
 
 # copying Time series profiler avg Results into ACTUAL_DATA_DIR
-cp "/opt/intel/eii/TimeSeriesProfiler/SPS_Results.csv" "${ACTUAL_DATA_DIR}"
+cp "/opt/intel/eii/tools_output/SPS_Results.csv" "${ACTUAL_DATA_DIR}"
 
 # --------------------------------------------------------------
 # Post-process complete
