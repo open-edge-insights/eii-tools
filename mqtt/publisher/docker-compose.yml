@@ -24,8 +24,8 @@ services:
   ## Define mqtt publisher service
   ia_mqtt_publisher:
     build:
-      context: $PWD/../tools/mqtt/publisher
-      dockerfile: $PWD/../tools/mqtt/publisher/Dockerfile
+      context: $PWD
+      dockerfile: $PWD/Dockerfile
     container_name: ia_mqtt_publisher
     hostname: ia_mqtt_publisher
     image:  ${DOCKER_REGISTRY}ia_mqtt_publisher:${EII_VERSION}
@@ -38,3 +38,9 @@ services:
     networks:
       - eii
     command: ["--temperature", "10:30"]
+
+networks:
+  eii:
+    external:
+      name: eii
+

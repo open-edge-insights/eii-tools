@@ -14,13 +14,16 @@ Simple Python temperature sensor simulator.
     $ ./broker.sh 1883
     ```
 
-   - Add an entry for publisher as 'tools/mqtt/publisher' in either 'time-series.yml' or 'all.yml' file in [build/usecases](../../build/usecases) directory.
-   - Use [builder.py](../../build/builder.py) utility with the modified 'time-series.yml' or 'all.yml' file as an argument. Example:
+   - Start the mqtt-publisher
    ```sh
-   $ cd [WORKDIR]/IEdgeInsigths/build
-   $ python3 builder.py -f usecases/time-series.yml
+   $ cd publisher
+   $ set -a
+   $ source ../../../build/.env
+   $ set +a
+   $ docker-compose build
+   $ docker-compose up -d
    ```
-   - Provision, build and bring up the EII stack by following in the steps in the [README](../../README.md).
+
 
 **Note** By default the tool publishes temperature data. If the user wants to publish other data, he/she needs to modify the command option in "ia_mqtt_publisher" service in  [build/docker-compose.yml](../../build/docker-compose.yml) accordingly and restart the container using `docker-compose restart ia_mqtt_publisher` command from the build directory.
 
