@@ -22,3 +22,27 @@ EmbSubscriber subscribes message coming from a publisher.It subscribes to messag
 ## Running EmbSubscriber
 
 1. Refer [provision/README.md](../../README.md) to provision, build and run the tool along with the EII time-series recipe/stack.
+
+## Running EmbSubscriber in IPC mode
+User needs to modify interface section of **[config.json](./config.json)** to run in IPC mode as following
+```
+{
+  "config": {},
+  "interfaces": {
+    "Subscribers": [
+      {
+        "Name": "TestSub",
+        "PublisherAppName": "Telegraf",
+        "Type": "zmq_ipc",
+        "EndPoint": {
+                  "SocketDir": "/EII/sockets",
+                  "SocketFile": "telegraf-out"
+         },
+        "Topics": [
+          "*"
+        ]
+      }
+    ]
+  }
+}
+```

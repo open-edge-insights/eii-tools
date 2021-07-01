@@ -45,3 +45,32 @@ Let us look at the sample configuration
 - -msg_file : The file containinng the JSON data, which represents the single data point (files should be kept into directory named 'datafiles').
 - -num_itr : The number of iterations
 - -int_btw_itr: The intervel between any two iterations
+
+## Running EmbPublisher in IPC mode
+User needs to modify interface section of **[config.json](./config.json)** to run in IPC mode as following
+```
+  "interfaces": {
+    "Publishers": [
+      {
+        "Name": "TestPub",
+        "Type": "zmq_ipc",
+        "AllowedClients": [
+          "*"
+        ],
+        "EndPoint": {
+                "SocketDir": "/EII/sockets",
+                "SocketFile": "frontend-socket"
+            },
+        "Topics": [
+          "topic-pfx1",
+          "topic-pfx2",
+          "topic-pfx3",
+          "topic-pfx4"
+        ],
+        "BrokerAppName" : "ZmqBroker",
+        "brokered": true
+      }
+    ]
+  }
+```
+
