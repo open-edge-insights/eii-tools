@@ -18,20 +18,19 @@ README FOR DISCOVER HISTORY TOOL
         - ImageStore
         - InfluxDBConnector
     ```
- 2. Add "DiscoverHistory" in "AllowedClients" list of "Servers" interface in config.json file of ImageStore and InfluxDBConnector directory.
 
- 3. Open "config.json"
- 4. Provide the required query to be passed on to InfluxDB.
- 5. With the above pre-requisite done, please run the below to command:
+ 2. Open "config.json"
+ 3. Provide the required query to be passed on to InfluxDB.
+ 4. With the above pre-requisite done, please run the below to command:
     ```sh
         python3 builder.py -f usecases/video-streaming-storage.yml
     ```
- 6. Refer [main EII README.md](../../README.md) to provision, build and run the tool along with the EII video-streaming-storage recipe/stack.
- 7. Check imagestore and influxdbconnector services are running.
- 8. You will find data & frames directories at "/opt/intel/eii/tools_output".
+ 5. Refer [main EII README.md](../../README.md) to provision, build and run the tool along with the EII video-streaming-storage recipe/stack.
+ 6. Check imagestore and influxdbconnector services are running.
+ 7. You will find data & frames directories at "/opt/intel/eii/tools_output".
     (Note: if img_handle is part of select statement , then only frames
     directory will be created)
- 9. Use ETCDUI to change the query in configuration. Please run below command to start container with new configuration:
+ 8. Use ETCDUI to change the query in configuration. Please run below command to start container with new configuration:
      ```sh
         docker restart ia_discover_history
      ```
@@ -63,9 +62,9 @@ to
     This query will return all the records from the current time, going back upto last 1 hour.
 
 ## TO RUN THE TOOL IN zmq_ipc MODE
-Please make sure to change the content of [config.json](DiscoverHistory/config.json) . Modify the same in "Servers" interface in config.json file of ImageStore and InfluxDBConnector.
 
-to
+User needs to modify interface section of **[config.json](./config.json)** as following
+
 ```
     {
         "type": "zmq_ipc",
