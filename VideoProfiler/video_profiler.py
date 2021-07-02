@@ -475,7 +475,7 @@ if __name__ == "__main__":
                     writer.writerow('\n')
                     for key, value in monitor_mode_results.items():
                         writer.writerow([key, value])
-                logger.info('Check VP_Results.csv file'
+                logger.info('Check VP_Results.csv file '
                             'in {}/tools_output dir for results...'
                             .format(os.environ["EII_INSTALL_PATH"]))
             if config_dict['mode'] == 'fps':
@@ -485,7 +485,7 @@ if __name__ == "__main__":
                     writer.writerow(csv_columns)
                     for key, value in avg_fps_per_topic.items():
                         writer.writerow([key, value])
-                logger.info('Check FPS_Results.csv file'
+                logger.info('Check FPS_Results.csv file '
                             'in {}/tools_output dir for results...'
                             .format(os.environ["EII_INSTALL_PATH"]))
         except IOError:
