@@ -147,6 +147,14 @@ pushd "${EII_HOME}/tools/mqtt"
 run_logged ./broker.sh 1883
 popd
 
+notice "Starting mqtt publisher"
+pushd "${EII_HOME}/tools/mqtt/publisher"
+set -a
+source ../../../build/.env
+set +a
+run_logged docker-compose up --build -d
+popd
+
 # --------------------------------------------------------------
 # Launch
 # --------------------------------------------------------------
