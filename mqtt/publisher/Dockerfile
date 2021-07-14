@@ -32,5 +32,5 @@ COPY publisher.py /
 COPY demo_datafile.csv /
 COPY json_files /json_files
 
-ENTRYPOINT ["python3", "publisher.py"]
+ENTRYPOINT ["python3", "-u", "publisher.py"]
 

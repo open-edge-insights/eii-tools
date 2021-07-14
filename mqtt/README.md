@@ -25,7 +25,7 @@ Simple Python temperature sensor simulator.
    ```
 
 
-**Note** By default the tool publishes temperature data. If the user wants to publish other data, he/she needs to modify the command option in "ia_mqtt_publisher" service in  [build/docker-compose.yml](../../build/docker-compose.yml) accordingly and restart the container using `docker-compose restart ia_mqtt_publisher` command from the build directory.
+**Note** By default the tool publishes temperature data. If the user wants to publish other data, he/she needs to modify the command option in "ia_mqtt_publisher" service in  [docker-compose.yml](./publisher/docker-compose.yml) accordingly and recreate the container using `docker-compose up -d` command from publisher directory.
 
    * To publish temperature data to default topic, command option by default is set to:
    ```sh
