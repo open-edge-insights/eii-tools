@@ -40,6 +40,7 @@ services:
         OPENVINO_IMAGE: ${OPENVINO_IMAGE}
     image: ${DOCKER_REGISTRY}ia_jupyter_notebook:${EII_VERSION}
     container_name: ia_jupyter_notebook
+    read_only: true
     hostname: ia_jupyter_notebook
     restart: unless-stopped
     security_opt:
@@ -66,11 +67,20 @@ services:
       - eii
     volumes:
       - "vol_eii_socket:${SOCKET_DIR}"
+      - "vol_jn_workspace:/home/${EII_USER_NAME}"
     privileged: true
     secrets:
       - ca_etcd
       - etcd_JupyterNotebook_cert
       - etcd_JupyterNotebook_key
+
+volumes:
+  vol_jn_workspace:
+    driver: local
+    driver_opts:
+      type: local
+      o: bind
+      device: ${EII_INSTALL_PATH}/tools_output
 
 secrets:
   etcd_JupyterNotebook_cert:

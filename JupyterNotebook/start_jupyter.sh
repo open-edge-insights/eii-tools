@@ -20,9 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+NOTEBOOK_DIR="$1"
 source /opt/intel/openvino/bin/setupvars.sh
 
-# Copy all notebooks from /app to /var/tmp
-cp -r /app/*.ipynb /var/tmp/
+# Copy all notebooks from /app to $NOTEBOOK_DIR
+cp -r /app/*.ipynb "$NOTEBOOK_DIR"
 
-jupyter notebook --ip="0.0.0.0" --notebook-dir="/var/tmp"
+jupyter notebook --ip="0.0.0.0" --notebook-dir="$NOTEBOOK_DIR"
