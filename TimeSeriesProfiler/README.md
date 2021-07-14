@@ -185,15 +185,16 @@
 
 3. Set the required output stream/streams and appropriate stream config in [config.json](config.json) file.
 
-4. If using TimeSeriesProfiler in IPC mode, make sure to set required permissions to socket file created in `EII_INSTALL_PATH`
+4. To run this tool in IPC mode, User needs to modify subscribers interface section of **[config.json](./config.json)** as following
 
-    ```sh
-        sudo chmod -R 777 /opt/intel/eii/sockets
-    ```
-    > **NOTE**: This step is required everytime publisher is restarted in IPC mode.
-    > Caution: This step will make the streams insecure. Please do not do it on a production machine.
+```
+    {
+        "type": "zmq_ipc",
+        "EndPoint": "/EII/sockets"
+    }
+```
 
-5. Refer [provision/README.md](../../README.md) to provision, build and run the tool along with the EII time-series recipe/stack.
+5. Refer [README.md](../../README.md) to provision, build and run the tool along with the EII time-series recipe/stack.
 
 6. Run the following command to see the logs:
 

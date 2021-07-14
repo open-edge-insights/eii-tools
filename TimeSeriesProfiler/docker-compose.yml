@@ -54,6 +54,7 @@ services:
       - eii
     volumes:
       - "vol_timeseries_profiler_data:/app/out"
+      - "${EII_INSTALL_PATH}/sockets:${SOCKET_DIR}"
     secrets:
       - ca_etcd
       - etcd_TimeSeriesProfiler_cert
