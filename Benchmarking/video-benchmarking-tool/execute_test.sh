@@ -62,12 +62,12 @@ fi
 
 # --------------------------------------------------------------
 # configure directories/files
-# Each test has a unique directory. If that directory exists, 
-# the test is skipped. Override that behavior by supplying 
-# 'yes' or 'force' as the last (6th) argument to the script, and 
+# Each test has a unique directory. If that directory exists,
+# the test is skipped. Override that behavior by supplying
+# 'yes' or 'force' as the last (6th) argument to the script, and
 # the test will be run again. Even if the test is run again.
-# the original data is not deleted. a new folder based on the 
-# date is created and symbolic link 'latest' in that folder 
+# the original data is not deleted. a new folder based on the
+# date is created and symbolic link 'latest' in that folder
 # will point to the most recent such capture
 # --------------------------------------------------------------
 DATETIME=`date -u +"%Y%b%d_%H%M"`
@@ -130,7 +130,7 @@ run_logged modprobe msr
 
 # --------------------------------------------------------------
 # If necessary, start HDDL daemon
-# 
+#
 # --------------------------------------------------------------
 export HDDL="cpu"
 if [ "${HDDL}" == *"HDDL"* ]; then
@@ -162,7 +162,7 @@ run_logged mkdir -p ${EII_HOME}/VideoIngestion/benchmarking
 
 notice "Generating test configuration files"
 run_logged cp -v ${TEST_DIR}/services.yml ${EII_HOME}/build/services.yml
-run_logged cp -rv ${TEST_DIR}/docker-compose.yml ${EII_HOME}/VideoIngestion/benchmarking/
+run_logged cp -rv ${EII_HOME}/VideoIngestion/docker-compose.yml ${EII_HOME}/VideoIngestion/benchmarking/
 run_logged cp -rv ${TEST_DIR}/config.json ${EII_HOME}/VideoIngestion/benchmarking/
 
 # --------------------------------------------------------------
