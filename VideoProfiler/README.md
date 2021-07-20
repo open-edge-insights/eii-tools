@@ -1,3 +1,13 @@
+**Contents**
+
+- [EII Video Profiler](#eii-video-profiler)
+  - [EII Video Profiler pre-requisites](#eii-video-profiler-pre-requisites)
+  - [EII Video Profiler modes](#eii-video-profiler-modes)
+  - [EII Video Profiler configurations](#eii-video-profiler-configurations)
+  - [Running Video Profiler](#running-video-profiler)
+  - [Optimizing EII Video pipeline by analysing Video Profiler results](#optimizing-eii-video-pipeline-by-analysing-video-profiler-results)
+  - [Benchmarking with multi instance config](#benchmarking-with-multi-instance-config)
+
 # EII Video Profiler
 
 This tool can be used to determine the complete metrics involved in the entire Video pipeline by

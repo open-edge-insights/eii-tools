@@ -1,5 +1,11 @@
-# MQTT Temperature Sensor
-Simple Python temperature sensor simulator.
+**Contents**
+
+- [MQTT publisher](#mqtt-publisher)
+  - [Usage](#usage)
+
+# MQTT publisher
+
+MQTT publisher is a tool to help publish the sample sensor data.
 
 ## Usage
 > **NOTE:** This assumes you have already installed and configured Docker.

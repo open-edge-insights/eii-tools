@@ -1,10 +1,8 @@
-README FOR DISCOVER HISTORY TOOL
+DiscoverHistory tool helps in pulling the history meta-data and images from InfluxDB and ImageStore containers respectively
 
-# CONTENTS #
+# Steps to build and run DiscoverHistory service
 
-1. PROCEDURE TO RUN DISCOVERY TOOL
-
-# PROCEDURE TO RUN DISCOVERY TOOL (DEFAULT: PROD MODE) #
+* **Running in PROD mode**
 
  1. DiscoverHistory expects a set of config, interfaces & public private keys to be present in ETCD as a pre-requisite.
     To achieve this, please ensure an entry for DiscoverHistory with its relative path from [IEdgeInsights](../../) directory is set in the video-streaming-storage.yml file present in [build/usecases](../../build/usecases) directory. An example has been provided below:
@@ -34,7 +32,9 @@ README FOR DISCOVER HISTORY TOOL
      ```sh
         docker restart ia_discover_history
      ```
- ## ADDITIONAL STEP TO RUN DISCOVERY TOOL IN DEV MODE
+
+* **Running in DEV mode**
+
  1. Open [.env](../../build/.env)
  2. Set the DEV_MODE variable as "true".
  ```
@@ -45,10 +45,12 @@ to
     DEV_MODE=true
  ```
 
-### NOTE:Building the base images like ia_common, ia_eiibase are must in cases if this tool isn't run on the same node where EII is running.
-### Please ensure that the base images i.e. ia_common and ia_eiibase are present on the node where this tool is run.
+> **NOTE**:
+> * Building the base images like ia_common, ia_eiibase are must in cases if this tool isn't run on the same node
+>   where EII is running.
+> * Please ensure that the base images i.e. ia_common and ia_eiibase are present on the node where this tool is run.
 
-# List of sample select queries #
+# List of sample select queries
 
 1. "select * from camera1_stream_results order by desc limit 10"
    This query will return latest 10 records.
@@ -61,7 +63,7 @@ to
 4. "select * from camera1_stream_results where time>=now()-1h"
     This query will return all the records from the current time, going back upto last 1 hour.
 
-## TO RUN THE TOOL IN zmq_ipc MODE
+# To run the tool in zmq_ipc mode
 
 User needs to modify interface section of **[config.json](./config.json)** as following
 
@@ -72,9 +74,10 @@ User needs to modify interface section of **[config.json](./config.json)** as fo
     }
 ```
 
+----
+**NOTE**:
+If you want good and bad frames then the query must contain the following parameters:
 
-NOTE: If you want good and bad frames then the query must contain the following parameters:
-	
 	*img_handle
 	*defects
 	*encoding_level
@@ -83,12 +86,10 @@ NOTE: If you want good and bad frames then the query must contain the following 
 	*width
 	*channel
 
-    Example: 
+    Example:
      "select img_handle, defects, encoding_level, encoding_type,  height, width, channel from camera1_stream_results order by desc limit 10"
 
      or
 
      "select * from camera1_stream_results order by desc limit 10"
-
-
-
+----
