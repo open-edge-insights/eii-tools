@@ -44,6 +44,9 @@ module.
         "mode": "fps"
     ```
 
+   > **Note:**
+   > * For running Video Profiler in FPS mode, it is recommended to keep PROFILING_MODE set to false in [.env](../../build/.env) for better performance.
+
 2. Monitor mode
 
     Enabled by setting the 'mode' key in [config](./config.json) to 'monitor', this mode calculates average & per frame stats
@@ -79,9 +82,10 @@ module.
     2. 'per_frame_stats': Continously displays the per frame metrics of every frame.
     3. 'avg_stats': Continously displays the average metrics of every frame.
 
-  > **Note:**
-  > * Pre-requisite for running in profiling or monitor mode: VI/VA should be running with PROFILING_MODE set to **true** in [.env](../../build/.env)
-  > * For running Video Profiler in FPS mode, it is recommended to keep PROFILING_MODE set to false in [.env](../../build/.env) for better performance.
+    > **Note:**
+    > * Pre-requisite for running in profiling or monitor mode: VI/VA should be running with PROFILING_MODE set to **true** in [.env](../../build/.env)
+    > * It is mandatory to have a udf for running in monitor mode. For instance [GVASafetyGearIngestion](../../CustomUdfs/GVASafetyGearIngestion/README.md) does not have any udf(since it uses GVA elements) so it will not be supported in monitor mode. The workaround to use GVASafetyGearIngestion in monitor mode is to add [dummy-udf](../../common/video/udfs/README.md
+    ) in [GVASafetyGearIngestion-config](../../CustomUdfs/GVASafetyGearIngestion/config.json).
 
 ## EII Video Profiler configurations
 
