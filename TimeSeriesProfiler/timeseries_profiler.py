@@ -131,9 +131,7 @@ class TimeSeriesCalculator:
                     key, value = i.split('=')
                     records[key] = value
 
-                required_timestamps = ["ts", "ts_kapacitor_udf_entry",
-                                       "ts_kapacitor_udf_exit",
-                                       "ts_idbconn_pub_entry",
+                required_timestamps = ["ts_idbconn_pub_entry",
                                        "ts_idbconn_pub_queue_entry",
                                        "ts_idbconn_influx_respose_write",
                                        "ts_idbconn_pub_queue_exit",
@@ -145,14 +143,27 @@ class TimeSeriesCalculator:
                                  .format(missing_timestamps))
                     os._exit(1)
                 records['ts_influx_entry'] = int(int(data[2])/1000000)
+                if 'ts_plugin_in' in records:
+                    records['ts_plugin_in'] = int(int(str(records['ts_plugin_in'])[:-1])/1000000)
+                if 'total_time_spent_in_plugin' in records:
+                    records['total_time_spent_in_plugin'] = int(int(str(
+                        records['total_time_spent_in_plugin'])[:-1])/1000000)
             else:
                 records = copy.deepcopy(meta_data)
+                if 'ts_plugin_in' in records:
+                    records['ts_plugin_in'] = int(int(records['ts_plugin_in']/1000000))
+                if 'total_time_spent_in_plugin' in records:
+                    records['total_time_spent_in_plugin'] = int(int(
+                        records['total_time_spent_in_plugin'])/1000000)
 
-            records['ts'] = int(float(records['ts']) * 1000)
-            records['ts_kapacitor_udf_entry'] = \
-                str(records['ts_kapacitor_udf_entry'])[0:13]
-            records['ts_kapacitor_udf_exit'] =  \
-                str(records['ts_kapacitor_udf_exit'])[0:13]
+            if 'ts' in records:
+                records['ts'] = int(float(records['ts']) * 1000)
+            if 'ts_kapacitor_udf_entry' in records:
+                records['ts_kapacitor_udf_entry'] = \
+                    str(records['ts_kapacitor_udf_entry'])[0:13]
+            if 'ts_kapacitor_udf_exit' in records:
+                records['ts_kapacitor_udf_exit'] =  \
+                    str(records['ts_kapacitor_udf_exit'])[0:13]
 
             if 'ts_telegraf_output_data_entry' in records:
                 records['ts_telegraf_output_data_entry'] = \
@@ -179,43 +190,61 @@ class TimeSeriesCalculator:
         """
 
         per_sample_stats = dict()
-        e2e = int(records['ts_profiler_entry']) - int(records['ts'])
-        per_sample_stats["e2e"] = e2e
+        try:
+            if 'ts' in records:
+                e2e = int(records['ts_profiler_entry']) - int(records['ts'])
+            if 'ts_plugin_in' in records:
+                e2e = int(records['ts_profiler_entry']) - int(records['ts_plugin_in'])
+            per_sample_stats["e2e"] = e2e
+        except Exception as e:
+            logger.error("Input timestamp 'ts' or 'ts_plugin_in' is missing. Exiting..")
+            os._exit(1)
+
+
+        # time taken in telegraf input plugin
+        if 'total_time_spent_in_plugin' in records:
+            per_sample_stats['ts_telegraf_in_diff'] = int(records[
+                'total_time_spent_in_plugin'])
 
         # time taken in telegraf output plugin
-        if 'ts_telegraf_output_pub_exit' and 'ts_telegraf_output_data_entry' \
-            in records:
-            per_sample_stats['telegraf_out_diff'] = int(records[
+        if all(key in records for key in (
+            'ts_telegraf_output_pub_exit', 'ts_telegraf_output_data_entry')):
+            per_sample_stats['ts_telegraf_out_diff'] = int(records[
                 'ts_telegraf_output_pub_exit']) - int(records['ts_telegraf_output_data_entry'])
 
         # time taken for mqtt publisher to influxdb
-        if 'ts_influx_entry' in records:
+        if all(key in records for key in (
+            'ts_influx_entry', 'ts')):
             per_sample_stats['mqttpub_to_influx_diff'] = int(records[
                 'ts_influx_entry']) - int(records['ts'])
 
         # time taken for influx to kapacitor-udf
-        if 'ts_influx_entry' in records:
+        if all(key in records for key in (
+            'ts_influx_entry', 'ts_kapacitor_udf_entry')):
             per_sample_stats['influx_to_kapacitor-udf_diff'] = int(records[
                 'ts_kapacitor_udf_entry']) - int(records['ts_influx_entry'])
 
         # time taken in kapacitor-udf
-        per_sample_stats['udf_diff'] = int(records[
-            'ts_kapacitor_udf_exit']) - int(records['ts_kapacitor_udf_entry'])
+        if all(key in records for key in (
+            'ts_kapacitor_udf_exit', 'ts_kapacitor_udf_entry')):
+            per_sample_stats['udf_diff'] = int(records[
+                'ts_kapacitor_udf_exit']) - int(records['ts_kapacitor_udf_entry'])
 
         # time taken for kapacitor-udf to idbconn
-        if 'ts_idbconn_pub_entry' in records:
+        if all(key in records for key in (
+            'ts_idbconn_pub_entry', 'ts_kapacitor_udf_exit')):
             per_sample_stats['kapacitor-udf_to_idbconn_diff'] = int(records[
                 'ts_idbconn_pub_entry']) - int(records['ts_kapacitor_udf_exit'])
 
         # time taken in influxdbconnector
-        if 'ts_idbconn_pub_exit' and 'ts_idbconn_pub_entry' \
-            in records:
+        if all(key in records for key in (
+            'ts_idbconn_pub_exit', 'ts_idbconn_pub_entry')):
             per_sample_stats['idbconn_pub_diff'] = int(records[
                 'ts_idbconn_pub_exit']) - int(records['ts_idbconn_pub_entry'])
 
         # time taken in influxdbconnector's queue
-        if 'ts_idbconn_pub_queue_exit' and 'ts_idbconn_pub_queue_entry'\
-            in records:
+        if all(key in records for key in (
+            'ts_idbconn_pub_queue_exit', 'ts_idbconn_pub_queue_entry')):
             per_sample_stats['idbconn_queue_pub_diff'] = int(records[
                 'ts_idbconn_pub_queue_exit']) - int(records[
                     'ts_idbconn_pub_queue_entry'])
@@ -227,12 +256,14 @@ class TimeSeriesCalculator:
                 int(records['ts_idbconn_pub_exit'])
 
         # time taken in mqtt publisher to idbconn
-        if 'ts_idbconn_pub_exit' in records:
+        if all(key in records for key in (
+            'ts_idbconn_pub_exit', 'ts')):
             per_sample_stats['mqtt_to_idbconn_diff'] = int(records[
                 'ts_idbconn_pub_exit']) - int(records['ts'])
 
         # time taken in influx to idbconn
-        if 'ts_idbconn_pub_exit' and 'ts_influx_entry' in records:
+        if all(key in records for key in (
+            'ts_idbconn_pub_exit', 'ts_influx_entry')):
             per_sample_stats['influx_to_idbconn_diff'] = int(records[
                 'ts_idbconn_pub_exit']) - int(records['ts_influx_entry'])
 
