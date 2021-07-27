@@ -127,7 +127,7 @@ module.
         "/VideoProfiler/interfaces": {
             "Subscribers": [
                 {
-                    "EndPoint": "/opt/intel/eii/sockets",
+                    "EndPoint": "/EII/sockets",
                     "Name": "default",
                     "PublisherAppName": "PyMultiClassificationIngestion",
                     "Topics": [
