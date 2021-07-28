@@ -2,19 +2,26 @@
 
 HttpTestServer runs a simple HTTP Test server with security being optional.
 
+## Pre-requisites for running the HttpTestServer
+
 * To install EII libs on bare-metal, follow the [README](../../common/README.md) of eii_libs_installer.
 
-* To Run rest data export test application
+* Generate the certificates required to run the Http Test Server using the following command
 
-    1. Generate the Certificate required to run the Http Test Server using the following command
     ```
     $ ./generate_testserver_cert.sh test-server-ip
     ```
 
-    2. To run the HttpTestServer
+## Starting HttpTestServer
+
+* Please run the below command to start the HttpTestServer
     ```
     $ cd IEdgeInsights/tools/HttpTestServer
     $ go run TestServer.go --dev_mode false --host <address of test server> --port <port of test server> --rdehost <address of Rest Data Export server> --rdeport <port of Rest Data Export server>
+    ```
+
+    ```
+    Eg: go run TestServer.go --dev_mode false --host=0.0.0.0 --port=8082 --rdehost=localhost --rdeport=8087
     ```
 
     ***NOTE***: server_cert.pem is valid for 365 days from the day of generation
