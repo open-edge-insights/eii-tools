@@ -143,15 +143,22 @@ module.
         },
       ```
 
-5. Refer [provision/README.md](../../README.md) to provision, build and run the tool along with the EII video-streaming recipe/stack.
+5. If running VideoProfiler with helm usecase or trying to subscribe to any external publishers outside the eii network, please ensure the correct IP of publisher has been provided in the interfaces section in [config](config.json) and correct ETCD host & port are set in environment for **ETCD_ENDPOINT** & **ETCD_HOST**.
+    * For example, for helm use case, since the ETCD_HOST and ETCD_PORT are different, run the commands mentioned below wit the required HOST IP:
+    ```sh
+        export ETCD_HOST="<HOST IP>"
+        export ETCD_ENDPOINT="<HOST IP>:32379"
+    ```
 
-6. Run the following command to see the logs:
+6. Refer [provision/README.md](../../README.md) to provision, build and run the tool along with the EII video-streaming recipe/stack.
+
+7. Run the following command to see the logs:
 
     ```sh
         docker logs -f ia_video_profiler
     ```
 
-7. The runtime stats of Video Profiler if enabled with export_to_csv switch can be found at [video_profiler_runtime_stats](video_profiler_runtime_stats.csv)
+8. The runtime stats of Video Profiler if enabled with export_to_csv switch can be found at [video_profiler_runtime_stats](video_profiler_runtime_stats.csv)
 
   > **Note:**
   > * `poll_interval` option in the VideoIngestion [config](../../VideoIngestion/config.json) sets the delay(in seconds)

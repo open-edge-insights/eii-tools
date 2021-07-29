@@ -46,8 +46,7 @@ services:
       DEV_MODE: ${DEV_MODE}
       no_proxy: ${ETCD_HOST}
       NO_PROXY: ${ETCD_HOST}
-      ETCD_HOST: ${ETCD_HOST}
-      ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
+      ETCD_ENDPOINT: ${ETCD_ENDPOINT}
       ETCD_PREFIX: ${ETCD_PREFIX}
       EII_INSTALL_PATH: ${EII_INSTALL_PATH}
     networks:
