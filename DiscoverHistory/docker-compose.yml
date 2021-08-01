@@ -50,6 +50,8 @@ services:
       ETCD_HOST: ${ETCD_HOST}
       ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
       ETCD_PREFIX: ${ETCD_PREFIX}
+      INFLUX_SERVER: 'ia_influxdbconnector'
+      INFLUXDB_PORT: $INFLUXDB_PORT
     networks:
       - eii
     volumes:

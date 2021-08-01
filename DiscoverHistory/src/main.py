@@ -27,6 +27,7 @@ import influxdbconnector_client
 import common
 import sys
 import os
+import socket
 import logging
 import cfgmgr.config_manager as cfg
 
@@ -54,6 +55,39 @@ def main():
     logging.basicConfig(format=fmt_str, level=logging.DEBUG)
     query = app_cfg["query"]
     img_handle_queue = queue.Queue(maxsize=10000)
+    # TODO: This is a temporary fix to wait until influx container binds 8086 port.
+    num_retries = 5
+    retry_count = 0
+    sock_retries = 2
+    sock_retry_count = 0
+    influx_up = False
+    while(retry_count < num_retries):
+        try:
+            influx_host = os.getenv("INFLUX_SERVER", "ia_influxdbconnector")
+            influx_port = os.getenv("INFLUXDB_PORT", 8086)
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            if not (sock.connect_ex((influx_host, int(influx_port)))):
+                influx_up = True
+                break
+            else:
+                logger.info('Checking 8086 port of '
+                             'ia_influxdbconnector')
+                retry_count += 1
+                time.sleep(10)
+        except socket.gaierror as e:
+            if(sock_retry_count <= sock_retries):
+                logger.info('Waiting for ia_influxdbconnector '
+                            'container to start')
+                sock_retry_count += 1
+                time.sleep(5)
+            else:
+                break
+    if  influx_up:
+        time.sleep(5)
+    else:
+        logger.info('Please check ia_influxdbconnector container, '
+                    'then restart ia_discover_history container')
+        os._exit(-1)
 
     # This thread will retrieve the image from imagestore service
     # and will store into frames directory
