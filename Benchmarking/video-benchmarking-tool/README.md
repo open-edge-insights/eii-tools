@@ -8,13 +8,13 @@ If you do not have PCM on your system, those columns will be blank in the output
 
 > **Note**:
 
-> * For running the gstreamer pipeline mentioned in [sample_test/config.json](sample_test/config.json) one needs to copy the required model files to [WORKDIR]/IEdgeInsights/VideoIngestion/models by referring [models-readme](../../../VideoIngestion/models/README.md).
+> * For running the gstreamer pipeline mentioned in [sample_test/config.json](sample_test/config.json) one needs to copy the required model files to [WORKDIR]/IEdgeInsights/VideoIngestion/models by referring [models-readme](https://github.com/open-edge-insights/video-ingestion/blob/master/models/README.md).
 
 > * For using `MYRIAD` device for inference please add `user: root` in docker-compose.yml file for VI. If IPC mode is used then `user: root` needs to be added for VideoProfiler docker-compose.yml file as well.
 
 > * The docker-compose.yml files of VI and VideoProfiler gets picked from their respective repos. So any changes needed should be applied in their repsective repos.
 
-> * Refer [README-Using-video-accelerators](../../../README.md#using-video-accelerators) for using video accelerators.
+> * Refer [README-Using-video-accelerators](https://github.com/open-edge-insights/eii-core#using-video-accelerators-in-ingestionanalytics-containers) for using video accelerators.
 
 Steps for running a benchmarking test case:
 

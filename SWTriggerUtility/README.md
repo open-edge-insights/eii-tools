@@ -16,8 +16,8 @@ This utility is used for invoking various software trigger features of VideoInge
 ## Software Trigger Utilily pre-requisites
 
 SWTriggerUtility expects a set of config, interfaces & public private keys to be present in ETCD as a pre-requisite.
-* To achieve this, please ensure an entry for SWTriggerUtility with its relative path from [IEdgeInsights](../../) directory is set in any of the .yml files present in [build/usecases](../../build/usecases) directory.
-    * An example has been provided below to add the entry in [video-streaming.yml](../../build/usecases/video-streaming.yml)
+* To achieve this, please ensure an entry for SWTriggerUtility with its relative path from [IEdgeInsights](../../) directory is set in any of the .yml files present in [build/usecases](https://github.com/open-edge-insights/eii-core/tree/master/build/usecases) directory.
+    * An example has been provided below to add the entry in [video-streaming.yml](https://github.com/open-edge-insights/eii-core/blob/master/build/usecases/video-streaming.yml)
     ```yml
         AppContexts:
         ---snip---
@@ -59,7 +59,7 @@ SWTriggerUtility expects a set of config, interfaces & public private keys to be
 **This utility works in both dev & prod mode.**  As a pre-requisite make sure to turn ON the flag corresponding to "dev_mode" to true/false in the config.json file.
 ## Running Software Trigger Utility
 
-1. EII services can be running in prod or dev mode by setting `DEV_MODE` value accordingly in [build/.env](../../build/.env)
+1. EII services can be running in prod or dev mode by setting `DEV_MODE` value accordingly in [build/.env](https://github.com/open-edge-insights/eii-core/blob/master/build/.env)
 
 2. Execute builder.py script:
    ```sh
@@ -67,7 +67,7 @@ SWTriggerUtility expects a set of config, interfaces & public private keys to be
    $ python3 builder.py -f usecases/video-streaming.yml
    ```
 
-   **NOTE**: The same yml file to which the **SWTriggerUtility** entry was added in [pre-requisites](#software-trigger-utilily-pre-requisites) has to be selected while running [builder](../../build/builder.py)
+   **NOTE**: The same yml file to which the **SWTriggerUtility** entry was added in [pre-requisites](#software-trigger-utilily-pre-requisites) has to be selected while running [builder](https://github.com/open-edge-insights/eii-core/blob/master/build/builder.py)
 
 3. Run provisioning step as below:
 

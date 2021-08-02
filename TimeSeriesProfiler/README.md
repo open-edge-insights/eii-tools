@@ -17,7 +17,7 @@
 ## EII pre-requisites
 
 1. TimeSeriesProfiler expects a set of config, interfaces & public private keys to be present in ETCD as a pre-requisite.
-    To achieve this, please ensure an entry for TimeSeriesProfiler with its relative path from [IEdgeInsights](../../) directory is set in the time-series.yml file present in [build/usecases](../../build/usecases) directory. An example has been provided below:
+    To achieve this, please ensure an entry for TimeSeriesProfiler with its relative path from [IEdgeInsights](../../) directory is set in the time-series.yml file present in [build/usecases](https://github.com/open-edge-insights/eii-core/tree/master/build/usecases) directory. An example has been provided below:
     ```sh
         AppContexts:
         - Grafana
@@ -75,8 +75,8 @@
     3. 'avg_stats': Continously displays the average metrics of every sample.
 
   > **Note:**
-  > * Pre-requisite for running in profiling or monitor mode: Time series containers should be running with PROFILING_MODE set to **true** in [.env](../../build/.env)
-  > * For running TimeSeriesProfiler in SPS mode, it is recommended to keep PROFILING_MODE set to false in [.env](../../build/.env) for better performance.
+  > * Pre-requisite for running in profiling or monitor mode: Time series containers should be running with PROFILING_MODE set to **true** in [.env](https://github.com/open-edge-insights/eii-core/blob/master/build/.env)
+  > * For running TimeSeriesProfiler in SPS mode, it is recommended to keep PROFILING_MODE set to false in [.env](https://github.com/open-edge-insights/eii-core/blob/master/build/.env) for better performance.
 
 ## EII TimeSeriesProfiler configurations
 
@@ -100,8 +100,8 @@
    Profiling UDF returns "ts_kapacitor_udf_entry" and "ts_kapacitor_udf_exit" timestamp.  
    
     These 2 as examples to refer:
-    1. [profiling_udf.go](../../Kapacitor/udfs/profiling_udf.go)
-    2. [rfc_classifier.py](../../Kapacitor/udfs/rfc_classifier.py)
+    1. [profiling_udf.go](https://github.com/open-edge-insights/ts-kapacitor/blob/master/udfs/profiling_udf.go)
+    2. [rfc_classifier.py](https://github.com/open-edge-insights/ts-kapacitor/blob/master/udfs/rfc_classifier.py)
    
 * **Additional:** Adding timestamps in ingestion and UDFs:
 
@@ -116,11 +116,11 @@
 
      ts_kapacitor_udf_exit : timestamp in UDF after execution of the algorithm.
 
-    The sample profiling UDFs can be referred at [profiling_udf.go](../../Kapacitor/udfs/profiling_udf.go) and [rfc_classifier.py](../../Kapacitor/udfs/rfc_classifier.py).
+    The sample profiling UDFs can be referred at [profiling_udf.go](https://github.com/open-edge-insights/ts-kapacitor/blob/master/udfs/profiling_udf.go) and [rfc_classifier.py](https://github.com/open-edge-insights/ts-kapacitor/blob/master/udfs/rfc_classifier.py).
 
 * configuration required to run profiling_udf.go as profiling udf
 
-   In **[Kapacitor config.json](../../Kapacitor/config.json)** , update "task" key as below:
+   In **[Kapacitor config.json](https://github.com/open-edge-insights/ts-kapacitor/blob/master/config.json)** , update "task" key as below:
    ```
    "task": [{
        "tick_script": "profiling_udf.tick",
@@ -131,7 +131,7 @@
        }]
    }]
    ```
-   In **[kapacitor.conf](../../Kapacitor/config/kapacitor.conf)** under udf section:
+   In **[kapacitor.conf](https://github.com/open-edge-insights/ts-kapacitor/blob/master/config/kapacitor.conf)** under udf section:
 
    ```
       [udf.functions]
@@ -141,7 +141,7 @@
 
    ```
  * configuration required to run rfc_classifier.py as profiler udf
-   In **[Kapacitor config.json](../../Kapacitor/config.json)** , update "task" key as below:
+   In **[Kapacitor config.json](https://github.com/open-edge-insights/ts-kapacitor/blob/master/config.json)** , update "task" key as below:
    ```
    "task": [{
        {
@@ -150,7 +150,7 @@
         }
    }]
    ```
-   In **[kapacitor.conf](../../Kapacitor/config/kapacitor.conf)** under udf section:
+   In **[kapacitor.conf](https://github.com/open-edge-insights/ts-kapacitor/blob/master/config/kapacitor.conf)** under udf section:
 
    ```
     [udf.functions.rfc]
@@ -185,7 +185,7 @@
 
 
 
-   In [.env](../../build/.env):
+   In [.env](https://github.com/open-edge-insights/eii-core/blob/master/build/.env):
 
    Set the profiling mode as true.
 
@@ -202,7 +202,7 @@
     }
 ```
 
-5. Refer [README.md](../../README.md) to provision, build and run the tool along with the EII time-series recipe/stack.
+5. Refer [README.md](https://github.com/open-edge-insights/eii-core/blob/master/README.md) to provision, build and run the tool along with the EII time-series recipe/stack.
 
 6. Run the following command to see the logs:
 

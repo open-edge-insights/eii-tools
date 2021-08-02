@@ -11,20 +11,20 @@ Jupyter Notebook is an open-source web application that allows you to create and
 
 This tool acts as an interface between user and Jupyter Notebook service allowing the user to interact with Jupyter Notebook to write, edit, experiment and create python UDFs.
 
-It works along with the [jupyter_connector](../../common/video/udfs/python/jupyter_connector.py) UDF for enabling the IDE for udf development.
+It works along with the [jupyter_connector](https://github.com/open-edge-insights/video-common/tree/master/udfs/python/jupyter_connector.py) UDF for enabling the IDE for udf development.
 
 ## Jupyter Notebook pre-requisites
 
 1. Jupyter Notebook expects a set of config, interfaces & public private keys to be present in ETCD as a pre-requisite.
-    * To achieve this, please ensure an entry for Jupyter Notebook with its relative path from [IEdgeInsights](../../) directory is set in any of the .yml files present in [build/usecases](../../build/usecases) directory.
-    * An example has been provided below to add the entry in [video-streaming.yml](../../build/usecases/video-streaming.yml)
+    * To achieve this, please ensure an entry for Jupyter Notebook with its relative path from [IEdgeInsights](../../) directory is set in any of the .yml files present in [build/usecases](https://github.com/open-edge-insights/eii-core/tree/master/build/usecases) directory.
+    * An example has been provided below to add the entry in [video-streaming.yml](https://github.com/open-edge-insights/eii-core/tree/master/build/usecases/video-streaming.yml)
     ```yml
         AppContexts:
         ---snip---
         - tools/JupyterNotebook
     ```
 
-2. Ensure the [jupyter_connector](../../common/video/udfs/python/jupyter_connector.py) UDF is enabled in the config of either **VideoIngestion** or **VideoAnalytics** to be connected to JupyterNotebook. An example has been provided here for connecting **VideoIngestion** to **JupyterNotebook**, the config to be changed being present at [config.json](../../VideoIngestion/config.json):
+2. Ensure the [jupyter_connector](https://github.com/open-edge-insights/video-common/tree/master/udfs/python/jupyter_connector.py) UDF is enabled in the config of either **VideoIngestion** or **VideoAnalytics** to be connected to JupyterNotebook. An example has been provided here for connecting **VideoIngestion** to **JupyterNotebook**, the config to be changed being present at [config.json](https://github.com/open-edge-insights/video-ingestion/blob/master/config.json):
     ```javascript
         {
             "config": {
@@ -62,7 +62,7 @@ It works along with the [jupyter_connector](../../common/video/udfs/python/jupyt
         python3 builder.py -f usecases/video-streaming.yml
     ```
 
-2. Refer [IEdgeInsights/README.md](../../README.md) to provision, build and run the tool along with the EII recipe/stack.
+2. Refer [IEdgeInsights/README.md](https://github.com/open-edge-insights/eii-core/blob/master/README.md) to provision, build and run the tool along with the EII recipe/stack.
 
 3. Run the following command to see the logs:
 
@@ -81,11 +81,11 @@ It works along with the [jupyter_connector](../../common/video/udfs/python/jupyt
 
 6. The process method of [udf_template.ipynb](udf_template.ipynb) file available in the list of files can be altered and re-run to experiment and test the UDF.
 
-7. If any parameters are to be sent to the custom udf by the user, they can be added in the **jupyter_connector** UDF config provided to either **VideoIngestion** or **VideoAnalytics** and can be accessed in the [udf_template.ipynb](udf_template.ipynb) constructor in the **udf_config** parameter which is a dict containing all these parameters. A sample UDF for reference has been provided at [pcb_filter.py](../../common/video/udfs/python/pcb/pcb_filter.py).
+7. If any parameters are to be sent to the custom udf by the user, they can be added in the **jupyter_connector** UDF config provided to either **VideoIngestion** or **VideoAnalytics** and can be accessed in the [udf_template.ipynb](udf_template.ipynb) constructor in the **udf_config** parameter which is a dict containing all these parameters. A sample UDF for reference has been provided at [pcb_filter.py](https://github.com/open-edge-insights/video-common/blob/master/udfs/python/pcb/pcb_filter.py).
 
 **Note**: After altering/creating a new udf, run main.ipynb  and restart **VideoIngestion** or **VideoAnalytics** with which you have enabled jupyter notebook service.
 
-8. Once the user is satisfied with the functionality of the UDF, the udf can be saved/exported by clicking on the **Download as** option and selecting **(.py)** option. The downloaded udf can then be directly used by placing it in the [../../common/video/udfs/python](../../common/video/udfs/python) directory or can be integrated and used with **CustomUDFs**.
+8. Once the user is satisfied with the functionality of the UDF, the udf can be saved/exported by clicking on the **Download as** option and selecting **(.py)** option. The downloaded udf can then be directly used by placing it in the [../../common/video/udfs/python](https://github.com/open-edge-insights/video-common/blob/master/udfs/python) directory or can be integrated and used with **CustomUDFs**.
 
   > **Note:**
   > * JupyterNotebook is not to be used with **CustomUDFs** like **GVASafetyGearIngestion** since they are specific to certain usecases only. Instead, the VideoIngestion pipeline can be modified to use GVA ingestor pipeline and config can be modifed to use **jupyter_connector** UDF.

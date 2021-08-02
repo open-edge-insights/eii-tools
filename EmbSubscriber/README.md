@@ -11,7 +11,7 @@ EmbSubscriber subscribes message coming from a publisher.It subscribes to messag
 
 ## EII pre-requisites
 1.  EmbSubscriber expects a set of config, interfaces & public private keys to be present in ETCD as a pre-requisite.
-    To achieve this, please ensure an entry for EmbSubscriber with its relative path from [IEdgeInsights](../../) directory is set in the time-series.yml file present in [build/usecases](../../build/usecases) directory. An example has been provided below:
+    To achieve this, please ensure an entry for EmbSubscriber with its relative path from [IEdgeInsights](../../) directory is set in the time-series.yml file present in [build/usecases](https://github.com/open-edge-insights/eii-core/tree/master/build/usecases) directory. An example has been provided below:
     ```sh
         AppName:
         - Grafana
@@ -29,7 +29,7 @@ EmbSubscriber subscribes message coming from a publisher.It subscribes to messag
 
 ## Running EmbSubscriber
 
-1. Refer [../README.md](../../README.md) to provision, build and run the tool along with the EII time-series recipe/stack.
+1. Refer [../README.md](https://github.com/open-edge-insights/eii-core/blob/master/README.md) to provision, build and run the tool along with the EII time-series recipe/stack.
 
 ## Running EmbSubscriber in IPC mode
 User needs to modify interface section of **[config.json](./config.json)** to run in IPC mode as following

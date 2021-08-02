@@ -4,7 +4,7 @@ HttpTestServer runs a simple HTTP Test server with security being optional.
 
 ## Pre-requisites for running the HttpTestServer
 
-* To install EII libs on bare-metal, follow the [README](../../common/README.md) of eii_libs_installer.
+* To install EII libs on bare-metal, follow the [README](https://github.com/open-edge-insights/eii-core/blob/master/common/README.md) of eii_libs_installer.
 
 * Generate the certificates required to run the Http Test Server using the following command
 

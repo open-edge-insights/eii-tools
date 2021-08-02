@@ -19,7 +19,7 @@ module.
 ## EII Video Profiler pre-requisites
 
 1. VideoProfiler expects a set of config, interfaces & public private keys to be present in ETCD as a pre-requisite.
-    To achieve this, please ensure an entry for VideoProfiler with its relative path from [IEdgeInsights](../../) directory is set in any of the .yml files present in [build/usecases](../../build/usecases) directory. An example has been provided below:
+    To achieve this, please ensure an entry for VideoProfiler with its relative path from [IEdgeInsights](../../) directory is set in any of the .yml files present in [build/usecases](https://github.com/open-edge-insights/eii-core/tree/master/build/usecases) directory. An example has been provided below:
     ```sh
         AppContexts:
         - VideoIngestion
@@ -45,7 +45,7 @@ module.
     ```
 
    > **Note:**
-   > * For running Video Profiler in FPS mode, it is recommended to keep PROFILING_MODE set to false in [.env](../../build/.env) for better performance.
+   > * For running Video Profiler in FPS mode, it is recommended to keep PROFILING_MODE set to false in [.env](https://github.com/open-edge-insights/eii-core/tree/master/build/.env) for better performance.
 
 2. Monitor mode
 
@@ -83,15 +83,15 @@ module.
     3. 'avg_stats': Continously displays the average metrics of every frame.
 
     > **Note:**
-    > * Pre-requisite for running in profiling or monitor mode: VI/VA should be running with PROFILING_MODE set to **true** in [.env](../../build/.env)
-    > * It is mandatory to have a udf for running in monitor mode. For instance [GVASafetyGearIngestion](../../CustomUdfs/GVASafetyGearIngestion/README.md) does not have any udf(since it uses GVA elements) so it will not be supported in monitor mode. The workaround to use GVASafetyGearIngestion in monitor mode is to add [dummy-udf](../../common/video/udfs/README.md
-    ) in [GVASafetyGearIngestion-config](../../CustomUdfs/GVASafetyGearIngestion/config.json).
+    > * Pre-requisite for running in profiling or monitor mode: VI/VA should be running with PROFILING_MODE set to **true** in [.env](https://github.com/open-edge-insights/eii-core/tree/master/build/.env)
+    > * It is mandatory to have a udf for running in monitor mode. For instance [GVASafetyGearIngestion](https://github.com/open-edge-insights/video-custom-udfs/blob/master/GVASafetyGearIngestion/README.md) does not have any udf(since it uses GVA elements) so it will not be supported in monitor mode. The workaround to use GVASafetyGearIngestion in monitor mode is to add [dummy-udf](https://github.com/open-edge-insights/video-common/blob/master/udfs/README.md
+    ) in [GVASafetyGearIngestion-config](https://github.com/open-edge-insights/video-custom-udfs/blob/master/GVASafetyGearIngestion/config.json).
 
 ## EII Video Profiler configurations
 
 1. dev_mode
 
-    Setting this to false enables secure communication with the EII stack. User must ensure this switch is in sync with DEV_MODE in [.env](../../build/.env)
+    Setting this to false enables secure communication with the EII stack. User must ensure this switch is in sync with DEV_MODE in [.env](https://github.com/open-edge-insights/eii-core/tree/master/build/.env)
     With PROD mode enabled, the path for the certs mentioned in [config](./config.json) can be changed by the user to point to the required certs.
 
 2. total_number_of_frames
@@ -114,7 +114,7 @@ module.
 
 3. If VideoProfiler is subscribing to multiple streams, ensure the **AppName** of VideoProfiler is added in the Clients list of all the publishers.
 
-4. If using Video Profiler in IPC mode, make sure to set required permissions to socket file created in SOCKET_DIR in [build/.env](../../build/.env).
+4. If using Video Profiler in IPC mode, make sure to set required permissions to socket file created in SOCKET_DIR in [build/.env](https://github.com/open-edge-insights/eii-core/blob/master/build/.env).
 
     ```sh
         sudo chmod -R 777 /opt/intel/eii/sockets
@@ -150,7 +150,7 @@ module.
         export ETCD_ENDPOINT="<HOST IP>:32379"
     ```
 
-6. Refer [provision/README.md](../../README.md) to provision, build and run the tool along with the EII video-streaming recipe/stack.
+6. Refer [provision/README.md](https://github.com/open-edge-insights/eii-core/blob/master/README.md#provision) to provision, build and run the tool along with the EII video-streaming recipe/stack.
 
 7. Run the following command to see the logs:
 
@@ -161,12 +161,12 @@ module.
 8. The runtime stats of Video Profiler if enabled with export_to_csv switch can be found at [video_profiler_runtime_stats](video_profiler_runtime_stats.csv)
 
   > **Note:**
-  > * `poll_interval` option in the VideoIngestion [config](../../VideoIngestion/config.json) sets the delay(in seconds)
+  > * `poll_interval` option in the VideoIngestion [config](https://github.com/open-edge-insights/video-ingestion/blob/master/config.json) sets the delay(in seconds)
       to be induced after every consecutive frame is read by the opencv ingestor.
       Not setting it will ingest frames without any delay.
-  > * `videorate` element in the VideoIngestion [config](../../VideoIngestion/config.json) can be used to modify the
+  > * `videorate` element in the VideoIngestion [config](https://github.com/open-edge-insights/video-ingestion/blob/master/config.json) can be used to modify the
       ingestion rate for gstreamer ingestor.
-      More info available at [README](../../VideoIngestion/README.md).
+      More info available at [README](https://github.com/open-edge-insights/video-ingestion/blob/master/README.md).
   > * `ZMQ_RECV_HWM` option shall set the high water mark for inbound messages on the subscriber socket.
       The high water is a hard limit on the maximum number of outstanding messages ZeroMQ shall queue in memory for
       any single peer that the specified socket is communicating with.
@@ -185,7 +185,7 @@ module.
     UDFs are slow and causing latency throughout the pipeline.
     As per the log suggests, the user can increase the poll_interval to a optimum value to reduce the blockage of VideoIngestion
     ingestor queue thereby optimizing the video pipeline in case using the opencv ingestor.
-    In case Gstreamer ingestor is used, the videorate option can be optimized by following the [README](../../VideoIngestion/README.md).
+    In case Gstreamer ingestor is used, the videorate option can be optimized by following the [README](https://github.com/open-edge-insights/video-ingestion/blob/master/README.md).
 
 2. VA subs/UDF input queue is blocked, consider reducing ZMQ_RECV_HWM value or reducing ingestion rate.
 
@@ -210,7 +210,7 @@ module.
 
 ## Benchmarking with multi instance config
 
-1. EII supports multi instance config generation for benchmarking purposes. This can be acheived by running the [builder.py](../../build/builder.py) with certain parameters, please refer to the **Multi instance config generation** section of **EII Pre-Requisites** in [README](../../README.md) for more details.
+1. EII supports multi instance config generation for benchmarking purposes. This can be acheived by running the [builder.py](https://github.com/open-edge-insights/eii-core/blob/master/build/builder.py) with certain parameters, please refer to the **Multi instance config generation** section of **EII Pre-Requisites** in [README](https://github.com/open-edge-insights/eii-core/blob/master/README.md#eii-prerequisites-installation) for more details.
 
 2. For running VideoProfiler for multiple streams, run the builder with the **-v** flag provided the pre-requisites mentioned above are done. Given below is an example for generating **6** streams config:
     ```sh
