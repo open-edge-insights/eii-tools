@@ -77,7 +77,7 @@ $ python3 GigEConfig.py --help
 
 $  python3 GigEConfig.py [-h] --pfs_file PFS_FILE [--etcd] [--ca_cert CA_CERT]
                          [--root_key ROOT_KEY] [--root_cert ROOT_CERT]
-                         [--app_name APP_NAME]
+                         [--app_name APP_NAME] [-host HOSTNAME] [-port PORT]
 ```
 ----
 Tool for updating pipeline according to user requirement
@@ -102,7 +102,15 @@ optional arguments:
 
   --app_name APP_NAME, -a APP_NAME
                         For providing appname of VideoIngestion instance (default: VideoIngestion)
+
+  --hostname HOSTNAME, -host HOSTNAME
+                        Etcd host IP (default: localhost)
+
+  --port PORT, -port PORT
+                        Etcd host port (default: 2379)
+
 ----
+
 [config.json](config.json) consist of mapping between the PFS file elements and the camera properties. The pipeline constructed will only consist of the elements specified in it.
 
 The user needs to provide following elements:-
@@ -127,14 +135,14 @@ The tool can be executed in following manner :-
 2. Modify [config.json](config.json) based on the requirements
 
 
-3. For DEV Mode
+3. In case etcd configuration needs to be updated.
 
-    a. In case etcd configuration needs to be updated.
+    a. For DEV Mode
 
     ```sh
     $ python3 GigEConfig.py --pfs_file <path to pylon's pfs file> -e
     ```
-    For PROD Mode
+    b. For PROD Mode
 
     Before running in PROD mode please change the permissions of the certificates i.e :-
 
@@ -142,13 +150,31 @@ The tool can be executed in following manner :-
     $sudo chmod 755 -R [WORDK_DIR]/IEdgeInsights/build/provision/Certificates
     ```
 
-    a. In case etcd configuration needs to be updated.
-
     ```sh
     $ python3 GigEConfig.py -f <path to pylon's pfs file> -c [WORK_DIR]/IEdgeInsights/build/provision/Certificates/ca/ca_certificate.pem -r_k [WORK_DIR]/IEdgeInsights/build/provision/Certificates/root/root_client_key.pem -r_c [WORK_DIR]IEdgeInsights/build/provision/Certificates/root/root_client_certificate.pem -e
     ```
+    
 4. In case only pipeline needs to be printed.
 
     ```sh
     $ python3 GigEConfig.py --pfs_file <path to pylon's pfs file>
     ```
+5. In case host or port is needed to be specified for etcd.
+
+    a. For DEV Mode
+
+    ```sh
+    $ python3 GigEConfig.py --pfs_file <path to pylon's pfs file> -e -host <etcd_host> -port <etcd_port> 
+    ```
+    b. For PROD Mode
+
+    Before running in PROD mode please change the permissions of the certificates i.e :
+
+    ```sh
+    $sudo chmod 755 -R [WORDK_DIR]/IEdgeInsights/build/provision/Certificates
+    ```
+
+    ```sh
+    $ python3 GigEConfig.py -f <path to pylon's pfs file> -c [WORK_DIR]/IEdgeInsights/build/provision/Certificates/ca/ca_certificate.pem -r_k [WORK_DIR]/IEdgeInsights/build/provision/Certificates/root/root_client_key.pem -r_c [WORK_DIR]IEdgeInsights/build/provision/Certificates/root/root_client_certificate.pem -e -host <etcd_host> -port <etcd_port>
+    ```
+
