@@ -18,46 +18,31 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Dockerfile for DiscoverHistory
+# Dockerfile for Jupyter Notebook
 
 ARG EII_VERSION
-ARG DOCKER_REGISTRY
 ARG ARTIFACTS="/artifacts"
 ARG EII_UID
 ARG EII_USER_NAME
-ARG UBUNTU_IMAGE_VERSION
+ARG OPENVINO_IMAGE
 FROM ia_eiibase:$EII_VERSION as base
 FROM ia_common:$EII_VERSION as common
 
 FROM base as builder
-LABEL description="DiscoverHistory image"
-
+LABEL description="Jupyter Notebook image"
 
 ARG ARTIFACTS
-RUN mkdir $ARTIFACTS
 WORKDIR /app
 
 COPY requirements.txt .
 RUN pip3 install --user -r requirements.txt
 
-COPY src/ .
+COPY . .
 
-FROM ubuntu:$UBUNTU_IMAGE_VERSION as runtime
-
-# Setting python dev env
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends software-properties-common && \
-    add-apt-repository ppa:deadsnakes/ppa && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends libsm6 \
-					       libgl1-mesa-glx \
-                                               libxext6 \
-                                               libxrender1 \
-                                               python3-distutils && \
-    rm -rf /var/lib/apt/lists/*
+FROM ${OPENVINO_IMAGE} AS runtime
+USER root
 
 WORKDIR /app
-
 
 ARG EII_UID
 ARG EII_USER_NAME
@@ -68,17 +53,23 @@ ARG ARTIFACTS
 ARG CMAKE_INSTALL_PREFIX
 ENV PYTHONPATH $PYTHONPATH:/app/.local/lib/python3.8/site-packages:/app
 COPY --from=common ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib
-COPY --from=common /eii/common/util/*.py util/
 COPY --from=common /root/.local/lib .local/lib
-COPY --from=builder /app .
 COPY --from=builder /root/.local/lib .local/lib
-RUN mkdir -p /output && \
-    chown -R ${EII_UID} /output
+COPY --from=builder /root/.local/bin .local/bin
+COPY --from=builder /app .
+
 RUN chown -R ${EII_UID} .local/lib/python3.8
 
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:${CMAKE_INSTALL_PREFIX}/lib
 ENV PATH $PATH:/app/.local/bin
+
+# This is required since JupyterNotebook expects
+# a /home/$EII_USER_NAME/.local/share/jupyter to be present
+RUN mkdir -p /home/$EII_USER_NAME/.local/share/jupyter && \
+    chown -R $EII_USER_NAME:$EII_USER_NAME /home/$EII_USER_NAME
+
 USER $EII_USER_NAME
 
 HEALTHCHECK NONE
-ENTRYPOINT [ "python3", "main.py" ]
+ENV HOME_DIR "/home/$EII_USER_NAME"
+ENTRYPOINT ./start_jupyter.sh "$HOME_DIR"

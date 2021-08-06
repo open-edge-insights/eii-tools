@@ -1,0 +1,16 @@
+{
+  "config": {},
+  "interfaces": {
+    "Subscribers": [
+      {
+        "Name": "TestSub",
+        "PublisherAppName": "Telegraf",
+        "Type": "zmq_tcp",
+        "EndPoint": "ia_telegraf:65077",
+        "Topics": [
+          "*"
+        ]
+      }
+    ]
+  }
+}

@@ -13,7 +13,7 @@
         "AllowedClients": [
           "*"
         ],
-        "EndPoint": "127.0.0.1:60514",
+        "EndPoint": "ia_zmq_broker:60514",
         "Topics": [
           "topic-pfx1",
           "topic-pfx2",

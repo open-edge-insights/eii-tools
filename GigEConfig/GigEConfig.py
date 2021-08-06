@@ -44,7 +44,8 @@ def make_pipeline(pfs_config_map, config_table):
     """
     gstreamer_pipeline = config_table["plugin_name"] + " "
     if "device_serial_number" in config_table:
-        gstreamer_pipeline += "serial=" + config_table["device_serial_number"] + " "
+        gstreamer_pipeline += "serial=" + \
+                              config_table["device_serial_number"] + " "
     video_raw = ""
     if "mono" in pfs_config_map["pixel-format"]:
         pfs_config_map["pixel-format"] = "mono8"
@@ -106,10 +107,14 @@ def pfs_file_parser(pfs_file, config_table):
     return pfs_config_map
 
 
-def etcd_config(ca_cert, root_key, root_cert):
+def etcd_config(hostname, port, ca_cert, root_key, root_cert):
     """Creates an EtcdCli instance, checks for
         the etcd service port availability
 
+    :param hostname: Etcd host IP name
+    :type hostname: String
+    :param port: Etcd host port
+    :type port: String
     :param ca_cert: Path of ca_certificate.pem
     :type ca_cert: String
     :param root_key: Path of root_client_key.pem
@@ -119,14 +124,12 @@ def etcd_config(ca_cert, root_key, root_cert):
     :return: etcd
     :rtype: etcd3.client()
     """
-    hostname = os.getenv("ETCD_HOST", "localhost")
-    port = os.getenv("ETCD_CLIENT_PORT", "2379")
     if(len(hostname) == 0):
         hostname = "localhost"
 
     if(len(port) == 0):
         port = "2379"
-    
+
     try:
         if ca_cert is None and root_key is None and root_cert is None:
             etcd = etcd3.client(host=hostname, port=port)
@@ -171,15 +174,26 @@ if __name__ == '__main__':
         '--app_name', '-a', action='store', default="VideoIngestion",
         help="For providing appname of VideoIngestion instance"
     )
+    my_parser.add_argument(
+        '--hostname', '-host', default='localhost',
+        help='Etcd host IP'
+    )
+    my_parser.add_argument(
+        '--port', '-port', default='2379',
+        help='Etcd host port'
+    )
+    
     args = my_parser.parse_args()
     pfs_file = args.pfs_file
     etcd_flag = args.etcd
     ca_cert = args.ca_cert
     root_key = args.root_key
     root_cert = args.root_cert
+    hostname = args.hostname
+    port = args.port
     app_name = "/" + args.app_name+"/config"
     # Creates an EtcdCli instance
-    etcd_client = etcd_config(ca_cert, root_key, root_cert)
+    etcd_client = etcd_config(hostname, port, ca_cert, root_key, root_cert)
     etcd_value = {}
     # Command to get etcd data
     if etcd_flag:

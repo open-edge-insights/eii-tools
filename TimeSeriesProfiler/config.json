@@ -1,14 +1,21 @@
 {
     "config": {
+	"mode": "sps",
+        "monitor_mode_settings": {
+                                    "display_metadata": false,
+                                    "per_sample_stats": true,
+                                    "avg_stats": false
+                                },
+	
         "total_number_of_samples": 10,
-        "export_to_csv": "False"
+        "export_to_csv": false
     },
     "interfaces": {
         "Subscribers": [
             {
                 "Name": "default",
                 "Type": "zmq_tcp",
-                "EndPoint": "127.0.0.1:65034",
+                "EndPoint": "ia_influxdbconnector:65034",
                 "PublisherAppName": "InfluxDBConnector",
                 "Topics": [
                     "point_classifier_results"

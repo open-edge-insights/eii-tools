@@ -62,12 +62,12 @@ fi
 
 # --------------------------------------------------------------
 # configure directories/files
-# Each test has a unique directory. If that directory exists, 
-# the test is skipped. Override that behavior by supplying 
-# 'yes' or 'force' as the last (6th) argument to the script, and 
+# Each test has a unique directory. If that directory exists,
+# the test is skipped. Override that behavior by supplying
+# 'yes' or 'force' as the last (6th) argument to the script, and
 # the test will be run again. Even if the test is run again.
-# the original data is not deleted. a new folder based on the 
-# date is created and symbolic link 'latest' in that folder 
+# the original data is not deleted. a new folder based on the
+# date is created and symbolic link 'latest' in that folder
 # will point to the most recent such capture
 # --------------------------------------------------------------
 DATETIME=`date -u +"%Y%b%d_%H%M"`
@@ -130,7 +130,7 @@ run_logged modprobe msr
 
 # --------------------------------------------------------------
 # If necessary, start HDDL daemon
-# 
+#
 # --------------------------------------------------------------
 export HDDL="cpu"
 if [ "${HDDL}" == *"HDDL"* ]; then
@@ -162,7 +162,7 @@ run_logged mkdir -p ${EII_HOME}/VideoIngestion/benchmarking
 
 notice "Generating test configuration files"
 run_logged cp -v ${TEST_DIR}/services.yml ${EII_HOME}/build/services.yml
-run_logged cp -rv ${TEST_DIR}/docker-compose.yml ${EII_HOME}/VideoIngestion/benchmarking/
+run_logged cp -rv ${EII_HOME}/VideoIngestion/docker-compose.yml ${EII_HOME}/VideoIngestion/benchmarking/
 run_logged cp -rv ${TEST_DIR}/config.json ${EII_HOME}/VideoIngestion/benchmarking/
 
 # --------------------------------------------------------------
@@ -170,7 +170,6 @@ run_logged cp -rv ${TEST_DIR}/config.json ${EII_HOME}/VideoIngestion/benchmarkin
 # --------------------------------------------------------------
 notice "Configuring the VideoProfiler"
 run_logged cp -rvf ${TEST_DIR}/VP_config.json ${EII_HOME}/tools/VideoProfiler/config.json
-run_logged cp -v ${EII_HOME}/tools/Benchmarking/video-benchmarking-tool/vp_stats.sh ${EII_HOME}/tools/VideoProfiler/vp_stats.sh
 
 pushd "${EII_HOME}/build"
 run_logged python3 builder.py -f services.yml -d benchmarking -v $STREAMS
@@ -189,7 +188,8 @@ popd
 # --------------------------------------------------------------
 notice "Starting containers"
 pushd "${EII_HOME}/build"
-run_logged docker-compose up --build -d
+run_logged docker-compose -f docker-compose-build.yml build
+run_logged docker-compose up -d
 #${PCM_HOME}/pcm.x 2>&1 | tee -a "${ACTUAL_DATA_DIR}/output.pcm" &
 run_logged sleep $SLEEP
 popd
@@ -204,15 +204,6 @@ top -b -i -o %CPU  | tee -a "${ACTUAL_DATA_DIR}/stat.top" &
 
 
 # --------------------------------------------------------------
-# Run the VideoProfiler tool until it captures N Frames
-# --------------------------------------------------------------
-notice "Polling framerate average over ${FRAMES} frames."
-pushd "${EII_HOME}/tools/VideoProfiler/"
-./vp_stats.sh 
-popd
-run_logged mv ${EII_HOME}/tools/VideoProfiler/FPS_Results.csv ${ACTUAL_DATA_DIR}/FPS_Results.csv
-
-# --------------------------------------------------------------
 # kill all tasks and wait for processes to finish
 # --------------------------------------------------------------
 notice "Stopping statistics collection"
@@ -225,9 +216,16 @@ run_logged wait
 
 notice "Test Complete"
 pushd "${EII_HOME}/build/"
+while [[ $(docker ps -a | grep ia_video_profiler | grep Exited | wc -l) -ne 1 ]]; do
+        echo "video profiler is running..sleep for 10s"
+        sleep 10
+done
+
+# Storing video profiler log into file
+docker logs ia_video_profiler >& ${ACTUAL_DATA_DIR}/profiler_output.log
 run_logged docker-compose down
 popd
-
+run_logged mv /opt/intel/eii/tools_output/FPS_Results.csv ${ACTUAL_DATA_DIR}/FPS_Results.csv
 # --------------------------------------------------------------
 # Post-process results
 # --------------------------------------------------------------

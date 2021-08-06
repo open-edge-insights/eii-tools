@@ -128,10 +128,10 @@ notice "Copying in test configuration files"
 
 
 notice "Generating test configuration files"
-run_logged cp -v ${TEST_DIR}/services.yml ${EII_HOME}/build/services.yml
+run_logged cp -v ${TEST_DIR}/services.yml ${EII_HOME}/build/usecases/services.yml
 
 pushd "${EII_HOME}/build"
-run_logged python3 builder.py -f services.yml
+run_logged python3 builder.py -f usecases/services.yml
 popd
 
 # --------------------------------------------------------------
@@ -142,12 +142,26 @@ pushd "${EII_HOME}/build/provision/"
 run_logged ./provision.sh ../docker-compose.yml
 popd
 
+notice "Running mqtt broker on 1883 port"
+pushd "${EII_HOME}/tools/mqtt"
+run_logged ./broker.sh 1883
+popd
+
+notice "Starting mqtt publisher"
+pushd "${EII_HOME}/tools/mqtt/publisher"
+set -a
+source ../../../build/.env
+set +a
+run_logged docker-compose up --build -d
+popd
+
 # --------------------------------------------------------------
 # Launch
 # --------------------------------------------------------------
 notice "Starting containers"
 pushd "${EII_HOME}/build"
-run_logged docker-compose up --build -d
+run_logged docker-compose -f docker-compose-build.yml build
+run_logged docker-compose up -d
 run_logged sleep 10
 popd
 
@@ -176,7 +190,7 @@ run_logged "./aggregateresults.sh" "${ACTUAL_DATA_DIR}" "${STREAMS}" "${DATETIME
 #sed -e "s/\r//g" ${ACTUAL_DATA_DIR}/output.csv > ${ACTUAL_DATA_DIR}/final_output.csv
 
 # copying Time series profiler avg Results into ACTUAL_DATA_DIR
-cp "${EII_HOME}/build/avg_latency_Results.csv" "${ACTUAL_DATA_DIR}"
+cp "/opt/intel/eii/tools_output/SPS_Results.csv" "${ACTUAL_DATA_DIR}"
 
 # --------------------------------------------------------------
 # Post-process complete

@@ -1,6 +1,4 @@
-#!/bin/bash -e
-
-# Copyright (c) 2020 Intel Corporation.
+# Copyright (c) 2021 Intel Corporation.
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,5 +18,19 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-echo "*****Building publisher image*****"
-docker build -t publisher .
+FROM ubuntu:20.04
+
+# Setting python dev env
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends python3-pip && \
+    python3 -m pip install -U pip && \
+    ln -sf /usr/bin/pip /usr/bin/pip3
+
+COPY requirements.txt /
+RUN pip3 install -r requirements.txt
+COPY publisher.py /
+COPY demo_datafile.csv /
+COPY json_files /json_files
+
+ENTRYPOINT ["python3", "-u", "publisher.py"]
+

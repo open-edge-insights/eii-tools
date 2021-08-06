@@ -1,0 +1,4 @@
+jupyterlab==3.0.9
+notebook==6.2.0
+ipynb==0.5.1
+nbconvert==5.4.1

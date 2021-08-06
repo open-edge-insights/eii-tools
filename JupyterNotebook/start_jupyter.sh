@@ -1,6 +1,6 @@
-#!/bin/bash -e
+#!/bin/bash
 
-# Copyright (c) 2020 Intel Corporation.
+# Copyright (c) 2021 Intel Corporation.
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,29 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+NOTEBOOK_DIR="$1"
+source /opt/intel/openvino/bin/setupvars.sh
 
-if [ "$#" -eq 2 ]; then
-    ARGS=$@
-    if [[ "$ARGS" =~ "detached_mode" ]]; then
-        while [ $# -ne 0 ] ; do
-            case "$1" in
-                --detached_mode)
-                    detached_mode=$2 ; shift 2;;
-            esac
-        done
-    fi
-fi
+# Copy all notebooks from /app to $NOTEBOOK_DIR
+cp -r /app/*.ipynb "$NOTEBOOK_DIR"
 
-if [ $# -eq 0 ]; then
-    if [ ! -z "$detached_mode" ];then
-        ./publisher.sh --detached_mode true --csv demo_datafile.csv --sampling_rate 10 --subsample 1
-    else
-        ./publisher.sh --csv demo_datafile.csv --sampling_rate 10 --subsample 1
-    fi
-else
-    ./publisher.sh $@
-fi
-
-
-
-
+jupyter notebook --ip="0.0.0.0" --notebook-dir="$NOTEBOOK_DIR"

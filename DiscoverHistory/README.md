@@ -1,15 +1,13 @@
-README FOR DISCOVER HISTORY TOOL
+DiscoverHistory tool helps in pulling the history meta-data and images from InfluxDB and ImageStore containers respectively
 
-# CONTENTS #
+# Steps to build and run DiscoverHistory service
 
-1. PROCEDURE TO RUN DISCOVERY TOOL
-
-# PROCEDURE TO RUN DISCOVERY TOOL (DEFAULT: PROD MODE) #
+* **Running in PROD mode**
 
  1. DiscoverHistory expects a set of config, interfaces & public private keys to be present in ETCD as a pre-requisite.
-    To achieve this, please ensure an entry for DiscoverHistory with its relative path from [IEdgeInsights](../../) directory is set in the video-streaming-storage.yml file present in [build](../../build) directory. An example has been provided below:
+    To achieve this, please ensure an entry for DiscoverHistory with its relative path from [IEdgeInsights](../../) directory is set in the video-streaming-storage.yml file present in [build/usecases](https://github.com/open-edge-insights/eii-core/tree/master/build/usecases) directory. An example has been provided below:
     ```sh
-        AppName:
+        AppContexts:
         - VideoIngestion
         - VideoAnalytics
         - Visualizer
@@ -18,26 +16,26 @@ README FOR DISCOVER HISTORY TOOL
         - ImageStore
         - InfluxDBConnector
     ```
- 2. Add "DiscoverHistory" in "AllowedClients" list of "Servers" interface in config.json file of ImageStore and InfluxDBConnector directory.
 
- 3. Open "config.json"
- 4. Provide the required query to be passed on to InfluxDB.
- 5. With the above pre-requisite done, please run the below to command:
+ 2. Open "config.json"
+ 3. Provide the required query to be passed on to InfluxDB.
+ 4. With the above pre-requisite done, please run the below to command:
     ```sh
-        python3 builder.py -f ./video-streaming-storage.yml
+        python3 builder.py -f usecases/video-streaming-storage.yml
     ```
- 6. Set the output directory variable at SAVE_PATH=/tmp/eii_history in file [build/.env](../../build/.env).
- 7. Refer [main EII README.md](../../README.md) to provision, build and run the tool along with the EII video-streaming-storage recipe/stack.
- 8. Check imagestore and influxdbconnector services are running.
- 9. In the provided "SAVE_PATH", you will find data & frames directory.
+ 5. Refer [main EII README.md](https://github.com/open-edge-insights/eii-core/blob/master/README.md) to provision, build and run the tool along with the EII video-streaming-storage recipe/stack.
+ 6. Check imagestore and influxdbconnector services are running.
+ 7. You will find data & frames directories at "/opt/intel/eii/tools_output".
     (Note: if img_handle is part of select statement , then only frames
     directory will be created)
- 10. Use ETCDUI to change the query in configuration. Please run below command to start container with new configuration:
+ 8. Use ETCDUI to change the query in configuration. Please run below command to start container with new configuration:
      ```sh
         docker restart ia_discover_history
      ```
- ## ADDITIONAL STEP TO RUN DISCOVERY TOOL IN DEV MODE
- 1. Open [.env](../../build/.env)
+
+* **Running in DEV mode**
+
+ 1. Open [.env](https://github.com/open-edge-insights/eii-core/blob/master/build/.env)
  2. Set the DEV_MODE variable as "true".
  ```
     DEV_MODE=false
@@ -47,10 +45,12 @@ to
     DEV_MODE=true
  ```
 
-### NOTE:Building the base images like ia_common, ia_eiibase are must in cases if this tool isn't run on the same node where EII is running.
-### Please ensure that the base images i.e. ia_common and ia_eiibase are present on the node where this tool is run.
+> **NOTE**:
+> * Building the base images like ia_common, ia_eiibase are must in cases if this tool isn't run on the same node
+>   where EII is running.
+> * Please ensure that the base images i.e. ia_common and ia_eiibase are present on the node where this tool is run.
 
-# List of sample select queries #
+# List of sample select queries
 
 1. "select * from camera1_stream_results order by desc limit 10"
    This query will return latest 10 records.
@@ -63,10 +63,10 @@ to
 4. "select * from camera1_stream_results where time>=now()-1h"
     This query will return all the records from the current time, going back upto last 1 hour.
 
-## TO RUN THE TOOL IN zmq_ipc MODE
-Please make sure to change the content of [config.json](DiscoverHistory/config.json) . Modify the same in "Servers" interface in config.json file of ImageStore and InfluxDBConnector. 
+# To run the tool in zmq_ipc mode
 
-to
+User needs to modify interface section of **[config.json](./config.json)** as following
+
 ```
     {
         "type": "zmq_ipc",
@@ -74,9 +74,10 @@ to
     }
 ```
 
+----
+**NOTE**:
+If you want good and bad frames then the query must contain the following parameters:
 
-NOTE: If you want good and bad frames then the query must contain the following parameters:
-	
 	*img_handle
 	*defects
 	*encoding_level
@@ -85,12 +86,10 @@ NOTE: If you want good and bad frames then the query must contain the following 
 	*width
 	*channel
 
-    Example: 
+    Example:
      "select img_handle, defects, encoding_level, encoding_type,  height, width, channel from camera1_stream_results order by desc limit 10"
 
      or
 
      "select * from camera1_stream_results order by desc limit 10"
-
-
-
+----

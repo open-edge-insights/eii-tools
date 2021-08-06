@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Intel Corporation.
+# Copyright (c) 2021 Intel Corporation.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -19,14 +19,14 @@
 # SOFTWARE.
 
 
-# Dockerfile for emb_publisher
+# Dockerfile for emb_subscriber
 ARG EII_VERSION
 ARG DOCKER_REGISTRY
 ARG UBUNTU_IMAGE_VERSION
 ARG ARTIFACTS="/artifacts"
 FROM ia_common:$EII_VERSION as common
 FROM ia_eiibase:${EII_VERSION} as builder
-LABEL description="Emb Publisher image"
+LABEL description="Emb Subscriber image"
 
 WORKDIR ${GOPATH}/src/IEdgeInsights
 ARG CMAKE_INSTALL_PREFIX
@@ -38,8 +38,8 @@ COPY --from=common ${GOPATH}/src ${GOPATH}/src
 COPY --from=common /eii/common/libs/EIIMessageBus/go/EIIMessageBus $GOPATH/src/EIIMessageBus
 COPY --from=common /eii/common/libs/ConfigMgr/go/ConfigMgr $GOPATH/src/ConfigMgr
 
+
 COPY ./*.go ./
-COPY datafiles ./datafiles
 
 ENV PATH="$PATH:/usr/local/go/bin" \
     PKG_CONFIG_PATH="$PKG_CONFIG_PATH:${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" \
@@ -51,8 +51,7 @@ ENV CGO_CFLAGS="$CGO_FLAGS -I ${CMAKE_INSTALL_PREFIX}/include -O2 -D_FORTIFY_SOU
 
 ARG ARTIFACTS
 RUN mkdir $ARTIFACTS && \
-    go build -o $ARTIFACTS/pub_tool ./*.go
-RUN mv datafiles $ARTIFACTS/
+    go build -o $ARTIFACTS/subscriber ./*.go
 
 FROM ubuntu:$UBUNTU_IMAGE_VERSION as runtime
 ARG ARTIFACTS
@@ -69,6 +68,6 @@ COPY --from=builder ${CMAKE_INSTALL_PREFIX}/lib .local/lib
 COPY --from=builder $ARTIFACTS .
 
 ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:/app/.local/lib
-USER $EII_USER_NAME
 HEALTHCHECK NONE
-ENTRYPOINT ["./pub_tool"]
+USER $EII_USER_NAME
+ENTRYPOINT ["./subscriber"]

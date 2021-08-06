@@ -6,7 +6,7 @@
                                     "analytics_appname": "VideoAnalytics",
                                     "display_metadata": false,
                                     "per_frame_stats":false,
-                                    "avg_stats": true
+                                    "avg_stats": true                                
                                 },
         "total_number_of_frames" : 1000,
         "export_to_csv" : false
@@ -16,7 +16,7 @@
             {
                 "Name": "default",
                 "Type": "zmq_tcp",
-                "EndPoint": "127.0.0.1:65013",
+                "EndPoint": "ia_video_analytics:65013",
                 "PublisherAppName": "VideoAnalytics",
                 "Topics": [
                     "camera1_stream_results"
@@ -25,3 +25,4 @@
         ]
     }
 }
+

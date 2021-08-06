@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Intel Corporation.
+# Copyright (c) 2021 Intel Corporation.
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -19,13 +19,15 @@
 # SOFTWARE.
 
 version: '3.6'
+
 services:
-  ia_video_ingestion:
+## Define JupyterNotebook service
+  ia_jupyter_notebook:
     depends_on:
-      - ia_openvino_base
+      - ia_common
     build:
-      context: $PWD/../VideoIngestion
-      dockerfile: $PWD/../VideoIngestion/Dockerfile
+      context: $PWD/../tools/JupyterNotebook
+      dockerfile: $PWD/../tools/JupyterNotebook/Dockerfile
       args:
         EII_VERSION: ${EII_VERSION}
         EII_UID: ${EII_UID}
@@ -33,48 +35,55 @@ services:
         # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
         CMAKE_BUILD_TYPE: "Release"
         DOCKER_REGISTRY: ${DOCKER_REGISTRY}
-    image: ${DOCKER_REGISTRY}ia_video_ingestion:${EII_VERSION}
-    container_name: ia_video_ingestion
-    hostname: ia_video_ingestion
-    network_mode: host
+        UBUNTU_IMAGE_VERSION: ${UBUNTU_IMAGE_VERSION}
+        CMAKE_INSTALL_PREFIX: ${EII_INSTALL_PATH}
+        OPENVINO_IMAGE: ${OPENVINO_IMAGE}
+    image: ${DOCKER_REGISTRY}ia_jupyter_notebook:${EII_VERSION}
+    container_name: ia_jupyter_notebook
+    read_only: true
+    hostname: ia_jupyter_notebook
     restart: unless-stopped
+    security_opt:
+    - no-new-privileges
+    healthcheck:
+      test: ["CMD-SHELL", "exit", "0"]
+      interval: 5m
+
+    ipc: "none"
     environment:
-      AppName: "VideoIngestion"
+      AppName: "JupyterNotebook"
       DEV_MODE: ${DEV_MODE}
       PROFILING_MODE: ${PROFILING_MODE}
-      no_proxy: ${eii_no_proxy},${RTSP_CAMERA_IP},${ETCD_HOST}
+      no_proxy: ${RTSP_CAMERA_IP},${ETCD_HOST}
       ETCD_HOST: ${ETCD_HOST}
       ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
       ETCD_PREFIX: ${ETCD_PREFIX}
+
+      # Provisioning related variable
       CertType: "zmq"
+    ports:
+      - 8888:8888
+    networks:
+      - eii
     volumes:
-      - "/dev:/dev"
       - "vol_eii_socket:${SOCKET_DIR}"
-      - "/var/tmp:/var/tmp"
+      - "vol_jn_workspace:/home/${EII_USER_NAME}"
     privileged: true
-    devices:
-      - "/dev/dri"
-      - "/dev/:/dev/"
     secrets:
       - ca_etcd
-      - etcd_VideoIngestion_cert
-      - etcd_VideoIngestion_key
-
+      - etcd_JupyterNotebook_cert
+      - etcd_JupyterNotebook_key
 
 volumes:
-  vol_eii_socket:
+  vol_jn_workspace:
     driver: local
     driver_opts:
       type: local
       o: bind
-      device: ${EII_INSTALL_PATH}/sockets
+      device: ${EII_INSTALL_PATH}/tools_output
 
 secrets:
-  ca_etcd:
-    file: provision/Certificates/ca/ca_certificate.pem
-
-  etcd_VideoIngestion_cert:
-    file: provision/Certificates/VideoIngestion/VideoIngestion_client_certificate.pem
-  etcd_VideoIngestion_key:
-    file: provision/Certificates/VideoIngestion/VideoIngestion_client_key.pem
-
+  etcd_JupyterNotebook_cert:
+    file: provision/Certificates/JupyterNotebook/JupyterNotebook_client_certificate.pem
+  etcd_JupyterNotebook_key:
+    file: provision/Certificates/JupyterNotebook/JupyterNotebook_client_key.pem

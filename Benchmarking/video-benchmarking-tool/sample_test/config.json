@@ -1,7 +1,7 @@
 {
     "config": {
         "ingestor": {
-            "pipeline": "rtspsrc location=\"rtsp://localhost:8554/live.sdp\" latency=100 ! rtph264depay ! h264parse ! vaapih264dec ! vaapipostproc format=bgrx ! gvadetect device=CPU model=models/frozen_inference_graph.xml ! vaapipostproc height=300 width=300 ! videoconvert ! video/x-raw,format=BGR ! appsink",
+            "pipeline": "rtspsrc location=\"rtsp://<RTSP_SOURCE_IP>:8554/live.sdp\" latency=100 ! rtph264depay ! h264parse ! vaapih264dec ! vaapipostproc format=bgrx ! gvainference device=CPU model=common/video/udfs/python/pcb/ref/model_2.xml ! vaapipostproc height=600 width=600 ! videoconvert ! video/x-raw,format=BGR ! appsink",
             "queue_size": 10,
             "type": "gstreamer"
         },
@@ -17,7 +17,7 @@
                     "camera1_stream"
                 ],
                 "AllowedClients": [
-                    "VideoAnalytics", "Visualizer", "WebVisualizer", "TLSRemoteAgent", "RestDataExport"
+                    "VideoAnalytics", "Visualizer", "WebVisualizer", "TLSRemoteAgent", "RestDataExport","VideoProfiler"
                 ]
             }
         ]

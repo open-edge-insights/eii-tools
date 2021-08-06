@@ -22,7 +22,7 @@ cmake_minimum_required(VERSION 3.11)
 project(sw_trigger_utility VERSION 1.0.0 LANGUAGES C CXX)
 
 # Globals
-set(EII_COMMON_CMAKE "${CMAKE_CURRENT_SOURCE_DIR}/../../common/cmake")
+set(EII_COMMON_CMAKE "${CMAKE_CURRENT_SOURCE_DIR}/../common/cmake")
 
 # Set C++ version
 set(CMAKE_CXX_STANDARD 14)
@@ -65,7 +65,7 @@ include_directories(
     ${WJE_INCLUDE_DIRS})
 
 set(SOURCES src/sw_trigger_vi.cpp)
-
+link_directories(${CMAKE_INSTALL_PREFIX}/lib)
 add_executable(sw_trigger_utility ${SOURCES})
 
 target_link_libraries(sw_trigger_utility

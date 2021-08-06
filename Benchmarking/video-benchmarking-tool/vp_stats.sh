@@ -37,4 +37,4 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
 
 #run VideoProfiler tool
-python3.6 video_profiler.py
+python3 video_profiler.py
