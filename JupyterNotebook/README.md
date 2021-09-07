@@ -77,7 +77,14 @@ It works along with the [jupyter_connector](https://github.com/open-edge-insight
     ```
    Replace the '127.0.0.1' IP address with host IP, if you are accessing the server remotely.
 
-5. Once the Jupyter Notebook service is launched in the browser, run the [main.ipynb](main.ipynb) file visible in the list of files available.
+   **Note:**
+    > To achieve the same behaviour in Visual Studio Code(VSCode) instead of web browser, follow below steps:
+    >* Install `Python` and `Jupyter` extensions in VSCode.
+    >* Run `Jupyter: Specify local or remote Jupyter server for connections` command from the Command Palette `(Ctrl+Shift+P)`.
+    >* When prompted to pick how to connect to Jupyter, select `Existing: Specify the URI of an existing server`.
+    >* When prompted to Enter the URI of a Jupyter server, provide the server's URI (hostname) with the authentication token included with a ?token= URL parameter as shown in the above example.
+
+5. Once the Jupyter Notebook service is launched in the browser, run the [main.ipynb](main.ipynb) file visible in the list of files available. Make sure Python3.8 kernel is selected.
 
 6. The process method of [udf_template.ipynb](udf_template.ipynb) file available in the list of files can be altered and re-run to experiment and test the UDF.
 
