@@ -29,6 +29,7 @@ import time
 import datetime
 import threading
 import gc
+import re
 from distutils.util import strtobool
 # IMPORT the library to read from EII
 from util.util import Util
@@ -126,7 +127,13 @@ class TimeSeriesCalculator:
             ts_profiler_entry = int(round(time.time() * 1000))
             if "data" in meta_data:
                 data = meta_data['data'].split(' ')
-                metrics = data[1].split(',')
+                rep_no = 1
+                metrics_data = data[1]
+                while (rep_no):
+                    # Removing dict or list from meta_data value which might cause issue
+                    # in times of spliting with ',' if any ',' is present inside.
+                    metrics_data, rep_no = re.subn(r'\{[^{}]*\}|\[[^[\]]*\]', '""', metrics_data)
+                metrics = metrics_data.split(',')
                 for i in metrics:
                     key, value = i.split('=')
                     records[key] = value
