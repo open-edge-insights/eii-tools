@@ -40,6 +40,9 @@ services:
     image: ${DOCKER_REGISTRY}ia_timeseries_profiler:${EII_VERSION}
     restart: "no"
     ipc: "none"
+    read_only: true
+    security_opt:
+    - no-new-privileges
     environment:
       AppName: "TimeSeriesProfiler"
       CertType: "pem,zmq"
@@ -52,6 +55,9 @@ services:
       EII_INSTALL_PATH: ${EII_INSTALL_PATH}
     networks:
       - eii
+    healthcheck:
+      test: ["CMD-SHELL", "exit", "0"]
+      interval: 5m
     volumes:
       - "vol_timeseries_profiler_data:/app/out"
       - "${EII_INSTALL_PATH}/sockets:${SOCKET_DIR}"
