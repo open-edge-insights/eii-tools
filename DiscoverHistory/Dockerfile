@@ -25,6 +25,7 @@ ARG DOCKER_REGISTRY
 ARG ARTIFACTS="/artifacts"
 ARG EII_UID
 ARG EII_USER_NAME
+ARG OPENVINO_IMAGE
 ARG UBUNTU_IMAGE_VERSION
 FROM ia_eiibase:$EII_VERSION as base
 FROM ia_common:$EII_VERSION as common
@@ -41,21 +42,11 @@ COPY requirements.txt .
 RUN pip3 install --user -r requirements.txt
 
 COPY src/ .
+COPY discover_history_start.sh .
 
-FROM ubuntu:$UBUNTU_IMAGE_VERSION as runtime
+FROM ${OPENVINO_IMAGE} AS runtime
 
-# Setting python dev env
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends software-properties-common && \
-    add-apt-repository ppa:deadsnakes/ppa && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends libsm6 \
-					       libgl1-mesa-glx \
-                                               libxext6 \
-                                               libxrender1 \
-                                               python3-distutils && \
-    rm -rf /var/lib/apt/lists/*
-
+USER root
 WORKDIR /app
 
 
@@ -81,4 +72,4 @@ ENV PATH $PATH:/app/.local/bin
 USER $EII_USER_NAME
 
 HEALTHCHECK NONE
-ENTRYPOINT [ "python3", "main.py" ]
+ENTRYPOINT ["./discover_history_start.sh"]

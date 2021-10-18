@@ -37,6 +37,7 @@ services:
         EII_USER_NAME: ${EII_USER_NAME}
         UBUNTU_IMAGE_VERSION: ${UBUNTU_IMAGE_VERSION}
         CMAKE_INSTALL_PREFIX: ${EII_INSTALL_PATH}
+        OPENVINO_IMAGE: ${OPENVINO_IMAGE}
     container_name: ia_discover_history
     hostname: ia_discover_history
     image: ${DOCKER_REGISTRY}ia_discover_history:${EII_VERSION}
