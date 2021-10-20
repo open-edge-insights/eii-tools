@@ -40,6 +40,9 @@ services:
     image: ${DOCKER_REGISTRY}ia_sw_trigger_utility:${EII_VERSION}
     restart: "no"
     ipc: "none"
+    read_only: true
+    security_opt:
+    - no-new-privileges
     environment:
       AppName: "SWTriggerUtility"
       CertType: "zmq"
@@ -51,6 +54,9 @@ services:
       ETCD_PREFIX: ${ETCD_PREFIX}
     networks:
       - eii
+    healthcheck:
+      test: ["CMD-SHELL", "exit", "0"]
+      interval: 5m
     secrets:
       - ca_etcd
       - etcd_SWTriggerUtility_cert
