@@ -1,4 +1,6 @@
-# Copyright (c) 2020 Intel Corporation.
+#!/bin/bash
+
+# Copyright (c) 2021 Intel Corporation.
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -18,35 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Dockerfile for DiscoverHistory tool
+source /opt/intel/openvino/bin/setupvars.sh
 
-ARG EII_VERSION
-ARG DOCKER_REGISTRY
-FROM ${DOCKER_REGISTRY}ia_openvino_base:$EII_VERSION as openvino
-LABEL description="DiscoverHistory image"
+python3 main.py
 
-FROM ${DOCKER_REGISTRY}ia_common:${EII_VERSION} as common
-
-FROM openvino
-
-COPY --from=common ${GO_WORK_DIR}/common/libs ${PY_WORK_DIR}/libs
-COPY --from=common ${GO_WORK_DIR}/common/util ${PY_WORK_DIR}/util
-COPY --from=common ${GO_WORK_DIR}/common/cmake ${PY_WORK_DIR}/common/cmake
-COPY --from=common /usr/local/lib /usr/local/lib
-COPY --from=common /usr/local/lib/python3.6/dist-packages/ /usr/local/lib/python3.6/dist-packages/
-
-COPY requirements.txt .
-RUN pip3 install -r requirements.txt
-
-ENV PYTHONPATH ${PYTHONPATH}:.:../../
-COPY ./ ./DiscoverHistory
-WORKDIR ${PY_WORK_DIR}/DiscoverHistory/src
-COPY discover_history_start.sh .
-
-#Removing build dependencies
-RUN apt-get remove -y wget && \
-    apt-get remove -y git && \
-    apt-get remove -y curl && \
-    apt-get autoremove -y
-
-ENTRYPOINT [ "./discover_history_start.sh" ]
