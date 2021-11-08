@@ -1,0 +1,199 @@
+[
+    {
+        "id": "23031abe5874b241",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "b0b598ec4ad073f1",
+        "type": "inject",
+        "z": "23031abe5874b241",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "",
+        "topic": "",
+        "payloadType": "date",
+        "x": 210,
+        "y": 120,
+        "wires": [
+            [
+                "c5e6574d432785c7",
+                "ae97dadc9699a671"
+            ]
+        ]
+    },
+    {
+        "id": "c5e6574d432785c7",
+        "type": "http request",
+        "z": "23031abe5874b241",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://update_ip:8087/metadata",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 440,
+        "y": 160,
+        "wires": [
+            [
+                "6a15388ab9821621"
+            ]
+        ]
+    },
+    {
+        "id": "2ca33311f67725fd",
+        "type": "uibuilder",
+        "z": "23031abe5874b241",
+        "name": "",
+        "topic": "",
+        "url": "uibuilder",
+        "fwdInMessages": false,
+        "allowScripts": false,
+        "allowStyles": false,
+        "copyIndex": true,
+        "templateFolder": "blank",
+        "extTemplate": "",
+        "showfolder": false,
+        "useSecurity": false,
+        "sessionLength": 432000,
+        "tokenAutoExtend": false,
+        "reload": true,
+        "sourceFolder": "src",
+        "credentials": {},
+        "x": 600,
+        "y": 380,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "f12b79f2de08b979",
+        "type": "http request",
+        "z": "23031abe5874b241",
+        "name": "",
+        "method": "use",
+        "ret": "bin",
+        "paytoqs": "body",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 670,
+        "y": 220,
+        "wires": [
+            [
+                "1783e0d49f23cef8",
+                "2ca33311f67725fd"
+            ]
+        ]
+    },
+    {
+        "id": "6a15388ab9821621",
+        "type": "function",
+        "z": "23031abe5874b241",
+        "name": "",
+        "func": "var url = \"http://update_ip:8087/image?img_handle=\"+msg.payload.img_handle\nmsg.payload = url\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 220,
+        "y": 240,
+        "wires": [
+            [
+                "a7c949a9055c775b"
+            ]
+        ]
+    },
+    {
+        "id": "a7c949a9055c775b",
+        "type": "change",
+        "z": "23031abe5874b241",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "url",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "method",
+                "pt": "msg",
+                "to": "get",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 170,
+        "y": 380,
+        "wires": [
+            [
+                "f12b79f2de08b979"
+            ]
+        ]
+    },
+    {
+        "id": "1783e0d49f23cef8",
+        "type": "debug",
+        "z": "23031abe5874b241",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 910,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "ae97dadc9699a671",
+        "type": "http request",
+        "z": "23031abe5874b241",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://update_ip:8087/metadata",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 450,
+        "y": 440,
+        "wires": [
+            [
+                "2ca33311f67725fd"
+            ]
+        ]
+    }
+]
