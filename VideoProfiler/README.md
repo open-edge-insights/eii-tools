@@ -157,13 +157,19 @@ module.
 
 6. If using VideoProfiler in DEV mode, please ensure you have commented out the variables defining the certs path and uncomment the variables initializing the certs path to empty strings in [env.sh](env.sh)
 
-7. Run the below command to start the Video Profiler.
+7. Incase running VideoProfiler with multiple versions of EII installed in same system, please ensure to remove other versions of EII libraries if existing in the system. Run the below command to remove one such cfgmgr python library:
+
+    ```sh
+        sudo rm -rf ~/.local/lib/python3.6/site-packages/cfgmgr
+    ```
+
+8. Run the below command to start the Video Profiler.
 
     ```sh
         python3.6 video_profiler.py
     ```
 
-8. The runtime stats of Video Profiler if enabled with export_to_csv switch can be found at [video_profiler_runtime_stats](video_profiler_runtime_stats.csv)
+9. The runtime stats of Video Profiler if enabled with export_to_csv switch can be found at [video_profiler_runtime_stats](video_profiler_runtime_stats.csv)
 
   > **Note:**
   > * `poll_interval` option in the VideoIngestion [config](../../VideoIngestion/config.json) sets the delay(in seconds)
