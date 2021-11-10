@@ -32,5 +32,6 @@ COPY publisher.py /
 COPY demo_datafile.csv /
 COPY json_files /json_files
 
+HEALTHCHECK NONE
 ENTRYPOINT ["python3", "-u", "publisher.py"]
 

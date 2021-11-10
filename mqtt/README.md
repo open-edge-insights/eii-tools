@@ -10,28 +10,9 @@ MQTT publisher is a tool to help publish the sample sensor data.
 ## Usage
 > **NOTE:** This assumes you have already installed and configured Docker.
 
-1. Building and bringing up the tool
-   - Run the broker (Use `docker ps` to see if the broker has started successfully as the container starts in detached mode)
-    ```sh
-    $ ./broker.sh <port>
-    ```
-    **NOTE:** To run the broker for EII TimeSeries Analytics usecase:
-    ```sh
-    $ ./broker.sh 1883
-    ```
+1. Provision, build and bring up the EII stack by following in the steps in the [README](../../README.md).
 
-   - Start the mqtt-publisher
-   ```sh
-   $ cd publisher
-   $ set -a
-   $ source ../../../build/.env
-   $ set +a
-   $ docker-compose build
-   $ docker-compose up -d
-   ```
-
-
-**Note** By default the tool publishes temperature data. If the user wants to publish other data, he/she needs to modify the command option in "ia_mqtt_publisher" service in  [docker-compose.yml](./publisher/docker-compose.yml) accordingly and recreate the container using `docker-compose up -d` command from publisher directory.
+**Note** By default the tool publishes temperature data. If the user wants to publish other data, he/she needs to modify the command option in "ia_mqtt_publisher" service in [build/docker-compose.yml](../../build/docker-compose.yml) accordingly and recreate the container using `docker-compose up -d` command from build directory.
 
    * To publish temperature data to default topic, command option by default is set to:
    ```sh
