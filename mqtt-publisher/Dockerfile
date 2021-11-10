@@ -36,5 +36,5 @@ RUN pip3 install -r requirements.txt
 COPY publisher.py /
 COPY demo_datafile.csv /
 COPY json_files /json_files
-
+HEALTHCHECK NONE
 ENTRYPOINT ["python3", "publisher.py"]

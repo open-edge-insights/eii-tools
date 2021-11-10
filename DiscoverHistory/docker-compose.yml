@@ -39,6 +39,11 @@ services:
     network_mode: host
     image: ${DOCKER_REGISTRY}ia_discover_history:${EII_VERSION}
     ipc: "none"
+    security_opt:
+    - no-new-privileges
+    healthcheck:
+      test: ["CMD-SHELL", "exit", "0"]
+      interval: 5m
     environment:
       AppName: "DiscoverHistory"
       CertType: "zmq"

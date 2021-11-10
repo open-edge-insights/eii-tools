@@ -45,5 +45,5 @@ RUN apt-get remove -y wget && \
 RUN mkdir /EII/out/
 
 COPY ./timeseries_profiler.py ./timeseries_profiler.py
-
+HEALTHCHECK NONE	
 ENTRYPOINT [ "python3.6", "timeseries_profiler.py" ]

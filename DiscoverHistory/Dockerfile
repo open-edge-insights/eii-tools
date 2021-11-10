@@ -37,12 +37,11 @@ COPY --from=common /usr/local/lib/python3.6/dist-packages/ /usr/local/lib/python
 
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
-
 ENV PYTHONPATH ${PYTHONPATH}:.:../../
 COPY ./ ./DiscoverHistory
 WORKDIR ${PY_WORK_DIR}/DiscoverHistory/src
 COPY discover_history_start.sh .
-
+HEALTHCHECK NONE
 #Removing build dependencies
 RUN apt-get remove -y wget && \
     apt-get remove -y git && \
