@@ -26,6 +26,7 @@ services:
     depends_on:
       - ia_influxdbconnector
       - ia_imagestore
+      - ia_openvino_base
 
     build:
       context: $PWD/../tools/DiscoverHistory
