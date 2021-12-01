@@ -16,8 +16,9 @@ It works along with the [jupyter_connector](https://github.com/open-edge-insight
 ## Jupyter Notebook pre-requisites
 
 1. Jupyter Notebook expects a set of config, interfaces & public private keys to be present in ETCD as a pre-requisite.
-    * To achieve this, please ensure an entry for Jupyter Notebook with its relative path from [IEdgeInsights](../../) directory is set in any of the .yml files present in [build/usecases](https://github.com/open-edge-insights/eii-core/tree/master/build/usecases) directory.
-    * An example has been provided below to add the entry in [video-streaming.yml](https://github.com/open-edge-insights/eii-core/tree/master/build/usecases/video-streaming.yml)
+    - To achieve this, please ensure an entry for Jupyter Notebook with its relative path from [IEdgeInsights](../../) directory is set in any of the .yml files present in [build/usecases](https://github.com/open-edge-insights/eii-core/tree/master/build/usecases) directory.
+    - An example has been provided below to add the entry in [video-streaming.yml](https://github.com/open-edge-insights/eii-core/tree/master/build/usecases/video-streaming.yml)
+
     ```yml
         AppContexts:
         ---snip---
@@ -25,6 +26,7 @@ It works along with the [jupyter_connector](https://github.com/open-edge-insight
     ```
 
 2. Ensure the [jupyter_connector](https://github.com/open-edge-insights/video-common/tree/master/udfs/python/jupyter_connector.py) UDF is enabled in the config of either **VideoIngestion** or **VideoAnalytics** to be connected to JupyterNotebook. An example has been provided here for connecting **VideoIngestion** to **JupyterNotebook**, the config to be changed being present at [config.json](https://github.com/open-edge-insights/video-ingestion/blob/master/config.json):
+
     ```javascript
         {
             "config": {
@@ -54,10 +56,10 @@ It works along with the [jupyter_connector](https://github.com/open-edge-insight
         }
     ```
 
-
 ## Running Jupyter Notebook
 
 1. With the above pre-requisite done, please run the below command:
+
     ```sh
         python3 builder.py -f usecases/video-streaming.yml
     ```
@@ -70,19 +72,21 @@ It works along with the [jupyter_connector](https://github.com/open-edge-insight
         docker logs -f ia_jupyter_notebook
     ```
 
-4. Copy paste the URL (along with the token) from the above logs in a browser. Below is a sample URL 
+4. Copy paste the URL (along with the token) from the above logs in a browser. Below is a sample URL
 
     ```sh
         http://127.0.0.1:8888/?token=5839f4d1425ecf4f4d0dd5971d1d61b7019ff2700804b973
     ```
+
    Replace the '127.0.0.1' IP address with host IP, if you are accessing the server remotely.
 
    **Note:**
     > To achieve the same behaviour in Visual Studio Code(VSCode) instead of web browser, follow below steps:
-    >* Install `Python` and `Jupyter` extensions in VSCode.
-    >* Run `Jupyter: Specify local or remote Jupyter server for connections` command from the Command Palette `(Ctrl+Shift+P)`.
-    >* When prompted to pick how to connect to Jupyter, select `Existing: Specify the URI of an existing server`.
-    >* When prompted to Enter the URI of a Jupyter server, provide the server's URI (hostname) with the authentication token included with a ?token= URL parameter as shown in the above example.
+    >
+    >- Install `Python` and `Jupyter` extensions in VSCode.
+    >- Run `Jupyter: Specify local or remote Jupyter server for connections` command from the Command Palette `(Ctrl+Shift+P)`.
+    >- When prompted to pick how to connect to Jupyter, select `Existing: Specify the URI of an existing server`.
+    >- When prompted to Enter the URI of a Jupyter server, provide the server's URI (hostname) with the authentication token included with a ?token= URL parameter as shown in the above example.
 
 5. Once the Jupyter Notebook service is launched in the browser, run the [main.ipynb](main.ipynb) file visible in the list of files available. Make sure Python3.8 kernel is selected.
 
@@ -90,10 +94,11 @@ It works along with the [jupyter_connector](https://github.com/open-edge-insight
 
 7. If any parameters are to be sent to the custom udf by the user, they can be added in the **jupyter_connector** UDF config provided to either **VideoIngestion** or **VideoAnalytics** and can be accessed in the [udf_template.ipynb](udf_template.ipynb) constructor in the **udf_config** parameter which is a dict containing all these parameters. A sample UDF for reference has been provided at [pcb_filter.py](https://github.com/open-edge-insights/video-common/blob/master/udfs/python/pcb/pcb_filter.py).
 
-**Note**: After altering/creating a new udf, run main.ipynb  and restart **VideoIngestion** or **VideoAnalytics** with which you have enabled jupyter notebook service.
+> **Note:** After altering/creating a new udf, run main.ipynb  and restart **VideoIngestion** or **VideoAnalytics** with which you have enabled jupyter notebook service.
 
 8. Once the user is satisfied with the functionality of the UDF, the udf can be saved/exported by clicking on the **Download as** option and selecting **(.py)** option. The downloaded udf can then be directly used by placing it in the [../../common/video/udfs/python](https://github.com/open-edge-insights/video-common/blob/master/udfs/python) directory or can be integrated and used with **CustomUDFs**.
 
-  > **Note:**
-  > * JupyterNotebook is not to be used with **CustomUDFs** like **GVASafetyGearIngestion** since they are specific to certain usecases only. Instead, the VideoIngestion pipeline can be modified to use GVA ingestor pipeline and config can be modifed to use **jupyter_connector** UDF.
-  > * A sample opencv udf template is provided at [opencv_udf_template.ipynb](opencv_udf_template.ipynb) to serve as an example for how a user can write an OpenCV UDF and modify it however required. This sample UDF uses OpenCV APIs to write a sample text on the frames, which can be visualized in the **Visualizer** display. Please ensure **encoding is disabled** when using this UDF since encoding enabled automatically removes the text added onto the frames.
+> **Note:**
+>
+> - JupyterNotebook is not to be used with **CustomUDFs** like **GVASafetyGearIngestion** since they are specific to certain usecases only. Instead, the VideoIngestion pipeline can be modified to use GVA ingestor pipeline and config can be modifed to use **jupyter_connector** UDF.
+> - A sample opencv udf template is provided at [opencv_udf_template.ipynb](opencv_udf_template.ipynb) to serve as an example for how a user can write an OpenCV UDF and modify it however required. This sample UDF uses OpenCV APIs to write a sample text on the frames, which can be visualized in the **Visualizer** display. Please ensure **encoding is disabled** when using this UDF since encoding enabled automatically removes the text added onto the frames.

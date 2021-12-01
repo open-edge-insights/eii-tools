@@ -13,11 +13,11 @@
    for a metric from mqtt-publisher to TimeSeriesProfiler (mqtt-publisher->telegraf->influx->kapacitor->influx->influxdbconnector->
    TimeSeriesProfiler)
 
-
 ## EII pre-requisites
 
 1. TimeSeriesProfiler expects a set of config, interfaces & public private keys to be present in ETCD as a pre-requisite.
     To achieve this, please ensure an entry for TimeSeriesProfiler with its relative path from [IEdgeInsights](../../) directory is set in the time-series.yml file present in [build/usecases](https://github.com/open-edge-insights/eii-core/tree/master/build/usecases) directory. An example has been provided below:
+
     ```sh
         AppContexts:
         - Grafana
@@ -28,11 +28,10 @@
     ```
 
 2. With the above pre-requisite done, please run the below command:
+
     ```sh
         python3 builder.py -f ./usecases/time-series.yml
     ```
-
-
 
 ## EII TimeSeriesProfiler modes
 
@@ -40,17 +39,18 @@
 
 1. SPS mode
 
-    Enabled by setting the 'mode' key in [config](./config.json) to 'sps', this mode calculates the samples
-    per second of any EII module by subscribing to that module's respective stream.
+   Enabled by setting the 'mode' key in [config](./config.json) to 'sps', this mode calculates the samples
+   per second of any EII module by subscribing to that module's respective stream.
+
     ```sh
         "mode": "sps"
     ```
 
 2. Monitor mode
 
-    Enabled by setting the 'mode' key in [config](./config.json) to 'monitor', this mode calculates average & per sample stats
+   Enabled by setting the 'mode' key in [config](./config.json) to 'monitor', this mode calculates average & per sample stats
 
-    Refer the below exmaple config where TimeSeriesProfiler is used in monitor mode.
+   Refer the below exmaple config where TimeSeriesProfiler is used in monitor mode.
 
     ```javascript
         "config": {
@@ -69,41 +69,41 @@
         "mode": "monitor"
     ```
 
-    The stats to be displayed by the tool in monitor_mode can be set in the monitor_mode_settings key of [config.json](config.json).
+   The stats to be displayed by the tool in monitor_mode can be set in the monitor_mode_settings key of [config.json](config.json).
     1. 'display_metadata': Displays the raw meta-data with timestamps associated with every sample.
     2. 'per_sample_stats': Continously displays the per sample metrics of every sample.
     3. 'avg_stats': Continously displays the average metrics of every sample.
 
-  > **Note:**
-  > * Pre-requisite for running in profiling or monitor mode: Time series containers should be running with PROFILING_MODE set to **true** in [.env](https://github.com/open-edge-insights/eii-core/blob/master/build/.env)
-  > * For running TimeSeriesProfiler in SPS mode, it is recommended to keep PROFILING_MODE set to false in [.env](https://github.com/open-edge-insights/eii-core/blob/master/build/.env) for better performance.
+> **Note:**
+>
+> - Pre-requisite for running in profiling or monitor mode: Time series containers should be running with PROFILING_MODE set to **true** in [.env](https://github.com/open-edge-insights/eii-core/blob/master/build/.env)
+> - For running TimeSeriesProfiler in SPS mode, it is recommended to keep PROFILING_MODE set to false in [.env](https://github.com/open-edge-insights/eii-core/blob/master/build/.env) for better performance.
 
 ## EII TimeSeriesProfiler configurations
 
 1. total_number_of_samples
 
-    If mode is set to 'sps', the average SPS is calculated for the number of samples set by this variable.
-    If mode is set to 'monitor', the average stats is calculated for the number of samples set by this variable.
-    Setting it to (-1) will run the profiler forever unless terminated by stopping container TimeSeriesProfiler manually.
-    total_number_of_samples should never be set as (-1) for 'sps' mode.
+   If mode is set to 'sps', the average SPS is calculated for the number of samples set by this variable.
+   If mode is set to 'monitor', the average stats is calculated for the number of samples set by this variable.
+   Setting it to (-1) will run the profiler forever unless terminated by stopping container TimeSeriesProfiler manually.
+   total_number_of_samples should never be set as (-1) for 'sps' mode.
 
 2. export_to_csv
 
-    Setting this switch to **true** exports csv files for the results obtained in TimeSeriesProfiler. For monitor_mode, runtime stats printed in the csv
-    are based on the the following precdence: avg_stats, per_sample_stats, display_metadata.
-
+   Setting this switch to **true** exports csv files for the results obtained in TimeSeriesProfiler. For monitor_mode, runtime stats printed in the csv
+   are based on the the following precdence: avg_stats, per_sample_stats, display_metadata.
 
 ## Running TimeSeriesProfiler
 
 1. Pre-requisite :
 
    Profiling UDF returns "ts_kapacitor_udf_entry" and "ts_kapacitor_udf_exit" timestamp.  
-   
-    These 2 as examples to refer:
+
+   These 2 as examples to refer:
     1. [profiling_udf.go](https://github.com/open-edge-insights/ts-kapacitor/blob/master/udfs/profiling_udf.go)
     2. [rfc_classifier.py](https://github.com/open-edge-insights/ts-kapacitor/blob/master/udfs/rfc_classifier.py)
-   
-* **Additional:** Adding timestamps in ingestion and UDFs:
+
+- **Additional:** Adding timestamps in ingestion and UDFs:
 
   In case user wants to enable his/her own ingestion and UDFs, timestamps need to be added to ingestion and UDFs modules respectively.
   The TS Profiler needs three timestamps.
@@ -118,9 +118,10 @@
 
     The sample profiling UDFs can be referred at [profiling_udf.go](https://github.com/open-edge-insights/ts-kapacitor/blob/master/udfs/profiling_udf.go) and [rfc_classifier.py](https://github.com/open-edge-insights/ts-kapacitor/blob/master/udfs/rfc_classifier.py).
 
-* configuration required to run profiling_udf.go as profiling udf
+- configuration required to run profiling_udf.go as profiling udf
 
-   In **[Kapacitor config.json](https://github.com/open-edge-insights/ts-kapacitor/blob/master/config.json)** , update "task" key as below:
+  In **[Kapacitor config.json](https://github.com/open-edge-insights/ts-kapacitor/blob/master/config.json)** , update "task" key as below:
+
    ```
    "task": [{
        "tick_script": "profiling_udf.tick",
@@ -131,7 +132,8 @@
        }]
    }]
    ```
-   In **[kapacitor.conf](https://github.com/open-edge-insights/ts-kapacitor/blob/master/config/kapacitor.conf)** under udf section:
+
+  In **[kapacitor.conf](https://github.com/open-edge-insights/ts-kapacitor/blob/master/config/kapacitor.conf)** under udf section:
 
    ```
       [udf.functions]
@@ -140,8 +142,10 @@
            timeout = "20s"
 
    ```
- * configuration required to run rfc_classifier.py as profiler udf
-   In **[Kapacitor config.json](https://github.com/open-edge-insights/ts-kapacitor/blob/master/config.json)** , update "task" key as below:
+
+- configuration required to run rfc_classifier.py as profiler udf
+  In **[Kapacitor config.json](https://github.com/open-edge-insights/ts-kapacitor/blob/master/config.json)** , update "task" key as below:
+
    ```
    "task": [{
        {
@@ -150,44 +154,45 @@
         }
    }]
    ```
-   In **[kapacitor.conf](https://github.com/open-edge-insights/ts-kapacitor/blob/master/config/kapacitor.conf)** under udf section:
+
+  In **[kapacitor.conf](https://github.com/open-edge-insights/ts-kapacitor/blob/master/config/kapacitor.conf)** under udf section:
 
    ```
     [udf.functions.rfc]
-      prog = "python3.7"
-      args = ["-u", "/EII/udfs/rfc_classifier.py"]
-      timeout = "60s"
-      [udf.functions.rfc.env]
-         PYTHONPATH = "/EII/go/src/github.com/influxdata/kapacitor/udf/agent/py/"
+       prog = "python3.7"
+       args = ["-u", "/EII/udfs/rfc_classifier.py"]
+       timeout = "60s"
+       [udf.functions.rfc.env]
+          PYTHONPATH = "/EII/go/src/github.com/influxdata/kapacitor/udf/agent/py/"
    ```
+
   keep **[config.json](./config.json)** file as following:
-```
-  {
-    "config": {
-        "total_number_of_samples": 10,
-        "export_to_csv": "False"
-    },
-    "interfaces": {
-        "Subscribers": [
-            {
-                "Name": "default",
-                "Type": "zmq_tcp",
-                "EndPoint": "ia_influxdbconnector:65032",
-                "PublisherAppName": "InfluxDBConnector",
-                "Topics": [
-                    "rfc_results"
-                ]
-            }
-        ]
-    }
-}
-```
 
+   ```
+   {
+     "config": {
+         "total_number_of_samples": 10,
+         "export_to_csv": "False"
+     },
+     "interfaces": {
+         "Subscribers": [
+             {
+                 "Name": "default",
+                 "Type": "zmq_tcp",
+                 "EndPoint": "ia_influxdbconnector:65032",
+                 "PublisherAppName": "InfluxDBConnector",
+                 "Topics": [
+                     "rfc_results"
+                 ]
+             }
+         ]
+     }
+   }
+   ```
 
+  In [.env](https://github.com/open-edge-insights/eii-core/blob/master/build/.env):
 
-   In [.env](https://github.com/open-edge-insights/eii-core/blob/master/build/.env):
-
-   Set the profiling mode as true.
+  Set the profiling mode as true.
 
 2. Set environment variables accordingly in [config.json](config.json)
 
@@ -209,4 +214,3 @@
     ```sh
         docker logs -f ia_timeseries_profiler
     ```
-

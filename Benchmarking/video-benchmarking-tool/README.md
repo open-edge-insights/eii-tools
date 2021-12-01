@@ -2,11 +2,11 @@
 
 These scripts are designed to automate the running of benchmarking tests and the collection of the performance data. This performance data includes the FPS of each video stream, and also the CPU%, Memory%, and Memory Read/Write bandwidth.
 
-The Processor Counter Monitor (PCM) is required for measuring memory read/write bandwidth, which can be downloaded and built here: https://github.com/opcm/pcm
+The Processor Counter Monitor (PCM) is required for measuring memory read/write bandwidth, which can be downloaded and built here: <https://github.com/opcm/pcm>
 
 If you do not have PCM on your system, those columns will be blank in the output.csv.
 
-> **Note**:
+> **Note:**
 
 > * For running the gstreamer pipeline mentioned in [sample_test/config.json](sample_test/config.json) one needs to copy the required model files to [WORKDIR]/IEdgeInsights/VideoIngestion/models by referring [models-readme](https://github.com/open-edge-insights/video-ingestion/blob/master/models/README.md).
 
@@ -23,14 +23,17 @@ Steps for running a benchmarking test case:
 2. Start RTSP server on a sepereate system on the network:
 
     ```sh
-    $ ./stream_rtsp.sh <number-of-streams> <starting-port-number> <bitrate> <width> <height> <framerate>
+    ./stream_rtsp.sh <number-of-streams> <starting-port-number> <bitrate> <width> <height> <framerate>
     ```
+
    For example:
+
    ```sh
-    $ ./stream_rtsp.sh 16 8554 4096 1920 1080 30
+    ./stream_rtsp.sh 16 8554 4096 1920 1080 30
    ```
 
 3. Run execute_test.sh with the desired benchmarking config:
+
     ```
     USAGE:
         ./execute_test.sh TEST_DIR STREAMS SLEEP PCM_HOME [EII_HOME]
@@ -42,7 +45,9 @@ Steps for running a benchmarking test case:
         PCM_HOME  - The absolute path to the PCM repository where pcm.x is built
         EII_HOME - [Optional] The absolute path to EII home directory, if running from a non-default location
     ```
+
    For example:
+
     ```sh
     sudo -E ./execute_test.sh $PWD/sample_test 16 60 /opt/intel/pcm /home/intel/IEdgeInsights
     ```
