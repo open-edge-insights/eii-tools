@@ -40,7 +40,10 @@ RUN pip3 install --user -r requirements.txt
 COPY . .
 
 FROM ${OPENVINO_IMAGE} AS runtime
+
 USER root
+RUN apt update && apt install --no-install-recommends -y libcjson1 libzmq5 && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
