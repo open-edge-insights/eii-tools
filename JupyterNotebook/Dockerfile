@@ -42,7 +42,7 @@ COPY . .
 FROM ${OPENVINO_IMAGE} AS runtime
 
 USER root
-RUN apt update && apt install --no-install-recommends -y libcjson1 libzmq5 && \
+RUN apt update && apt install --no-install-recommends -y libcjson1 libzmq5 zlib1g && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

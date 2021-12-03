@@ -49,6 +49,9 @@ FROM ${OPENVINO_IMAGE} AS runtime
 USER root
 WORKDIR /app
 
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libcjson1 libzmq5 zlib1g && \
+    rm -rf /var/lib/apt/lists/*
 
 ARG EII_UID
 ARG EII_USER_NAME
