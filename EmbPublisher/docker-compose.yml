@@ -32,13 +32,3 @@ services:
       - eii
     volumes:
       - "vol_eii_socket:${SOCKET_DIR}"
-    secrets:
-      - ca_etcd
-      - etcd_EmbPublisher_cert
-      - etcd_EmbPublisher_key
-
-secrets:
-  etcd_EmbPublisher_cert:
-    file: provision/Certificates/EmbPublisher/EmbPublisher_client_certificate.pem
-  etcd_EmbPublisher_key:
-    file: provision/Certificates/EmbPublisher/EmbPublisher_client_key.pem

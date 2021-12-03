@@ -1,4 +1,5 @@
 {
+    "cert_type": ["zmq"],
     "config": {
             "query" : "select * from camera1_stream_results where time>=now()-1m limit 10"
     },

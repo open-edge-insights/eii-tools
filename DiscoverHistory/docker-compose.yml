@@ -58,10 +58,6 @@ services:
     volumes:
       - "vol_history_data:/output"
       - "${EII_INSTALL_PATH}/sockets:${SOCKET_DIR}"
-    secrets:
-      - ca_etcd
-      - etcd_DiscoverHistory_cert
-      - etcd_DiscoverHistory_key
 
 volumes:
   vol_history_data:
@@ -70,8 +66,3 @@ volumes:
       type: local
       o: bind
       device: ${EII_INSTALL_PATH}/tools_output
-secrets:
-  etcd_DiscoverHistory_cert:
-    file: provision/Certificates/DiscoverHistory/DiscoverHistory_client_certificate.pem
-  etcd_DiscoverHistory_key:
-    file: provision/Certificates/DiscoverHistory/DiscoverHistory_client_key.pem

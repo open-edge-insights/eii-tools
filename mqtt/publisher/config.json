@@ -1,4 +1,5 @@
 {
+    "cert_type": ["zmq"],
     "config": {},
     "interfaces": {}
 }

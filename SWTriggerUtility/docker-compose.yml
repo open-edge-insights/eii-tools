@@ -57,14 +57,3 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "exit", "0"]
       interval: 5m
-    secrets:
-      - ca_etcd
-      - etcd_SWTriggerUtility_cert
-      - etcd_SWTriggerUtility_key
-
-
-secrets:
-  etcd_SWTriggerUtility_cert:
-    file: provision/Certificates/SWTriggerUtility/SWTriggerUtility_client_certificate.pem
-  etcd_SWTriggerUtility_key:
-    file: provision/Certificates/SWTriggerUtility/SWTriggerUtility_client_key.pem

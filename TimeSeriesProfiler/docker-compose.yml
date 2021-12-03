@@ -61,10 +61,7 @@ services:
     volumes:
       - "vol_timeseries_profiler_data:/app/out"
       - "${EII_INSTALL_PATH}/sockets:${SOCKET_DIR}"
-    secrets:
-      - ca_etcd
-      - etcd_TimeSeriesProfiler_cert
-      - etcd_TimeSeriesProfiler_key
+
 volumes:
   vol_timeseries_profiler_data:
     driver: local
@@ -72,10 +69,3 @@ volumes:
       type: local
       o: bind
       device: ${EII_INSTALL_PATH}/tools_output
-
-
-secrets:
-  etcd_TimeSeriesProfiler_cert:
-    file: provision/Certificates/TimeSeriesProfiler/TimeSeriesProfiler_client_certificate.pem
-  etcd_TimeSeriesProfiler_key:
-    file: provision/Certificates/TimeSeriesProfiler/TimeSeriesProfiler_client_key.pem

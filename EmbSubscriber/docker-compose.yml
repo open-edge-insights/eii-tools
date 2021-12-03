@@ -50,13 +50,3 @@ services:
       - eii
     volumes:
       - "vol_eii_socket:${SOCKET_DIR}"
-    secrets:
-      - ca_etcd
-      - etcd_EmbSubscriber_cert
-      - etcd_EmbSubscriber_key
-
-secrets:
-  etcd_EmbSubscriber_cert:
-    file: provision/Certificates/EmbSubscriber/EmbSubscriber_client_certificate.pem
-  etcd_EmbSubscriber_key:
-    file: provision/Certificates/EmbSubscriber/EmbSubscriber_client_key.pem

@@ -64,10 +64,6 @@ services:
     volumes:
       - "vol_video_profiler_data:/app/out"
       - "vol_eii_socket:${SOCKET_DIR}"
-    secrets:
-      - ca_etcd
-      - etcd_VideoProfiler_cert
-      - etcd_VideoProfiler_key
 volumes:
   vol_video_profiler_data:
     driver: local
@@ -75,9 +71,3 @@ volumes:
       type: local
       o: bind
       device: ${EII_INSTALL_PATH}/tools_output
-
-secrets:
-  etcd_VideoProfiler_cert:
-    file: provision/Certificates/VideoProfiler/VideoProfiler_client_certificate.pem
-  etcd_VideoProfiler_key:
-    file: provision/Certificates/VideoProfiler/VideoProfiler_client_key.pem

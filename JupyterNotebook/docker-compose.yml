@@ -69,10 +69,6 @@ services:
       - "vol_eii_socket:${SOCKET_DIR}"
       - "vol_jn_workspace:/home/${EII_USER_NAME}"
     privileged: true
-    secrets:
-      - ca_etcd
-      - etcd_JupyterNotebook_cert
-      - etcd_JupyterNotebook_key
 
 volumes:
   vol_jn_workspace:
@@ -81,9 +77,3 @@ volumes:
       type: local
       o: bind
       device: ${EII_INSTALL_PATH}/tools_output
-
-secrets:
-  etcd_JupyterNotebook_cert:
-    file: provision/Certificates/JupyterNotebook/JupyterNotebook_client_certificate.pem
-  etcd_JupyterNotebook_key:
-    file: provision/Certificates/JupyterNotebook/JupyterNotebook_client_key.pem

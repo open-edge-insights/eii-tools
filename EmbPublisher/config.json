@@ -1,4 +1,5 @@
 {
+  "cert_type": ["zmq"],
   "config": {
     "pub_name": "TestPub",
     "msg_file": "data1k.json",

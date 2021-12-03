@@ -1,4 +1,5 @@
 {
+    "cert_type": ["zmq"],
     "config": {
 	"mode": "sps",
         "monitor_mode_settings": {
