@@ -1,6 +1,8 @@
+#DiscoverHistory
+
 DiscoverHistory tool helps in pulling the history meta-data and images from InfluxDB and ImageStore containers respectively
 
-# Steps to build and run DiscoverHistory service
+## Steps to build and run DiscoverHistory service
 
 * **Running in PROD mode**
 
@@ -17,15 +19,12 @@ DiscoverHistory tool helps in pulling the history meta-data and images from Infl
         - ImageStore
         - InfluxDBConnector
     ```
-
  2. Open "config.json"
  3. Provide the required query to be passed on to InfluxDB.
  4. With the above pre-requisite done, please run the below to command:
-
     ```sh
         python3 builder.py -f usecases/video-streaming-storage.yml
     ```
-
  5. Refer [main EII README.md](https://github.com/open-edge-insights/eii-core/blob/master/README.md) to provision, build and run the tool along with the EII video-streaming-storage recipe/stack.
  6. Check imagestore and influxdbconnector services are running.
  7. You will find data & frames directories at "/opt/intel/eii/tools_output".
@@ -33,9 +32,9 @@ DiscoverHistory tool helps in pulling the history meta-data and images from Infl
     directory will be created)
  8. Use ETCDUI to change the query in configuration. Please run below command to start container with new configuration:
 
-     ```sh
+    ```sh
         docker restart ia_discover_history
-     ```
+    ```
 
 * **Running in DEV mode**
 
@@ -43,22 +42,22 @@ DiscoverHistory tool helps in pulling the history meta-data and images from Infl
  2. Set the DEV_MODE variable as "true".
 
  ```
-    DEV_MODE=false
+ DEV_MODE=false
  ```
 
-to
+ to
 
  ```
-    DEV_MODE=true
+ DEV_MODE=true
  ```
 
-> **NOTE**:
+> **NOTE:**
 >
 > * Building the base images like ia_common, ia_eiibase are must in cases if this tool isn't run on the same node
 >   where EII is running.
 > * Please ensure that the base images i.e. ia_common and ia_eiibase are present on the node where this tool is run.
 
-# List of sample select queries
+## List of sample select queries
 
 1. "select * from camera1_stream_results order by desc limit 10"
    This query will return latest 10 records.
@@ -71,7 +70,7 @@ to
 4. "select * from camera1_stream_results where time>=now()-1h"
     This query will return all the records from the current time, going back upto last 1 hour.
 
-# To run the tool in zmq_ipc mode
+## To run the tool in zmq_ipc mode
 
 User needs to modify interface section of **[config.json](./config.json)** as following
 
@@ -83,9 +82,10 @@ User needs to modify interface section of **[config.json](./config.json)** as fo
 ```
 
 ----
-**NOTE**:
+**NOTE:**
 If you want good and bad frames then the query must contain the following parameters:
 
+ ```
  *img_handle
  *defects
  *encoding_level
@@ -100,4 +100,5 @@ If you want good and bad frames then the query must contain the following parame
      or
 
      "select * from camera1_stream_results order by desc limit 10"
+ ```
 ----

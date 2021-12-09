@@ -1,22 +1,22 @@
 **Contents**
 
-- [About tool](#about-tool)
-- [How to integrate this tool with video/timeseries use case.](#how-to-integrate-this-tool-with-videotimeseries-use-case)
-- [Configuration of the tool.](#configuration-of-the-tool)
-- [Running EmbPublisher in IPC mode](#running-embpublisher-in-ipc-mode)
+- [EmbPublisher](#embpublisher)
+  - [How to integrate this tool with video/timeseries use case](#how-to-integrate-this-tool-with-video-timeseries-use-case)
+  - [Configuration of the tool](#configuration-of-the-tool)
+  - [Running EmbPublisher in IPC mode](#running-embpublisher-in-ipc-mode)
 
-# About tool
+# EmbPublisher
 
 - This tool acts as a brokered publisher of EII messagebus.
 - Telegaf's eii messagebus input plugin acts as a subscriber to the EII broker.
 
-# How to integrate this tool with video/timeseries use case
+## How to integrate this tool with video/timeseries use case
 
 - In 'time-series.yml'/'video-streaming.yml' file, please add 'ZmqBroker' and 'tools/EmbPublisher' components.
 - Use the modified  'time-series.yml'/'video-streaming.yml' file as an argument while generating the docker-compose.yml file using the 'builder.py' utility.
 - Follow usual provisioning and starting process.
 
-# Configuration of the tool
+## Configuration of the tool
 
 Let us look at the sample configuration
 
@@ -58,7 +58,7 @@ Let us look at the sample configuration
 - -num_itr : The number of iterations
 - -int_btw_itr: The interval between any two iterations
 
-# Running EmbPublisher in IPC mode
+## Running EmbPublisher in IPC mode
 
 User needs to modify interface section of **[config.json](./config.json)** to run in IPC mode as following
 

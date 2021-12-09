@@ -1,4 +1,4 @@
-# `HttpTestServer`
+# HttpTestServer
 
 HttpTestServer runs a simple HTTP Test server with security being optional.
 
@@ -25,7 +25,7 @@ HttpTestServer runs a simple HTTP Test server with security being optional.
     Eg: go run TestServer.go --dev_mode false --host=0.0.0.0 --port=8082 --rdehost=localhost --rdeport=8087
     ```
 
-    ***NOTE***: server_cert.pem is valid for 365 days from the day of generation
+  **NOTE:** server_cert.pem is valid for 365 days from the day of generation
 
 * In PROD mode, you might see intermediate logs like this:
 
@@ -33,4 +33,4 @@ HttpTestServer runs a simple HTTP Test server with security being optional.
     http: TLS handshake error from 127.0.0.1:51732: EOF
     ```
 
-    These logs are because of RestExport trying to check if the server is present by pinging it without using any certs and can be ignored.
+  These logs are because of RestExport trying to check if the server is present by pinging it without using any certs and can be ignored.
