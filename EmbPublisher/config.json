@@ -1,10 +1,11 @@
 {
-  "cert_type": ["zmq"],
   "config": {
+    "cert_type": ["zmq"],
     "pub_name": "TestPub",
     "msg_file": "data1k.json",
     "iteration": 10,
-    "interval": "5ms"
+    "interval": "5ms",
+    "cert_type": "zmq"
   },
   "interfaces": {
     "Publishers": [

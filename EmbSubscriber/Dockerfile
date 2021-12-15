@@ -40,7 +40,7 @@ COPY --from=common /eii/common/libs/ConfigMgr/go/ConfigMgr $GOPATH/src/ConfigMgr
 
 
 COPY ./*.go ./
-
+COPY go.mod ./
 ENV PATH="$PATH:/usr/local/go/bin" \
     PKG_CONFIG_PATH="$PKG_CONFIG_PATH:${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" \
     LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${CMAKE_INSTALL_PREFIX}/lib"
@@ -51,7 +51,7 @@ ENV CGO_CFLAGS="$CGO_FLAGS -I ${CMAKE_INSTALL_PREFIX}/include -O2 -D_FORTIFY_SOU
 
 ARG ARTIFACTS
 RUN mkdir $ARTIFACTS && \
-    go build -o $ARTIFACTS/subscriber ./*.go
+    GO111MODULE=on go build -o $ARTIFACTS/subscriber ./*.go
 
 FROM ubuntu:$UBUNTU_IMAGE_VERSION as runtime
 

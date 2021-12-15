@@ -38,6 +38,7 @@ services:
     image: ${DOCKER_REGISTRY}ia_emb_subscriber:${EII_VERSION}
     container_name: ia_emb_subscriber
     hostname: ia_emb_subscriber
+    restart: unless-stopped
     environment:
       AppName: "EmbSubscriber"
       DEV_MODE: ${DEV_MODE}
@@ -50,3 +51,6 @@ services:
       - eii
     volumes:
       - "vol_eii_socket:${SOCKET_DIR}"
+      - ./Certificates/EmbSubscriber:/run/secrets/EmbSubscriber
+      - ./Certificates/rootca:/run/secrets/rootca
+

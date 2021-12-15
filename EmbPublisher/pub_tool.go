@@ -23,8 +23,8 @@ SOFTWARE.
 package main
 
 import (
-	eiicfgmgr "ConfigMgr/eiiconfigmgr"
-	eiimsgbus "EIIMessageBus/eiimsgbus"
+	eiicfgmgr "github.com/open-edge-insights/eii-configmgr-go/eiiconfigmgr"
+	eiimsgbus "github.com/open-edge-insights/eii-messagebus-go/eiimsgbus"
 	"encoding/json"
 	"fmt"
 	"sync"

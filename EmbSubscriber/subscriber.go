@@ -24,8 +24,8 @@ package main
 
 import (
 	"flag"
-	eiimsgbus "EIIMessageBus/eiimsgbus"
-	eiicfgmgr "ConfigMgr/eiiconfigmgr"
+	eiimsgbus "github.com/open-edge-insights/eii-messagebus-go/eiimsgbus"
+	eiicfgmgr "github.com/open-edge-insights/eii-configmgr-go/eiiconfigmgr"
 	"github.com/golang/glog"
 	"os"
 )
