@@ -58,7 +58,7 @@ FROM ubuntu:$UBUNTU_IMAGE_VERSION as runtime
 ARG EII_UID
 ARG EII_USER_NAME
 RUN groupadd $EII_USER_NAME -g $EII_UID && \
-    useradd -r -u $EII_UID -g $EII_USER_NAME $EII_USER_NAME
+    useradd -r -u $EII_UID -g $EII_USER_NAME -m $EII_USER_NAME
 RUN apt update && apt install --no-install-recommends -y libcjson1 libzmq5 zlib1g && \
     rm -rf /var/lib/apt/lists/*
 

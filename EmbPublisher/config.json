@@ -4,8 +4,7 @@
     "pub_name": "TestPub",
     "msg_file": "data1k.json",
     "iteration": 10,
-    "interval": "5ms",
-    "cert_type": "zmq"
+    "interval": "5ms"
   },
   "interfaces": {
     "Publishers": [

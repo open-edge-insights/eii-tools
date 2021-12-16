@@ -56,7 +56,7 @@ RUN apt-get update && \
 ARG EII_UID
 ARG EII_USER_NAME
 RUN groupadd $EII_USER_NAME -g $EII_UID && \
-    useradd -r -u $EII_UID -g $EII_USER_NAME $EII_USER_NAME
+    useradd -r -u $EII_UID -g $EII_USER_NAME -m $EII_USER_NAME
 
 ARG ARTIFACTS
 ARG CMAKE_INSTALL_PREFIX

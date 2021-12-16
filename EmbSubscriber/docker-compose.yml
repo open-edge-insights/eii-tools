@@ -46,7 +46,6 @@ services:
       ETCD_HOST: ${ETCD_HOST}
       ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
       ETCD_PREFIX: ${ETCD_PREFIX}
-      CertType: "zmq"
     networks:
       - eii
     volumes:

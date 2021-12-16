@@ -45,7 +45,6 @@ services:
     - no-new-privileges
     environment:
       AppName: "VideoProfiler"
-      CertType: "pem,zmq"
       DEV_MODE: ${DEV_MODE}
       no_proxy: ${ETCD_HOST}
       NO_PROXY: ${ETCD_HOST}
@@ -64,6 +63,9 @@ services:
     volumes:
       - "vol_video_profiler_data:/app/out"
       - "vol_eii_socket:${SOCKET_DIR}"
+      - ./Certificates/VideoProfiler:/run/secrets/VideoProfiler
+      - ./Certificates/rootca:/run/secrets/rootca
+
 volumes:
   vol_video_profiler_data:
     driver: local

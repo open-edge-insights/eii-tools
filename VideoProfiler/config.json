@@ -1,6 +1,6 @@
 {
-    "cert_type": ["zmq"],
     "config": {
+	"cert_type": ["zmq", "pem"],
         "mode": "fps",
         "monitor_mode_settings": {
                                     "ingestion_appname": "VideoIngestion",

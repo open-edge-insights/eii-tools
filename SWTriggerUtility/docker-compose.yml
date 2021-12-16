@@ -45,7 +45,6 @@ services:
     - no-new-privileges
     environment:
       AppName: "SWTriggerUtility"
-      CertType: "zmq"
       DEV_MODE: ${DEV_MODE}
       no_proxy: ${ETCD_HOST}
       NO_PROXY: ${ETCD_HOST}
@@ -54,6 +53,9 @@ services:
       ETCD_PREFIX: ${ETCD_PREFIX}
     networks:
       - eii
+    volumes:
+      - ./Certificates/SWTriggerUtility:/run/secrets/SWTriggerUtility
+      - ./Certificates/rootca:/run/secrets/rootca
     healthcheck:
       test: ["CMD-SHELL", "exit", "0"]
       interval: 5m

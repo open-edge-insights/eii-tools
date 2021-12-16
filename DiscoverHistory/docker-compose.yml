@@ -44,7 +44,6 @@ services:
     ipc: "none"
     environment:
       AppName: "DiscoverHistory"
-      CertType: "zmq"
       DEV_MODE: ${DEV_MODE}
       no_proxy: ${ETCD_HOST}
       NO_PROXY: ${ETCD_HOST}
@@ -58,6 +57,8 @@ services:
     volumes:
       - "vol_history_data:/output"
       - "${EII_INSTALL_PATH}/sockets:${SOCKET_DIR}"
+      - ./Certificates/DiscoverHistory:/run/secrets/DiscoverHistory
+      - ./Certificates/rootca:/run/secrets/rootca
 
 volumes:
   vol_history_data:

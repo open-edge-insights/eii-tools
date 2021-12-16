@@ -1,6 +1,6 @@
 {
-    "cert_type": ["zmq"],
     "config": {
+	"cert_type": ["zmq", "pem"],
 	"mode": "sps",
         "monitor_mode_settings": {
                                     "display_metadata": false,
