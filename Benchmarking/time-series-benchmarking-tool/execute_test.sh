@@ -134,26 +134,6 @@ pushd "${EII_HOME}/build"
 run_logged python3 builder.py -f usecases/services.yml
 popd
 
-# --------------------------------------------------------------
-# Provision containers
-# --------------------------------------------------------------
-notice "Provisioning cluster"
-pushd "${EII_HOME}/build/provision/"
-run_logged ./provision.sh ../docker-compose.yml
-popd
-
-notice "Running mqtt broker on 1883 port"
-pushd "${EII_HOME}/tools/mqtt"
-run_logged ./broker.sh 1883
-popd
-
-notice "Starting mqtt publisher"
-pushd "${EII_HOME}/tools/mqtt/publisher"
-set -a
-source ../../../build/.env
-set +a
-run_logged docker-compose up --build -d
-popd
 
 # --------------------------------------------------------------
 # Launch

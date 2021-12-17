@@ -1,5 +1,8 @@
 AppContexts:
+- ConfigMgrAgent
 - InfluxDBConnector
 - Kapacitor
 - Telegraf
 - tools/TimeSeriesProfiler
+- tools/mqtt/broker
+- tools/mqtt/publisher
