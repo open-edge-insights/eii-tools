@@ -1,3 +1,5 @@
+mistune==0.8.4
+jupyter-client==6.1.12
 jupyterlab==3.0.17
 notebook==6.4.1
 ipynb==0.5.1
