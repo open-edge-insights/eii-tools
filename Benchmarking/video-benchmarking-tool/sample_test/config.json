@@ -1,6 +1,6 @@
 {
-    "cert_type": ["zmq"],
     "config": {
+        "cert_type": ["zmq"],
         "ingestor": {
             "pipeline": "rtspsrc location=\"rtsp://<RTSP_SOURCE_IP>:8554/live.sdp\" latency=100 ! rtph264depay ! h264parse ! vaapih264dec ! vaapipostproc format=bgrx ! gvainference device=CPU model=common/video/udfs/python/pcb/ref/model_2.xml ! vaapipostproc height=600 width=600 ! videoconvert ! video/x-raw,format=BGR ! appsink",
             "queue_size": 10,

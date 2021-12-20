@@ -156,8 +156,8 @@ popd
 # --------------------------------------------------------------
 notice "Cleaning files from prior tests"
 run_logged rm -v "${EII_HOME}/build/docker-compose.yml"
-run_logged rm -v "${EII_HOME}/build/provision/config/eii_config.json"
-#run_logged rm -rf ${EII_HOME}/VideoIngestion/benchmarking
+run_logged rm -v "${EII_HOME}/build/eii_config.json"
+run_logged rm -rf -v "${EII_HOME}/build/multi_instance"
 run_logged mkdir -p ${EII_HOME}/VideoIngestion/benchmarking
 
 notice "Generating test configuration files"
@@ -176,19 +176,15 @@ run_logged python3 builder.py -f services.yml -d benchmarking -v $STREAMS
 popd
 
 # --------------------------------------------------------------
-# Provision containers
-# --------------------------------------------------------------
-notice "Provisioning cluster"
-pushd "${EII_HOME}/build/provision/"
-run_logged ./provision.sh ../docker-compose.yml
-popd
-
-# --------------------------------------------------------------
 # Launch
 # --------------------------------------------------------------
 notice "Starting containers"
 pushd "${EII_HOME}/build"
 run_logged docker-compose -f docker-compose-build.yml build
+# TODO: Once the configmgr initialization timing issue is fixed
+# remove the sleep and start all services
+run_logged docker-compose up -d ia_configmgr_agent
+run_logged sleep 10s
 run_logged docker-compose up -d
 #${PCM_HOME}/pcm.x 2>&1 | tee -a "${ACTUAL_DATA_DIR}/output.pcm" &
 run_logged sleep $SLEEP
