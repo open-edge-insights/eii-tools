@@ -53,7 +53,7 @@ const (
 	testServerCaPath   = "./certificates/ca_cert.pem"
 	testServerCertPath = "./certificates/server_cert.pem"
 	testServerKeyPath  = "./certificates/server_key.pem"
-	clientCaPath       = "../../build/provision/Certificates/ca/ca_certificate.pem"
+	clientCaPath       = "../../build/Certificates/rootca/cacert.pem"
 )
 
 // init is used to initialize and fetch required config
