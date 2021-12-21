@@ -64,15 +64,8 @@ services:
       - eii
     volumes:
       - "vol_eii_socket:${SOCKET_DIR}"
-      - "vol_jn_workspace:/home/${EII_USER_NAME}"
+      - "$EII_INSTALL_PATH/tools_output:/home/${EII_USER_NAME}"
       - ./Certificates/JupyterNotebook:/run/secrets/JupyterNotebook
       - ./Certificates/rootca:/run/secrets/rootca
     privileged: true
 
-volumes:
-  vol_jn_workspace:
-    driver: local
-    driver_opts:
-      type: local
-      o: bind
-      device: ${EII_INSTALL_PATH}/tools_output

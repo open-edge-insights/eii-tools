@@ -55,15 +55,8 @@ services:
     networks:
       - eii
     volumes:
-      - "vol_history_data:/output"
+      - "${EII_INSTALL_PATH}/tools_output:/output"
       - "${EII_INSTALL_PATH}/sockets:${SOCKET_DIR}"
       - ./Certificates/DiscoverHistory:/run/secrets/DiscoverHistory
       - ./Certificates/rootca:/run/secrets/rootca
 
-volumes:
-  vol_history_data:
-    driver: local
-    driver_opts:
-      type: local
-      o: bind
-      device: ${EII_INSTALL_PATH}/tools_output
