@@ -62,7 +62,7 @@ Before executing the tool make sure following steps are executed:-
 4. If using GigE tool in PROD mode, make sure to set required permissions to certificates.
 
     ```sh
-        sudo chmod -R 755 [WORKDIR]/IEdgeInsights/build/provision/Certificates
+        sudo chmod -R 755 [WORKDIR]/IEdgeInsights/build/Certificates
     ```
 
    > **Note:** This step is required everytime provisioning is done.
@@ -151,11 +151,11 @@ The tool can be executed in following manner :-
    Before running in PROD mode please change the permissions of the certificates i.e :-
 
     ```sh
-    sudo chmod 755 -R [WORDK_DIR]/IEdgeInsights/build/provision/Certificates
+    sudo chmod 755 -R [WORDK_DIR]/IEdgeInsights/build/Certificates
     ```
 
     ```sh
-    python3 GigEConfig.py -f <path to pylon's pfs file> -c [WORK_DIR]/IEdgeInsights/build/provision/Certificates/ca/ca_certificate.pem -r_k [WORK_DIR]/IEdgeInsights/build/provision/Certificates/root/root_client_key.pem -r_c [WORK_DIR]IEdgeInsights/build/provision/Certificates/root/root_client_certificate.pem -e
+    python3 GigEConfig.py -f <path to pylon's pfs file> -c [WORK_DIR]/IEdgeInsights/build/Certificates/rootca/cacert.pem -r_k [WORK_DIR]/IEdgeInsights/build/Certificates/root/root_client_key.pem -r_c [WORK_DIR]/IEdgeInsights/build/Certificates/root/root_client_certificate.pem -e
     ```
 
 4. In case only pipeline needs to be printed.
@@ -169,7 +169,7 @@ The tool can be executed in following manner :-
    a. For DEV Mode
 
     ```sh
-    python3 GigEConfig.py --pfs_file <path to pylon's pfs file> -e -host <etcd_host> -port <etcd_port> 
+    python3 GigEConfig.py --pfs_file <path to pylon's pfs file> -e -host <etcd_host> -port <etcd_port>
     ```
 
    b. For PROD Mode
@@ -177,9 +177,9 @@ The tool can be executed in following manner :-
    Before running in PROD mode please change the permissions of the certificates i.e :
 
     ```sh
-    sudo chmod 755 -R [WORDK_DIR]/IEdgeInsights/build/provision/Certificates
+    sudo chmod 755 -R [WORDK_DIR]/IEdgeInsights/build/Certificates
     ```
 
     ```sh
-    python3 GigEConfig.py -f <path to pylon's pfs file> -c [WORK_DIR]/IEdgeInsights/build/provision/Certificates/ca/ca_certificate.pem -r_k [WORK_DIR]/IEdgeInsights/build/provision/Certificates/root/root_client_key.pem -r_c [WORK_DIR]IEdgeInsights/build/provision/Certificates/root/root_client_certificate.pem -e -host <etcd_host> -port <etcd_port>
+    python3 GigEConfig.py -f <path to pylon's pfs file> -c [WORK_DIR]/IEdgeInsights/build/Certificates/rootca/cacert.pem -r_k [WORK_DIR]/IEdgeInsights/build/Certificates/root/root_client_key.pem -r_c [WORK_DIR]/IEdgeInsights/build/Certificates/root/root_client_certificate.pem -e -host <etcd_host> -port <etcd_port>
     ```
