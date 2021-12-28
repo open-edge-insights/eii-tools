@@ -98,5 +98,3 @@ The multi-instance feature support of Builder works only for the video pipeline 
 In the following example you can view how to change the configuration to use the builder.py script -v 2 feature with 2 instances of the DiscoverHistory tool enabled:
 ![DiscoverHistory instance 1 interfaces](img/discoverHistoryTool-conf-change1.png)
 ![DiscoverHistory instance 2 interfaces](img/discoverHistoryTool-conf-change2.png)
-![DiscoverHistory instance 2 logs](img/discoverHistoryTool-conf-change3.png)
-![DiscoverHistory instance 1 logs](img/discoverHistoryTool-conf-change4.png)
