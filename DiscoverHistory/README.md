@@ -1,104 +1,100 @@
-#DiscoverHistory
+# DiscoverHistory tool
 
-DiscoverHistory tool helps in pulling the history meta-data and images from InfluxDB and ImageStore containers respectively
+You can get history metadata and images from the InfluxDB and ImageStore containers using the DiscoverHistory tool.
 
-## Steps to build and run DiscoverHistory service
+## Build and run the DiscoverHistory tool
 
-* **Running in PROD mode**
+This section provides information for building and running DiscoverHistory tool in various modes such as the PROD mode and the DEV mode. To run the DiscoverHistory tool base images should be on the same node. Ensure that on the node where the DiscoverHistory tool is running, the `ia_common` and `ia_eiibase` base images are also available. For scenario, where EII and DiscoverHistory tool are not running on the same node, then you must build the base images, `ia_common` and `ia_eiibase`.
 
- 1. DiscoverHistory expects a set of config, interfaces & public private keys to be present in ETCD as a pre-requisite.
-    To achieve this, please ensure an entry for DiscoverHistory with its relative path from [IEdgeInsights](../../) directory is set in the video-streaming-storage.yml file present in [build/usecases](https://github.com/open-edge-insights/eii-core/tree/master/build/usecases) directory. An example has been provided below:
+### Prerequisites
 
-    ```sh
-        AppContexts:
-        - VideoIngestion
-        - VideoAnalytics
-        - Visualizer
-        - WebVisualizer
-        - tools/DiscoverHistory
-        - ImageStore
-        - InfluxDBConnector
-    ```
- 2. Open "config.json"
- 3. Provide the required query to be passed on to InfluxDB.
- 4. With the above pre-requisite done, please run the below to command:
+As a prerequisite to run the DiscoverHistory tool, a set of config, interfaces, public, and private keys should be present in etcd. To meet the prerequisite, ensure that an entry for the DiscoverHistory tool with its relative path from the `[WORK_DIR]/IEdgeInsights]` directory is set in the `video-streaming-storage.yml` file in the `[WORK_DIR]/IEdgeInsights/build/usecases/` directory. For more information, see the following example:
+
+```sh
+    AppContexts:
+    - VideoIngestion
+    - VideoAnalytics
+    - Visualizer
+    - WebVisualizer
+    - tools/DiscoverHistory
+    - ImageStore
+    - InfluxDBConnector
+```
+
+### Run the DiscoverHistory tool in the PROD mode
+
+After completing the prerequisites, perform the following steps to run the DiscoverHistory tool in the PROD mode:
+
+ 1. Open the `config.json` file.
+ 2. Enter the query for InfluxDB.
+ 3. Run the following command to generate the new `docker-compose.yml` that includes DiscoverHistory:
+
     ```sh
         python3 builder.py -f usecases/video-streaming-storage.yml
     ```
- 5. Refer [main EII README.md](https://github.com/open-edge-insights/eii-core/blob/master/README.md) to provision, build and run the tool along with the EII video-streaming-storage recipe/stack.
- 6. Check imagestore and influxdbconnector services are running.
- 7. You will find data & frames directories at "/opt/intel/eii/tools_output".
-    (Note: if img_handle is part of select statement , then only frames
-    directory will be created)
- 8. Use ETCDUI to change the query in configuration. Please run below command to start container with new configuration:
+
+ 4. Provision, build, and run the DiscoverHistory tool along with the EII video-streaming-storage recipe or stack. For more information, refer to the [EII README](https://github.com/open-edge-insights/eii-core/blob/master/README.md).
+ 5. Check if the `imagestore` and `influxdbconnector` services are running.
+ 6. Locate the `data` and the `frames` directories from the following path:
+  `/opt/intel/eii/tools_output`.
+    > Note: The `frames` directory will be created only if `img_handle` is part of the select statement.
+ 7. Use the ETCDUI to change the query in the configuration.
+ 8. Run the following command to start container with new configuration:
 
     ```sh
-        docker restart ia_discover_history
+       docker restart ia_discover_history
     ```
 
-* **Running in DEV mode**
+### Run the DiscoverHistory tool in the DEV mode
 
- 1. Open [.env](https://github.com/open-edge-insights/eii-core/blob/master/build/.env)
- 2. Set the DEV_MODE variable as "true".
+After completing the prerequisites, perform the following steps to run the DiscoverHistory tool in the DEV mode:
 
- ```
- DEV_MODE=false
- ```
+ 1. Open the [.env] file from the `[WORK_DIR]/IEdgeInsights/build` directory.
+ 2. Set the `DEV_MODE` variable as `true`.
 
- to
+### Run the DiscoverHistory tool in the zmq_ipc mode
 
- ```
- DEV_MODE=true
- ```
+After completing the prerequisites, to run the DiscoverHistory tool in the zmq_ipc mode, modify the interface section of the `config.json` file as follows:
 
-> **NOTE:**
->
-> * Building the base images like ia_common, ia_eiibase are must in cases if this tool isn't run on the same node
->   where EII is running.
-> * Please ensure that the base images i.e. ia_common and ia_eiibase are present on the node where this tool is run.
-
-## List of sample select queries
-
-1. "select * from camera1_stream_results order by desc limit 10"
-   This query will return latest 10 records.
-
-2. "select height,img_handle from camera1_stream_results order by desc limit 10"
-
-3. "select * from camera1_stream_results where time>='2019-08-30T07:25:39Z' AND time<='2019-08-30T07:29:00Z'"
-    This query will return all the records between the given time frame i.e. (time>='2019-08-30T07:25:39Z' AND time<='2019-08-30T07:29:00Z')
-
-4. "select * from camera1_stream_results where time>=now()-1h"
-    This query will return all the records from the current time, going back upto last 1 hour.
-
-## To run the tool in zmq_ipc mode
-
-User needs to modify interface section of **[config.json](./config.json)** as following
-
-```
+```json
     {
         "type": "zmq_ipc",
         "EndPoint": "/EII/sockets"
     }
 ```
 
-----
-**NOTE:**
-If you want good and bad frames then the query must contain the following parameters:
+## Sample select queries
 
- ```
- *img_handle
- *defects
- *encoding_level
- *encoding_type
- *height
- *width
- *channel
+The following table shows the samples for the select queries and its details:
 
-    Example:
-     "select img_handle, defects, encoding_level, encoding_type,  height, width, channel from camera1_stream_results order by desc limit 10"
+| Select Query      | Details      |
+|  ---  |  ---  |
+| "select * from camera1_stream_results order by desc limit 10"      | This query will return latest 10 records.      |
+| "select height,img_handle from camera1_stream_results order by desc limit 10"      |       |
+| "select * from camera1_stream_results where time>='2019-08-30T07:25:39Z' AND time<='2019-08-30T07:29:00Z'"      | This query will return all the records between the given time frame, which is (time>='2019-08-30T07:25:39Z' and time<='2019-08-30T07:29:00Z')      |
+| "select * from camera1_stream_results where time>=now()-1h"      | This query will return all the records from the current time, going back upto last 1 hour.      |
+|       |       |
 
-     or
+> Note
+> Include the following parameters in the query to get the good and the bad frames:
+>
+> - *img_handle
+> - *defects
+> - *encoding_level
+> - *encoding_type
+> - *height
+> - *width
+> - *channel
+>
+> The following examples shows how to include the parameters:
+>
+> - "select img_handle, defects, encoding_level, encoding_type, height, width, channel from camera1_stream_results order by desc limit 10"
+> - "select * from camera1_stream_results order by desc limit 10"
 
-     "select * from camera1_stream_results order by desc limit 10"
- ```
-----
+## Multi-instance feature support for the Builder script with the DiscoverHistory tool
+
+The multi-instance feature support of Builder works only for the video pipeline (`[WORK_DIR]/IEdgeInsights/build/usecase/video-streaming.yml`). For more details, refer to the [EII core readme](https://github.com/open-edge-insights/eii-core/blob/master/README.md#running-builder-to-generate-multi-instance-configs)
+
+In the following example you can view how to change the configuration to use the builder.py script -v 2 feature with 2 instances of the DiscoverHistory tool enabled:
+![DiscoverHistory instance 1 interfaces](img/discoverHistoryTool-conf-change1.png)
+![DiscoverHistory instance 2 interfaces](img/discoverHistoryTool-conf-change2.png)
