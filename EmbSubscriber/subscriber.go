@@ -69,10 +69,13 @@ func (subObj *msgbusSubscriber) receiveFromAllTopics() error {
 }
 
 func processMsg(sub *eiimsgbus.Subscriber) {
+	msgCount := make(map[string]int)
 	for {
 		select {
 		case msg := <-sub.MessageChannel:
 			glog.Infof("-- Received Message from topic %v : %v \n",msg.Name, msg.Data)
+			msgCount[msg.Name] += 1
+			glog.Infof("number of message recieved %v for topic %v", msgCount[msg.Name], msg.Name)
 		case err := <-sub.ErrorChannel:
 			glog.Errorf("-- Error receiving message: %v\n", err)
 		}
