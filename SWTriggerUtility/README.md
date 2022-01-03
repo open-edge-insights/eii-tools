@@ -73,13 +73,6 @@ Eg. In order to connect to `ia_video_ingestion` service which is configured with
 
    > **NOTE**: The same yml file to which the **SWTriggerUtility** entry was added in [pre-requisites](#software-trigger-utilily-pre-requisites) has to be selected while running [builder](https://github.com/open-edge-insights/eii-core/blob/master/build/builder.py)
 
-3. Run provisioning step as below:
-
-   ```sh
-   cd [WORKDIR]/IEdgeInsights/build/provision
-   sudo -E ./provision.sh  ../docker-compose.yml
-   ```
-
 ## Usage of Software Trigger Utility
 
 By default the SW Trigger Utility container will not execute anything and one needs to interact with the running container to generate the trigger commands. Make sure VI service is up and ready to process the commands from the utility.
