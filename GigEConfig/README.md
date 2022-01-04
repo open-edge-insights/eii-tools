@@ -56,6 +56,7 @@ Before executing the tool make sure following steps are executed:-
    be found here: <https://www.geeksforgeeks.org/python-virtual-environment/>
 
     ```sh
+    cd [WORKDIR]/IEdgeInsights/tools/GigEConfig
     pip3 install -r requirements.txt
     ```
 
