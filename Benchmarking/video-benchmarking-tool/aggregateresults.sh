@@ -145,5 +145,10 @@ TopData="${TopData},${next}"
 next=`grep "Top Memory utilization (KiB)" -A1 results.ppc | grep -v "Top Memory utilization (KiB)"`
 TopData="${TopData},${next}"
 
+# If PCMData is set to junk value, set Memory Read, Write, IO values to NA
+if [[ "$PCMData" == *"ia"* ]];
+then
+   PCMData='NA,NA,NA'
+fi
 
 echo $infodata,$CPUdata,$PCMData,$MemData,$MemData2,$TOTALfps,$FPSdata,$TopData >> $outputfile
