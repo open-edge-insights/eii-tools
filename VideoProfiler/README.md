@@ -141,7 +141,7 @@ module.
                     "Name": "default",
                     "PublisherAppName": "PyMultiClassificationIngestion",
                     "Topics": [
-                        "py_multi_calssification_results_stream"
+                        "py_multi_classification_results_stream"
                     ],
                     "Type": "zmq_ipc"
                 }
