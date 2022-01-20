@@ -83,10 +83,15 @@ It works along with the [jupyter_connector](https://github.com/open-edge-insight
    **Note:**
     > To achieve the same behaviour in Visual Studio Code(VSCode) instead of web browser, follow below steps:
     >
-    >- Install `Python` and `Jupyter` extensions in VSCode.
-    >- Run `Jupyter: Specify local or remote Jupyter server for connections` command from the Command Palette `(Ctrl+Shift+P)`.
-    >- When prompted to pick how to connect to Jupyter, select `Existing: Specify the URI of an existing server`.
-    >- When prompted to Enter the URI of a Jupyter server, provide the server's URI (hostname) with the authentication token included with a ?token= URL parameter as shown in the above example.
+    >1. In the consolidated `build/docker-compose.yml` file change the `read_only: true` to `read_only: false` for the service `ia_jupyter_notebook`.
+    >2. Run command `docker-compose up -d ia_jupyter_notebook`.
+    >3. Install `Remote - Containers` extension in VSCode.
+    >4. Run `Remote-Containers: Attach to Running Container` command from the Command Palette `(Ctrl+Shift+P)` and select `ia_jupyter_notebook` container.
+    >5. Install `Python` and `Jupyter` extensions in the `ia_jupyter_notebook` container in the VSCode.
+    >6. Run `Jupyter: Specify local or remote Jupyter server for connections` command from the Command Palette `(Ctrl+Shift+P)`.
+    >7. When prompted to pick how to connect to Jupyter, select `Existing: Specify the URI of an existing server`.
+    >8. When prompted to Enter the URI of a Jupyter server, provide the server's URI (hostname) with the authentication token included with a ?token= URL parameter as shown in the above example.
+    >9. As you are attached to `ia_jupyter_notebook` container as part of step 4, please open folder `(Ctrl+K+Ctrl+O)` `/home/eiiuser` to update the respective udf_template and main notebooks and re-run.
 
 5. Once the Jupyter Notebook service is launched in the browser, run the [main.ipynb](main.ipynb) file visible in the list of files available. Make sure Python3.8 kernel is selected.
 
