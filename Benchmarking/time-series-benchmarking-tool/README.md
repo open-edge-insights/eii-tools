@@ -26,11 +26,12 @@ Steps for running a benchmarking test case:
 
    ```
  USAGE:
-   ./execute_test.sh TEST_DIR STREAMS SLEEP PCM_HOME [EII_HOME]
+   ./execute_test.sh TEST_DIR STREAMS PORT SLEEP PCM_HOME [EII_HOME]
 
  WHERE:
    TEST_DIR  - Directory containing services.yml and config files for influx, telegraf, and kapacitor
    STREAMS   - The number of streams (1, 2, 4, 8, 16)
+   PORT      - MQTT broker port
    SLEEP     - The number of seconds to wait after the containers come up
           PCM_HOME  - The absolute path to the PCM repository where pcm.x is built
           [EII_HOME] - [Optional] Absolut path to EII home directory, if running from a non-default location
@@ -39,7 +40,7 @@ Steps for running a benchmarking test case:
    For example:
 
     ```sh
-    sudo -E ./execute_test.sh $PWD/samples 2 10 /opt/intel/pcm /home/intel/IEdgeInsights
+    sudo -E ./execute_test.sh $PWD/samples 2 1883 10 /opt/intel/pcm /home/intel/IEdgeInsights
     ```
 
 4. The execution log, performance logs, and the output.ppc will be saved in TEST_DIR/output/< timestamp >/ so that the same test case can be ran multiple times without overwriting the output. You can see if the test ocurred any errors in the execution.log, and you can see the results of a successful test in output.ppc

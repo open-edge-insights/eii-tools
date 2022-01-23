@@ -31,6 +31,7 @@ function usage(){
 	echo "WHERE:" 1>&2
 	echo "  TEST_DIR  - Directory containing services.yml and config files for influx, telegraf, and kapacitor" 1>&2
 	echo "  STREAMS   - The number of streams (1, 2, 4, 8, 16)" 1>&2
+	echo "  PORT      - MQTT broker port" 1>&2
 	echo "  SLEEP     - The number of seconds to wait after the containers come up " 1>&2
 	echo "	PCM_HOME  - The absolute path to the PCM repository where pcm.x is built" 1>&2
 	echo "	[EII_HOME] - [Optional] Absolut path to EII home directory, if running from a non-default location" 1>&2
@@ -43,6 +44,7 @@ if [ -z "$1" ]; then usage; fi
 if [ -z "$2" ]; then usage; fi
 if [ -z "$3" ]; then usage; fi
 if [ -z "$4" ]; then usage; fi
+if [ -z "$5" ]; then usage; fi
 
 
 # --------------------------------------------------------------
@@ -50,13 +52,14 @@ if [ -z "$4" ]; then usage; fi
 # --------------------------------------------------------------
 TEST_DIR=$1
 STREAMS=$2
-SLEEP=$3
-PCM_HOME=$4
+PORT=$3
+SLEEP=$4
+PCM_HOME=$5
 EII_HOME="../../.."
 
-if [ $# -eq 5 ]
+if [ $# -eq 6 ]
 then
-    EII_HOME=$5
+    EII_HOME=$6
 fi
 
 DATETIME=`date -u +"%Y%b%d_%H%M"`
@@ -64,7 +67,7 @@ DATA_DIR="${TEST_DIR}/output"
 ACTUAL_DATA_DIR="${DATA_DIR}/${DATETIME}"
 LOG_FILE="${ACTUAL_DATA_DIR}/execute.log"
 CFG_DIR=${TEST_DIR}
-
+HOST_IP=$(ip route get 1 | awk '{print $7}'|head -1)
 
 # --------------------------------------------------------------
 # Create data directories
@@ -134,6 +137,10 @@ pushd "${EII_HOME}/build"
 run_logged python3 builder.py -f usecases/services.yml
 popd
 
+./data_rate.sh &
+
+pushd "${EII_HOME}/tools/mqtt/publisher"
+python3 publisheralgo.py --host ${HOST_IP} --port ${PORT} --topic "test/rfc_data" --json "./json_files/*.json" --streams ${STREAMS}
 
 # --------------------------------------------------------------
 # Launch
