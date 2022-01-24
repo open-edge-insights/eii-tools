@@ -6,17 +6,15 @@ The Processor Counter Monitor (PCM) is required for measuring memory read/write 
 
 If you do not have PCM on your system, those columns will be blank in the output.csv.
 
+Refer [README-Using-video-accelerators](https://github.com/open-edge-insights/eii-core#using-video-accelerators-in-ingestionanalytics-containers) for using video accelerators and follow the required pre-reqisities to work with GPU, MYRIAD and HDDL devices.
+
 > **Note:**
 
-> * For running the gstreamer pipeline mentioned in [sample_test/config.json](sample_test/config.json) one needs to copy the required model files to [WORKDIR]/IEdgeInsights/VideoIngestion/models by referring [models-readme](https://github.com/open-edge-insights/video-ingestion/blob/master/models/README.md).
+> - For running the gstreamer pipeline mentioned in [sample_test/config.json](sample_test/config.json) one needs to copy the required model files to [WORKDIR]/IEdgeInsights/VideoIngestion/models by referring [models-readme](https://github.com/open-edge-insights/video-ingestion/blob/master/models/README.md).
 
-> * For using `MYRIAD` device for inference please add `user: root` in docker-compose.yml file for VI. If IPC mode is used then `user: root` needs to be added for VideoProfiler docker-compose.yml file as well.
+> - For `GPU` device there is an initial delay while the model is compiled and loaded. This can affect the first benchmarking results especially on low stream count. This will be reduced on subsequent runs using kernel caching. To make sure the kernel cache files are created please remove `read_only: true` in docker-compose.yml file for VI so that files can be generated.
 
-> * For `GPU` device there is an initial delay while the model is compiled and loaded. This can affect the first benchmarking results especially on low stream count. This will be reduced on subsequent runs using kernel caching. To make sure the kernel cache files are created please remove `read_only: true` in docker-compose.yml file for VI so that files can be generated.
-
-> * The docker-compose.yml files of VI and VideoProfiler gets picked from their respective repos. So any changes needed should be applied in their repsective repos.
-
-> * Refer [README-Using-video-accelerators](https://github.com/open-edge-insights/eii-core#using-video-accelerators-in-ingestionanalytics-containers) for using video accelerators.
+> - The docker-compose.yml files of VI and VideoProfiler gets picked from their respective repos. So any changes needed should be applied in their repsective repos.
 
 Steps for running a benchmarking test case:
 
