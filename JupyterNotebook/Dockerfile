@@ -72,9 +72,8 @@ RUN mkdir -p /home/$EII_USER_NAME/.local/share/jupyter && \
     chown -R $EII_USER_NAME:$EII_USER_NAME /home/$EII_USER_NAME
 
 ENV HOME_DIR "/home/$EII_USER_NAME"
-ENV EIIUSER=${EII_USER_NAME}
 
-COPY ./entrypoint.sh ./entrypoint.sh
+USER ${EII_USER_NAME}
 
 HEALTHCHECK NONE
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["./start_jupyter.sh"]

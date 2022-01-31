@@ -32,6 +32,13 @@ COPY publisher.py /
 COPY demo_datafile.csv /
 COPY json_files /json_files
 
+ARG EII_UID
+ARG EII_USER_NAME
+RUN groupadd $EII_USER_NAME -g $EII_UID && \
+    useradd -r -u $EII_UID -g $EII_USER_NAME $EII_USER_NAME
+
+USER ${EII_USER_NAME}
+
 HEALTHCHECK NONE
 ENTRYPOINT ["python3", "-u", "publisher.py"]
 

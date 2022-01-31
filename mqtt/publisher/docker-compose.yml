@@ -26,8 +26,12 @@ services:
     build:
       context: $PWD/../tools/mqtt/publisher
       dockerfile: $PWD/../tools/mqtt/publisher/Dockerfile
+      args:
+        EII_USER_NAME: ${EII_USER_NAME}
+        EII_UID: ${EII_UID}
     container_name: ia_mqtt_publisher
     hostname: ia_mqtt_publisher
+    read_only: true
     image:  ${DOCKER_REGISTRY}ia_mqtt_publisher:${EII_VERSION}
     restart: unless-stopped
     security_opt:
