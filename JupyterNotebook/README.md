@@ -101,7 +101,9 @@ It works along with the [jupyter_connector](https://github.com/open-edge-insight
 
 > **Note:** After altering/creating a new udf, run main.ipynb  and restart **VideoIngestion** or **VideoAnalytics** with which you have enabled jupyter notebook service.
 
-8. Once the user is satisfied with the functionality of the UDF, the udf can be saved/exported by clicking on the **Download as** option and selecting **(.py)** option. The downloaded udf can then be directly used by placing it in the [../../common/video/udfs/python](https://github.com/open-edge-insights/video-common/blob/master/udfs/python) directory or can be integrated and used with **CustomUDFs**.
+8. Once the user is satisfied with the functionality of the UDF, the udf can be saved/exported by clicking on the **Download as** option and selecting **(.py)** option.
+   To save the UDF in VSCode, goto **More Actions**, select **Export** option. When prompted **Export As**, select **Python Script**. From the Main menu, goto **File-Save As**, select **Show Local**, rename and save the file.
+   The downloaded udf can then be directly used by placing it in the [../../common/video/udfs/python](https://github.com/open-edge-insights/video-common/blob/master/udfs/python) directory or can be integrated and used with **CustomUDFs**.
 
 > **Note:**
 >
