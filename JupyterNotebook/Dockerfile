@@ -69,11 +69,11 @@ ENV PATH $PATH:/app/.local/bin
 # This is required since JupyterNotebook expects
 # a /home/$EII_USER_NAME/.local/share/jupyter to be present
 RUN mkdir -p /home/$EII_USER_NAME/.local/share/jupyter && \
-    chown -R $EII_USER_NAME:$EII_USER_NAME /home/$EII_USER_NAME
+    chown -R $EII_USER_NAME:$EII_USER_NAME /home/
 
 ENV HOME_DIR "/home/$EII_USER_NAME"
 
 USER ${EII_USER_NAME}
 
 HEALTHCHECK NONE
-ENTRYPOINT ["./start_jupyter.sh"]
+ENTRYPOINT ["./start_jupyter.sh", "/home/eiiuser"]
