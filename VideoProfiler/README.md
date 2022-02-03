@@ -185,6 +185,69 @@ module.
       In case multiple UDFs are used, the FPS UDF is required to be added as the last UDF.
   > - In case running this tool with VI & VA in two different nodes, same time needs to be set in both the nodes.
 
+## Running VideoProfiler in helm usecase
+
+For running VideoProfiler in helm usecase to subscribe to either VideoIngestion/VideoAnalytics or any other EII service, the etcd endpoint, volume mount for helm certs and service endpoints are to be updated.
+
+For connecting to the etcd server running in helm environment, the endpoint and required volume mounts should be modified in the following manner in environment & volumes section of [docker-compose.yml](docker-compose.yml):
+
+  ```yaml
+  ia_video_profiler:
+    depends_on:
+      - ia_common
+    ...
+    environment:
+    ...
+      ETCD_HOST: ${ETCD_HOST}
+      ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
+      # Update this variable referring
+      # for helm use case
+      ETCD_ENDPOINT: <HOST_IP>:32379
+      CONFIGMGR_CERT: "/run/secrets/VideoProfiler/VideoProfiler_client_certificate.pem"
+      CONFIGMGR_KEY: "/run/secrets/VideoProfiler/VideoProfiler_client_key.pem"
+      CONFIGMGR_CACERT: "/run/secrets/rootca/cacert.pem"
+    ...
+    volumes:
+      - "${EII_INSTALL_PATH}/tools_output:/app/out"
+      - "${EII_INSTALL_PATH}/sockets:${SOCKET_DIR}"
+      - ./helm-eii/eii-deploy/Certificates/rootca:/run/secrets/rootca
+      - ./helm-eii/eii-deploy/Certificates/VideoProfiler:/run/secrets/VideoProfiler
+  ```
+
+For connecting to any service running in helm usecase, the container IP associated with the specific service should be updated in the Endpoint section in VideoProfiler [config](config.json):
+
+    The IP associated with the service container can be obtained by checking the container pod IP using docker inspect. Assuming we are connecting to VideoAnalytics service, the command to be run would be:
+
+      ```sh
+        docker inspect <VIDEOANALYTICS CONTAINER ID> | grep VIDEOANALYTICS
+      ```
+
+      The output of the above command consists the IP of the VideoAnalytics container that can be updated in VideoProfiler config using EtcdUI:
+
+      ```sh
+        "VIDEOANALYTICS_SERVICE_HOST=10.99.204.80"
+      ```
+
+      The config can be updated with the obtained container IP in the following way:
+
+      ```javascript
+      {
+        "interfaces": {
+            "Subscribers": [
+                {
+                    "Name": "default",
+                    "Type": "zmq_tcp",
+                    "EndPoint": "10.99.204.80:65013",
+                    "PublisherAppName": "VideoAnalytics",
+                    "Topics": [
+                        "camera1_stream_results"
+                    ]
+                }
+            ]
+        }
+      }
+      ```
+
 ## Optimizing EII Video pipeline by analysing Video Profiler results
 
 1. VI ingestor/UDF input queue is blocked, consider reducing ingestion rate.
