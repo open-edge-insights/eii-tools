@@ -12,6 +12,12 @@ HttpTestServer runs a simple HTTP Test server with security being optional.
     ./generate_testserver_cert.sh test-server-ip
     ```
 
+* Update no_proxy to connect to RestDataExport server
+
+    ```
+    export no_proxy=$no_proxy,<HOST_IP>
+    ```
+
 ## Starting HttpTestServer
 
 * Please run the below command to start the HttpTestServer
