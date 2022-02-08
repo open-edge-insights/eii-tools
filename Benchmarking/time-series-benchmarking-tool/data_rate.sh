@@ -24,25 +24,27 @@
 # Fetch SAR data values and convert to csv format
 # --------------------------------------------------------------
 
-sar_data_file="sar_cmd_data.txt"
-output_file="data_output.csv"
+ACTUAL_DATA_DIR=$1
+sar_data_file="${ACTUAL_DATA_DIR}/sar_cmd_data.txt"
+output_file="${ACTUAL_DATA_DIR}/output_data.csv"
 
-if [ -f "$sar_data_file" ] ; then
-    rm "$sar_data_file"
-fi
+# Install dependency
+apt-get install -y sysstat
+
+# Executing data command
+echo "Fetching network interface data values"
 sar -n DEV 1 60 > ${sar_data_file}
 
+network_interface=`netstat -i | grep "en" | awk '{print $1}'`
 
-if [ -f "$output_file" ] ; then
-    rm "$output_file"
-fi
+# Update the values to the csv file
 
 title=`head -n 3 ${sar_data_file} | tail -n 1 | cut -d' ' -f3-`
 title_data=`echo ${title} | sed 's/ /,/g'`
-echo ${title_data} >> ${output_file}
+echo "${title_data}" >> ${output_file}
 
-network_value=`grep eno1 ${sar_data_file} | tail -n 1`
-network_value_data=`echo ${network_value} | sed 's/ /,g'`
-echo ${network_value_data} >> ${output_file}
+network_value=`grep ${network_interface} ${sar_data_file} | tail -n 1`
+network_value_data=`echo ${network_value} | sed 's/ /,/g'`
+echo "${network_value_data}" >> ${output_file}
 
 

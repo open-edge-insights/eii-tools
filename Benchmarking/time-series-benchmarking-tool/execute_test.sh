@@ -68,6 +68,7 @@ ACTUAL_DATA_DIR="${DATA_DIR}/${DATETIME}"
 LOG_FILE="${ACTUAL_DATA_DIR}/execute.log"
 CFG_DIR=${TEST_DIR}
 HOST_IP=$(ip route get 1 | awk '{print $7}'|head -1)
+SERVICE="benchmarking"
 
 # --------------------------------------------------------------
 # Create data directories
@@ -133,14 +134,11 @@ notice "Copying in test configuration files"
 notice "Generating test configuration files"
 run_logged cp -v ${TEST_DIR}/services.yml ${EII_HOME}/build/usecases/services.yml
 
+
 pushd "${EII_HOME}/build"
 run_logged python3 builder.py -f usecases/services.yml
 popd
 
-./data_rate.sh &
-
-pushd "${EII_HOME}/tools/mqtt/publisher"
-python3 publisheralgo.py --host ${HOST_IP} --port ${PORT} --topic "test/rfc_data" --json "./json_files/*.json" --streams ${STREAMS}
 
 # --------------------------------------------------------------
 # Launch
@@ -151,6 +149,14 @@ run_logged docker-compose -f docker-compose-build.yml build
 run_logged docker-compose up -d
 run_logged sleep 10
 popd
+
+
+./data_rate.sh ${ACTUAL_DATA_DIR} &
+
+pushd "${EII_HOME}/tools/mqtt/publisher"
+python3 publisher.py --host ${HOST_IP} --port ${PORT} --topic "test/rfc_data" --json "./json_files/*.json" --streams ${STREAMS} --output "${ACTUAL_DATA_DIR}/output_data.csv" --service ${SERVICE}
+popd
+
 
 ./ts-start-stats.sh ${ACTUAL_DATA_DIR} ${SLEEP} ${PCM_HOME} ${EII_HOME}
 

@@ -1,4 +1,4 @@
-# Copyright (c) 2020 Intel Corporation.
+# Copyright (c) 2022 Intel Corporation.
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -19,29 +19,41 @@
 # SOFTWARE.
 
 
-"""Simple MQTT publisher which publishes randomized temperature sensor data.
 """
+Sample MQTT publisher to publisher sample temperature, humidity data etc.
+"""
+
 import json
 import time
 import random
 import argparse
 import re
 import sys
+import os
 import glob
+import pandas as pd
 import paho.mqtt.client as mqtt
 from multiprocessing import Process
+from influxdb import InfluxDBClient
 
 # MQTT topic string
 TOPIC_TEMP = 'temperature/simulated/0'
 TOPIC_PRES = 'pressure/simulated/0'
 TOPIC_HUMD = 'humidity/simulated/0'
 
+# INFLUXDB Credentials
+INFLUXDB_USERNAME = os.getenv("INFLUXDB_USERNAME")
+INFLUXDB_PASSWORD = os.getenv("INFLUXDB_PASSWORD")
+MEASUREMENT_NAME = "tc_data"
+
+SERVICE = 'mqtt'
 SAMPLING_RATE = 10  # 500.0 # 2msecdd
 SUBSAMPLE = 1  # 1:every row, 500: every 500 rows (ie. every 1 sec)
-
+POINTSPERPROCESS = 5000
 HOST = 'localhost'
 PORT = 1883
 PROCS = []
+DATA_PUBLISH_WAIT_PERIOD = 10
 
 
 def g_tick(period=1):
@@ -58,8 +70,7 @@ def parse_args():
     """Parse command line arguments.
     """
     a_p = argparse.ArgumentParser()
-    a_p.add_argument('--host', default='ia_mqtt_broker',
-                     help='MQTT broker host')
+    a_p.add_argument('--host', default='localhost', help='MQTT broker host')
     a_p.add_argument('--port', default=1883, type=int,
                      help='MQTT broker port')
     a_p.add_argument('--qos', default=1, type=int, help='MQTT publish qos')
@@ -88,13 +99,18 @@ def parse_args():
     a_p.add_argument('--sampling_rate', default=SAMPLING_RATE, type=float,
                      help='Data Sampling Rate')
     a_p.add_argument('--streams', default=1, type=int,
-                     help='Number of MQTT streams to send. This should '
-                          'correspond to the number of brokers running')
+                     help='Number of MQTT streams to send.'
+                     'This should correspond to the number of brokers running')
+    a_p.add_argument('--output', default=None, type=str,
+                     help='Output file path')
+    a_p.add_argument('--service', default=SERVICE, type=str,
+                     help='service tool for publish data')
     return a_p.parse_args()
 
 
 def stream_csv(mqttc, topic, subsample, sampling_rate, filename):
-    """Stream the csv file
+    """
+    Stream the csv file
     """
     target_start_time = time.time()
     row_count = 0
@@ -134,24 +150,38 @@ def stream_csv(mqttc, topic, subsample, sampling_rate, filename):
         filename, row_served, time.time() - target_start_time))
 
 
-def send_json_cb(instance_id, host, port, topic, data, qos):
-    client = mqtt.Client(str(instance_id))
+def send_json_cb(instance_id, host, port, topic, data, qos, service):
+    """ Send JSON
+    """
+    if service == "benchmarking":
+        client = mqtt.Client(str(instance_id))
+    else:
+        client = mqtt.Client(str(port))
     client.on_disconnect = on_disconnect
     client.on_connect = on_connect
     client.connect(host, port, 60)
     client.loop_start()
-    try:
-        while True:
+    if service == "benchmarking":
+        for i in range(0, POINTSPERPROCESS):
             t_s = time.time()
             for value in data:
+                print(value)
                 msg = {'ts': t_s, 'value': value}
                 client.publish(topic, json.dumps(msg), qos=qos)
-                time.sleep(1)
-    except KeyboardInterrupt:
-        client.loop_stop()
+                time.sleep(instance_id)
+    else:
+        try:
+            while True:
+                t_s = time.time()
+                for value in data:
+                    msg = {'ts': t_s, 'value': value}
+                    client.publish(topic, json.dumps(msg), qos=qos)
+                    time.sleep(1)
+        except KeyboardInterrupt:
+            client.loop_stop()
 
 
-def publish_json(mqttc, topic, path, qos, argsinterval, streams, host, port):
+def publish_json(mqttc, topic, path, qos, argsinterval, streams, host, port, output_file, service):
     """ Publish the JSON file
     """
     data = []
@@ -161,21 +191,45 @@ def publish_json(mqttc, topic, path, qos, argsinterval, streams, host, port):
         with open(file) as fpd:
             data.append(fpd.read())
     print("Publishing json files to mqtt in loop")
-    if streams == 1:
-        while True:
-            t_s = time.time()
-            for value in data:
-                msg = {'ts': t_s, 'value': value}
-                mqttc.publish(topic, json.dumps(msg), qos=qos)
-                msg.clear()
-                if argsinterval > 1000:
-                    argsinterval = 1000
-                time.sleep(1)
+    if service == "benchmarking":
+        intial_count_value = calculate_data_value(host, port)
+        print("Path :", path, " files: ", files)
+        totalpoints = streams * POINTSPERPROCESS * len(data)
+        processes = []
+        print("streams: ", streams, "topic: ", topic, " pointsperprocess: ", POINTSPERPROCESS, " length of data: ",
+              len(data))
+        try:
+            for i in range(0, streams):
+                port = port + i
+                processes.append(Process(target=send_json_cb, args=(argsinterval, host, port, topic, data, qos, service)))
+                processes[i].start()
+            for process in processes:
+                process.join()
+            print("Success: ", totalpoints, " points sent!")
+            time.sleep(DATA_PUBLISH_WAIT_PERIOD)
+            # Calculate the data loss between published data and received data in influxdb
+            final_count_value = calculate_data_value(host, port)
+            count_value = final_count_value - intial_count_value
+            if count_value != totalpoints:
+                data_new = pd.read_csv(output_file)
+                data_new['Data_Loss'] = str(count_value)
+                data_new.to_csv(output_file, index=False)
+        except Exception as e:
+            print("Exception occured while publishing the points")
     else:
-        for i in range(0, streams):
-            PROCS.append(Process(target=send_json_cb, args=(i, host, port,
-                                                            topic, data, qos)))
-            PROCS[i].start()
+        if streams == 1:
+            while True:
+                t_s = time.time()
+                for value in data:
+                    msg = {'ts': t_s, 'value': value}
+                    mqttc.publish(topic, json.dumps(msg), qos=qos)
+                    msg.clear()
+                    time.sleep(1)
+        else:
+            for i in range(0, streams):
+                PROCS.append(Process(target=send_json_cb, args=(i, host, port,
+                                                            topic, data, qos, service)))
+                PROCS[i].start()
 
 
 def update_topic(args_dict, topics, topic_data):
@@ -191,6 +245,25 @@ def update_topic(args_dict, topics, topic_data):
         else:
             updated_topics[value] = [key]
     return updated_topics
+
+
+def calculate_data_value(host, port):
+    """
+    Calculate the measurement count value
+    """
+    try:
+        count_value = 0
+        client = InfluxDBClient(host=host, port=port, username=INFLUXDB_USERNAME, password=INFLUXDB_PASSWORD, ssl=True, verify_ssl=False)
+        client.switch_database('datain')
+        results = client.query('SELECT count(*) FROM {}'.format(MEASUREMENT_NAME))
+        point = results.get_points()
+        for item in point:
+            count_value = item['count_ts']
+        return count_value
+    except:
+        # measurement not created
+        count_value = 0
+        return count_value
 
 
 def on_disconnect(client, userdata, rc):
@@ -235,7 +308,9 @@ def main():
                          args.interval,
                          args.streams,
                          args.host,
-                         args.port)
+                         args.port,
+                         args.output,
+                         args.service)
 
         else:
             if not updated_topics:
@@ -264,7 +339,7 @@ def main():
         else:
             for i in range(0, args.streams):
                 PROCS[i].close()
-
+                client[i].loop_stop()
 
 if __name__ == '__main__':
     main()
