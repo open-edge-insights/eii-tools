@@ -88,7 +88,7 @@ def parse_args():
     a_p.add_argument('--sampling_rate', default=SAMPLING_RATE, type=float,
                      help='Data Sampling Rate')
     a_p.add_argument('--streams', default=1, type=int,
-                     help='Number of MQTT streams to send.
+                     help='Number of MQTT streams to send. \
                      This should correspond to the number of brokers running')
     return a_p.parse_args()
 
@@ -163,18 +163,22 @@ def publish_json(host, topic, path, qos, argsinterval, streams, startport):
     for file in files:
         with open(file) as fpd:
             data.append(fpd.read())
-    totalpoints=streams*pointsperprocess*len(data)
+    totalpoints = streams*pointsperprocess*len(data)
     print("Publishing json files to mqtt in loop")
     processes = []
-    print("streams: ", streams, "topic: ", topic, " pointsperprocess: ", pointsperprocess, " length of data: ",len(data))
+    print("streams: ", streams, "topic: ", topic, " pointsperprocess: ",
+          pointsperprocess, " length of data: ", len(data))
     for i in range(0, streams):
-        port=startport+i
-        processes.append(Process(target=send_json_cb, args=(host, port, topic, data, qos, argsinterval)))
-        processes[i].start()   
+        port = startport + i
+        processes.append(Process(target=send_json_cb,
+                                 args=(host, port, topic, data,
+                                       qos, argsinterval)))
+        processes[i].start()
     for process in processes:
-        process.join() 
-    print("Success: ",totalpoints," points sent!")
-    # Calculate the data loss between published data and received data in influxdb
+        process.join()
+    print("Success: ", totalpoints, " points sent!")
+    # Calculate the data loss between published data and
+    # received data in influxdb
     final_count_value = calculate_data_value(host, startport)
     count_value = final_count_value - intial_count_value
     # TODO: Yet to test
@@ -204,7 +208,8 @@ def calculate_data_value(host, port):
     """
     try:
         count_value = 0
-        client = InfluxDBClient(host=host, port=port, username="admin", password="admin123", ssl=True, verify_ssl=False)
+        client = InfluxDBClient(host=host, port=port, username="admin",
+                                password="admin123", ssl=True, verify_ssl=False)
         client.switch_database('datain')
         results = client.query('SELECT count(*) FROM "ts_data"')
         point = results.get_points()
@@ -218,11 +223,13 @@ def calculate_data_value(host, port):
 
 
 def on_disconnect(client, userdata, rc):
-    print("MQTT disconnected:\nclient: ", client, "\n userdata: ", userdata,"\n rc: ", rc)
+    print("MQTT disconnected:\nclient: ", client, "\n userdata: ",
+          userdata, "\n rc: ", rc)
 
 
 def on_connect(client, userdata, flags, rc):
-    print("MQTT Connected:\nclient: ", client, "\n userdata: ", userdata, "\n rc: ", rc)
+    print("MQTT Connected:\nclient: ", client, "\n userdata: ",
+          userdata, "\n rc: ", rc)
 
 
 def main():
@@ -279,6 +286,7 @@ def main():
             for i in range(0, args.streams-1):
                 PROCS[i].close()
                 client[i].loop_stop()
+
 
 if __name__ == '__main__':
     main()

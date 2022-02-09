@@ -130,8 +130,9 @@ class TimeSeriesCalculator:
                 rep_no = 1
                 metrics_data = data[1]
                 while (rep_no):
-                    # Removing dict or list from meta_data value which might cause issue
-                    # in times of spliting with ',' if any ',' is present inside.
+                    # Removing dict or list from meta_data value which might
+                    # cause issue in times of spliting with ',' if any ','
+                    # is present inside.
                     metrics_data, rep_no = re.subn(r'\{[^{}]*\}|\[[^[\]]*\]', '""', metrics_data)
                 metrics = metrics_data.split(',')
                 for i in metrics:
@@ -207,7 +208,6 @@ class TimeSeriesCalculator:
             logger.error("Input timestamp 'ts' or 'ts_plugin_in' is missing. Exiting..")
             os._exit(1)
 
-
         # time taken in telegraf input plugin
         if 'total_time_spent_in_plugin' in records:
             per_sample_stats['ts_telegraf_in_diff'] = int(records[
@@ -217,7 +217,8 @@ class TimeSeriesCalculator:
         if all(key in records for key in (
             'ts_telegraf_output_pub_exit', 'ts_telegraf_output_data_entry')):
             per_sample_stats['ts_telegraf_out_diff'] = int(records[
-                'ts_telegraf_output_pub_exit']) - int(records['ts_telegraf_output_data_entry'])
+                'ts_telegraf_output_pub_exit']) - int(records[
+                'ts_telegraf_output_data_entry'])
 
         # time taken for mqtt publisher to influxdb
         if all(key in records for key in (

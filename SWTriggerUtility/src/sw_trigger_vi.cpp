@@ -26,7 +26,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <iostream>
 #include <unistd.h>
 
 #include <eii/msgbus/msgbus.h>
@@ -34,6 +33,7 @@
 #include <eii/utils/logger.h>
 #include <eii/utils/json_config.h>
 #include <eii/utils/config.h>
+#include <iostream>
 #include "eii/config_manager/config_mgr.hpp"
 
 
@@ -69,7 +69,7 @@ enum ReqStatusCode {
 };
 
 void usage(const char* name) {
-        std::cout <<name<<" usage: \n\n \
+        std::cout << name << " usage: \n\n \
                     ./sw_trigger_vi [Duration to ingest in seconds] [<START_INGESTION | STOP_INGESTION>] [Config file path] \n\n \
                     -> Optional argument: START_INGESTION | STOP_INGESTION - Action to send to Video Ingestion service  \n \
                     -> Optional argument: Duration to ingest in seconds (default=120 seconds). \n \
@@ -114,12 +114,12 @@ class SwTriggerUtility {
             if (log_level_cvt == NULL) {
                 const char* err = "\"log_level\" key is missing, setting to default log level as debug";
                 LOG_WARN("%s", err);
-                m_log_level = 3; // Since, we are not exiting, setting default to continue
+                m_log_level = 3;  // Since, we are not exiting, setting default to continue
             } else {
                 m_log_level = log_level_cvt->body.integer;
             }
 
-            //num_of_cycles
+            // num_of_cycles
             config_value_t* num_of_cyles_cvt = get_config_value(app_config->cfg,
                                                                "num_of_cycles");
 
@@ -130,7 +130,6 @@ class SwTriggerUtility {
             } else {
                 m_num_of_cycles = num_of_cyles_cvt->body.integer;
             }
-
         }
 
         /**
@@ -164,7 +163,7 @@ class SwTriggerUtility {
                 // get access to the allowed_clients list in VI.
                 ConfigMgr* ch = new ConfigMgr();
                 AppCfg* cfg = ch->getAppConfig();
-                if(cfg == NULL) {
+                if (cfg == NULL) {
                     const char* err = "Failed to initialize AppCfg object";
                     throw("%s", err);
                 }
@@ -202,7 +201,6 @@ class SwTriggerUtility {
                     LOG_ERROR("%s", err);
                     throw err;
                 }
-
             }
             catch (std::exception& ex) {
                 LOG_ERROR("Exception = %s occurred in construction of SW_trigger_utility object ", ex.what());
@@ -267,7 +265,7 @@ class SwTriggerUtility {
                     LOG_INFO_0("REQUEST NOT HONORED ");
                 } else if (status == REQUEST_ALREADY_RUNNING) {
                     LOG_INFO_0("DUPLICATE REQUEST SENT BY CLIENT, AS INGESTION IS ALREADY RUNNING");
-                } else if(status == REQUEST_ALREADY_STOPPED) {
+                } else if (status == REQUEST_ALREADY_STOPPED) {
                     LOG_INFO_0("DUPLICATE REQUEST SENT BY CLIENT, AS INGESTION IS ALREADY STOPPED");
                 } else if (status == REQUEST_COMMAND_NOT_REGISTERED) {
                     LOG_INFO_0("COMMAND IS NOT REGISTERED WITH COMMAND HANDLER, (Check if the command for example \"SW_Trigger\") is enabled in the config or not");
@@ -317,7 +315,6 @@ class SwTriggerUtility {
                             LOG_ERROR("%s", err);
                             throw err;
                         }
-
                     }
                     break;
                     case STOP_INGESTION: {
@@ -402,14 +399,13 @@ class SwTriggerUtility {
                 --count;
             }
         }
-
 };
 
 
 int main(int argc, char **argv) {
     try {
         SwTriggerUtility* sw_trigger_obj = NULL;
-        if (argc > 3 ) {
+        if (argc > 3) {
             usage(argv[0]);
             return -1;
         }
@@ -419,7 +415,7 @@ int main(int argc, char **argv) {
         switch (argc) {
             case 2: case 3: {
                 // checking if the second arguement is the config json file, if yes then go to case 1
-                if((std::string(argv[1]).find("json", 0)) != std::string::npos){
+                if ((std::string(argv[1]).find("json", 0)) != std::string::npos) {
                     goto case_one;
                 }
                 if (!strcmp(argv[1], "START_INGESTION")) {

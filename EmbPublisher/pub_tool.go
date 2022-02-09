@@ -71,8 +71,8 @@ func main() {
 		return
 	}
 
-	msg_file := "./datafiles/" + appConfig["msg_file"].(string)
-	msg, err := eiimsgbus.ReadJsonConfig(msg_file)
+	msgFile := "./datafiles/" + appConfig["msg_file"].(string)
+	msg, err := eiimsgbus.ReadJsonConfig(msgFile)
 	if err != nil {
 		fmt.Printf("-- Failed to parse config: %v\n", err)
 		return
@@ -83,9 +83,8 @@ func main() {
 	if err != nil {
 		fmt.Printf("-- Failed to Marshal the message : %v\n", err)
 		return
-	} else {
-		fmt.Printf("-- message size is: %v\n", len(buffer))
 	}
+	fmt.Printf("-- message size is: %v\n", len(buffer))
 
 	var msgData map[string]interface{}
 	if err := json.Unmarshal(buffer, &msgData); err != nil {
@@ -101,13 +100,13 @@ func main() {
 
 	for _, tpName := range topics {
 		wg.Add(1)
-		go publisher_function(config, tpName, msgData, intval, itr)
+		go publisherFunction(config, tpName, msgData, intval, itr)
 	}
 
 	wg.Wait()
 }
 
-func publisher_function(config map[string]interface{}, topic string, msgData map[string]interface{}, intval time.Duration, itr int64) {
+func publisherFunction(config map[string]interface{}, topic string, msgData map[string]interface{}, intval time.Duration, itr int64) {
 	defer wg.Done()
 
 	fmt.Printf("-- Initializing message bus context:%v\n", config)

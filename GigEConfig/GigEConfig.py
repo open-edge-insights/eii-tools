@@ -182,7 +182,7 @@ if __name__ == '__main__':
         '--port', '-port', default='2379',
         help='Etcd host port'
     )
-    
+
     args = my_parser.parse_args()
     pfs_file = args.pfs_file
     etcd_flag = args.etcd

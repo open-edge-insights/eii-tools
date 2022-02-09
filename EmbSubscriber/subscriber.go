@@ -74,7 +74,7 @@ func processMsg(sub *eiimsgbus.Subscriber) {
 		select {
 		case msg := <-sub.MessageChannel:
 			glog.Infof("-- Received Message from topic %v : %v \n",msg.Name, msg.Data)
-			msgCount[msg.Name] += 1
+			msgCount[msg.Name]++
 			glog.Infof("number of message recieved %v for topic %v", msgCount[msg.Name], msg.Name)
 		case err := <-sub.ErrorChannel:
 			glog.Errorf("-- Error receiving message: %v\n", err)
@@ -86,7 +86,7 @@ func processMsg(sub *eiimsgbus.Subscriber) {
 
 // StopAllSubscribers function to close all subscriber objects
 func (subObj *msgbusSubscriber) stopAllSubscribers() {
-	for sub, _ := range subObj.msgBusSubMap {
+	for sub := range subObj.msgBusSubMap {
 		sub.Close()
 	}
 }
