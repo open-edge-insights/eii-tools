@@ -57,6 +57,6 @@ services:
     volumes:
       - "${EII_INSTALL_PATH}/tools_output:/output"
       - "${EII_INSTALL_PATH}/sockets:${SOCKET_DIR}"
-      - ./Certificates/DiscoverHistory:/run/secrets/DiscoverHistory
-      - ./Certificates/rootca:/run/secrets/rootca
+      - ./Certificates/DiscoverHistory:/run/secrets/DiscoverHistory:ro
+      - ./Certificates/rootca/cacert.pem:/run/secrets/rootca/cacert.pem:ro
 

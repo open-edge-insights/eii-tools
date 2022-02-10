@@ -65,7 +65,7 @@ services:
     volumes:
       - "vol_eii_socket:${SOCKET_DIR}"
       - "$EII_INSTALL_PATH/tools_output:/home/${EII_USER_NAME}"
-      - ./Certificates/JupyterNotebook:/run/secrets/JupyterNotebook
-      - ./Certificates/rootca:/run/secrets/rootca
+      - ./Certificates/JupyterNotebook:/run/secrets/JupyterNotebook:ro
+      - ./Certificates/rootca/cacert.pem:/run/secrets/rootca/cacert.pem:ro
     privileged: true
 

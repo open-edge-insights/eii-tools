@@ -63,6 +63,6 @@ services:
     volumes:
       - "${EII_INSTALL_PATH}/tools_output:/app/out"
       - "${EII_INSTALL_PATH}/sockets:${SOCKET_DIR}"
-      - ./Certificates/VideoProfiler:/run/secrets/VideoProfiler
-      - ./Certificates/rootca:/run/secrets/rootca
+      - ./Certificates/VideoProfiler:/run/secrets/VideoProfiler:ro
+      - ./Certificates/rootca/cacert.pem:/run/secrets/rootca/cacert.pem:ro
 

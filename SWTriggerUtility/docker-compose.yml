@@ -54,8 +54,8 @@ services:
     networks:
       - eii
     volumes:
-      - ./Certificates/SWTriggerUtility:/run/secrets/SWTriggerUtility
-      - ./Certificates/rootca:/run/secrets/rootca
+      - ./Certificates/SWTriggerUtility:/run/secrets/SWTriggerUtility:ro
+      - ./Certificates/rootca/cacert.pem:/run/secrets/rootca/cacert.pem:ro
     healthcheck:
       test: ["CMD-SHELL", "exit", "0"]
       interval: 5m
