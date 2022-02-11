@@ -64,7 +64,7 @@ def main():
     influx_up = False
     while(retry_count < num_retries):
         try:
-            influx_host = os.getenv("INFLUX_SERVER", "ia_influxdbconnector")
+            influx_host = os.getenv("INFLUX_SERVER", "")
             influx_port = os.getenv("INFLUXDB_PORT", 8086)
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             if not (sock.connect_ex((influx_host, int(influx_port)))):
