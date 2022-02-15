@@ -142,11 +142,12 @@ Perform the following steps to use Visual Studio Code (VS Code) to develop a UDF
 12. Choose `Existing: Specify the URI of an existing server` when prompted to select how to connect to Jupyter Notebook.
 13. Enter the server's URI (hostname) with the authentication token (included with a ?token= URL parameter), when prompted to enter the URI of a Jupyter server. Refer to the sample URL mentioned in the previous procedure.
 14. Open the `/home/eiiuser` folder to update the respective udf_template and the main notebooks and re-run.
-15. To save the UDF, go to **More Actions (...)**, and then, select **Export**.
-16. When prompted **Export As**, select **Python Script**.
-17. From the **File** menu, click **Save As**.
-18. Select **Show Local**.
-19. Enter the name and save the file.
+15. To create a Jupyter notebook, run the `Jupyter: Create New Jupyter Notebook` command in the Command Palette.
+16. To save the UDF, go to **More Actions (...)**, and then, select **Export**.
+17. When prompted **Export As**, select **Python Script**.
+18. From the **File** menu, click **Save As**.
+19. Select **Show Local**.
+20. Enter the name and save the file.
 
 > **Note:**
 >
