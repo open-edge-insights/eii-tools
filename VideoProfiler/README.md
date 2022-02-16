@@ -292,3 +292,5 @@ For connecting to any service running in helm usecase, the container IP associat
 >
 > - For multi instance monitor mode usecase, please ensure only **VideoIngestion** & **VideoAnalytics** are used as **AppName** for Publishers.
 > - Running **VideoProfiler** with **CustomUDFs** for monitor mode is supported for single stream only. If required for multiple streams, please ensure **VideoIngestion** & **VideoAnalytics** are used as **AppName**.
+> -In IPC mode, for accelerators: `MYRIAD`, `GPU` and USB 3.0 Vision cameras, add `user: root` in [VideoProfiler-docker-compose.yml](../../VideoProfiler/docker-compose.yml) as the subscriber needs to run as `root` if the publisher is running as `root`.
+

@@ -12,6 +12,8 @@ Refer [README-Using-video-accelerators](https://github.com/open-edge-insights/ei
 
 > - For running the gstreamer pipeline mentioned in [sample_test/config.json](sample_test/config.json) one needs to copy the required model files to [WORKDIR]/IEdgeInsights/VideoIngestion/models by referring [models-readme](https://github.com/open-edge-insights/video-ingestion/blob/master/models/README.md).
 
+> - In IPC mode, for accelerators: `MYRIAD`, `GPU` and USB 3.0 Vision cameras, add `user: root` in [VideoProfiler-docker-compose.yml](../../VideoProfiler/docker-compose.yml) as the subscriber needs to run as `root` if the publisher is running as `root`.
+
 > - For `GPU` device there is an initial delay while the model is compiled and loaded. This can affect the first benchmarking results especially on low stream count. This will be reduced on subsequent runs using kernel caching. To make sure the kernel cache files are created please remove `read_only: true` in docker-compose.yml file for VI so that files can be generated.
 
 > - The docker-compose.yml files of VI and VideoProfiler gets picked from their respective repos. So any changes needed should be applied in their repsective repos.
