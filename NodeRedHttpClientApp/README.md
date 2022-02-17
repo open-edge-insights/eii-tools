@@ -32,12 +32,12 @@ This NodeRed in built http node based client App acts as client for the EII Rest
          ![images/imagedevmode.png](./images/imagedevmode.png)
 
    PROD Mode:
-      * Please follow the below dialog properties for setting DEV Mode in NodeRed dashboard
+      * Please follow the below dialog properties for setting PROD Mode in NodeRed dashboard
 
          ![imageprodmode.png](./images/imageprodmode.png)
 
-      * For Prod Mode TLS `ca_certificate.pem` import.
-         **Note**: This `ca_certificate.pem` will be part EII certificate bundle. Please refer `EII/build/provision/Certificates/` directory.
+      * For Prod Mode TLS `ca_cert.pem` import.
+         **Note**: This `ca_cert.pem` will be part EII certificate bundle. Please refer `[WORKDIR]/IEdgeInsights/build/provision/Certificates/` directory.
 
          ![imageprodmodetlscert.png](./images/imageprodmodetlscert.png)
 
