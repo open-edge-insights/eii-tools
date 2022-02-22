@@ -44,6 +44,7 @@ services:
       AppName: "mqtt-publisher"
       no_proxy: "ia_mqtt_broker"
       NO_PROXY: "ia_mqtt_broker"
+      HOST_IP: $HOST_IP
     networks:
       - eii
     command: ["--temperature", "10:30"]

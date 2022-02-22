@@ -280,6 +280,7 @@ def main():
     """Main method
     """
     args = parse_args()
+    args.host = os.getenv('HOST_IP', 'localhost')
     args_dict = vars(args)
     updated_topics = {}
     topic_data = {'topic_temp': 'temperature', 'topic_pres': 'pressure',
