@@ -154,6 +154,7 @@ popd
 ./data_rate.sh ${ACTUAL_DATA_DIR} &
 
 pushd "${EII_HOME}/tools/mqtt/publisher"
+pip3 install -r requirements.txt
 python3 publisher.py --host ${HOST_IP} --port ${PORT} --topic "test/rfc_data" --json "./json_files/*.json" --streams ${STREAMS} --output "${ACTUAL_DATA_DIR}/output_data.csv" --service ${SERVICE}
 popd
 
