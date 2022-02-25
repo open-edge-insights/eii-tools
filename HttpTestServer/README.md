@@ -31,6 +31,11 @@ HttpTestServer runs a simple HTTP Test server with security being optional.
     Eg: go run TestServer.go --dev_mode false --host=0.0.0.0 --port=8082 --rdehost=localhost --rdeport=8087
     ```
 
+    For Helm Usecases
+     ```
+    Eg: go run TestServer.go --dev_mode false --host=0.0.0.0 --port=8082 --rdehost=<maser_node_ip>--rdeport=31509 --client_ca_path ../../build/helm-eii/eii-deploy/Certificates/rootca/cacert.pem
+    ```
+
   **NOTE:** server_cert.pem is valid for 365 days from the day of generation
 
 * In PROD mode, you might see intermediate logs like this:

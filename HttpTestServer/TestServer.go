@@ -53,7 +53,6 @@ const (
 	testServerCaPath   = "./certificates/ca_cert.pem"
 	testServerCertPath = "./certificates/server_cert.pem"
 	testServerKeyPath  = "./certificates/server_key.pem"
-	clientCaPath       = "../../build/Certificates/rootca/cacert.pem"
 )
 
 // init is used to initialize and fetch required config
@@ -64,12 +63,13 @@ func (t *testServer) init() {
 	var host string
 	var restExportHost string
 	var restExportPort string
+	var clientCaPath string
 	flag.StringVar(&devmode, "dev_mode", "false", "devMode of external server")
 	flag.StringVar(&port, "port", "8082", "port of external server")
 	flag.StringVar(&host, "host", "localhost", "host of external server")
 	flag.StringVar(&restExportPort, "rdeport", "8087", "port of Rest Data Export server")
 	flag.StringVar(&restExportHost, "rdehost", "localhost", "host of Rest Data Export server")
-
+	flag.StringVar(&clientCaPath, "client_ca_path", "../../build/Certificates/rootca/cacert.pem", "clientCaPath, default: ../../build/Certificates/rootca/cacert.pem")
 	flag.Parse()
 	flag.Set("logtostderr", "true")
 
