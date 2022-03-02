@@ -37,13 +37,39 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip3 install --user -r requirements.txt
 
+ARG CMAKE_INSTALL_PREFIX
+
+# Install libzmq
+RUN rm -rf deps && \
+    mkdir -p deps && \
+    cd deps && \
+    wget -q --show-progress https://github.com/zeromq/libzmq/releases/download/v4.3.4/zeromq-4.3.4.tar.gz -O zeromq.tar.gz && \
+    tar xf zeromq.tar.gz && \
+    cd zeromq-4.3.4 && \
+    ./configure --prefix=${CMAKE_INSTALL_PREFIX} && \
+    make install
+
+# Install cjson
+RUN rm -rf deps && \
+    mkdir -p deps && \
+    cd deps && \
+    wget -q --show-progress https://github.com/DaveGamble/cJSON/archive/v1.7.12.tar.gz -O cjson.tar.gz && \
+    tar xf cjson.tar.gz && \
+    cd cJSON-1.7.12 && \
+    mkdir build && cd build && \
+    cmake -DCMAKE_INSTALL_INCLUDEDIR=${CMAKE_INSTALL_PREFIX}/include -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} .. && \
+    make install
+
+COPY --from=common ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib
+COPY --from=common ${CMAKE_INSTALL_PREFIX}/include ${CMAKE_INSTALL_PREFIX}/include
+
+
 COPY . .
 
 FROM ${OPENVINO_IMAGE} AS runtime
 
 USER root
-RUN apt update && apt install --no-install-recommends -y libcjson1 libzmq5 zlib1g && \
-    rm -rf /var/lib/apt/lists/*
+RUN rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -55,7 +81,8 @@ RUN groupadd $EII_USER_NAME -g $EII_UID && \
 ARG ARTIFACTS
 ARG CMAKE_INSTALL_PREFIX
 ENV PYTHONPATH $PYTHONPATH:/app/.local/lib/python3.8/site-packages:/app
-COPY --from=common ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib
+COPY --from=builder ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib
+COPY --from=builder ${CMAKE_INSTALL_PREFIX}/include ${CMAKE_INSTALL_PREFIX}/include
 COPY --from=common /root/.local/lib .local/lib
 COPY --from=builder /root/.local/lib .local/lib
 COPY --from=builder /root/.local/bin .local/bin

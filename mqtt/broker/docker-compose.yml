@@ -27,7 +27,7 @@ services:
     container_name: ia_mqtt_broker
     hostname: ia_mqtt_broker
     read_only: true
-    image: trafex/alpine-mosquitto:1.6.0
+    image: trafex/alpine-mosquitto:1.9.0
     restart: unless-stopped
     security_opt:
     - no-new-privileges
