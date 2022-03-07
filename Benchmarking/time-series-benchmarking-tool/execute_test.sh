@@ -120,13 +120,13 @@ popd
 # --------------------------------------------------------------
 notice "Cleaning files from prior tests"
 #run_logged rm -v "${EII_HOME}/build/docker-compose.yml"
-#run_logged rm -v "${EII_HOME}/build/provision/config/eii_config.json"
+#run_logged rm -v "${EII_HOME}/build/eii_config.json"
 #run_logged rm -v "${EII_HOME}/build/config/telegraf"*".conf"
 #run_logged rm -v "${EII_HOME}/build/config/influxdb.conf"
 
 notice "Copying in test configuration files"
 #run_logged cp -v "${CFG_DIR}/docker-compose.yml" "${EII_HOME}/build/docker-compose.yml"
-#run_logged cp -v "${CFG_DIR}/eii_config.json" "${EII_HOME}/build/provision/config/eii_config.json"
+#run_logged cp -v "${CFG_DIR}/eii_config.json" "${EII_HOME}/build/eii_config.json"
 #run_logged cp -v "${CFG_DIR}/telegraf"*".conf" "${EII_HOME}/build/config/"
 #run_logged cp -v "${CFG_DIR}/influxdb.conf" "${EII_HOME}/build/config/"
 

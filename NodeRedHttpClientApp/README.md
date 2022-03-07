@@ -37,7 +37,7 @@ This NodeRed in built http node based client App acts as client for the EII Rest
          ![imageprodmode.png](./images/imageprodmode.png)
 
       * For Prod Mode TLS `ca_cert.pem` import.
-         **Note**: This `ca_cert.pem` will be part EII certificate bundle. Please refer `[WORKDIR]/IEdgeInsights/build/provision/Certificates/` directory.
+         **Note**: This `ca_cert.pem` will be part EII certificate bundle. Please refer `[WORKDIR]/IEdgeInsights/build/Certificates/` directory.
 
          ![imageprodmodetlscert.png](./images/imageprodmodetlscert.png)
 
