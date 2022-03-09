@@ -31,6 +31,7 @@ function usage(){
 	echo "WHERE:" 1>&2
 	echo "  TEST_DIR  - Directory containing services.yml and config files for influx, telegraf, and kapacitor" 1>&2
 	echo "  STREAMS   - The number of streams (1, 2, 4, 8, 16)" 1>&2
+	echo "  INTERVAL  - Time interval to publish the data" 1>&2
 	echo "  PORT      - MQTT broker port" 1>&2
 	echo "  SLEEP     - The number of seconds to wait after the containers come up " 1>&2
 	echo "	PCM_HOME  - The absolute path to the PCM repository where pcm.x is built" 1>&2
@@ -45,21 +46,22 @@ if [ -z "$2" ]; then usage; fi
 if [ -z "$3" ]; then usage; fi
 if [ -z "$4" ]; then usage; fi
 if [ -z "$5" ]; then usage; fi
-
+if [ -z "$6" ]; then usage; fi
 
 # --------------------------------------------------------------
 # Get command line arguments
 # --------------------------------------------------------------
 TEST_DIR=$1
 STREAMS=$2
-PORT=$3
-SLEEP=$4
-PCM_HOME=$5
+INTERVAL=$3
+PORT=$4
+SLEEP=$5
+PCM_HOME=$6
 EII_HOME="../../.."
 
-if [ $# -eq 6 ]
+if [ $# -eq 7 ]
 then
-    EII_HOME=$6
+    EII_HOME=$7
 fi
 
 DATETIME=`date -u +"%Y%b%d_%H%M"`
@@ -155,7 +157,7 @@ popd
 
 pushd "${EII_HOME}/tools/mqtt/publisher"
 pip3 install -r requirements.txt
-python3 publisher.py --host ${HOST_IP} --port ${PORT} --topic "test/rfc_data" --json "./json_files/*.json" --streams ${STREAMS} --output "${ACTUAL_DATA_DIR}/output_data.csv" --service ${SERVICE}
+python3 publisher.py --host ${HOST_IP} --port ${PORT} --topic "test/rfc_data" --json "./json_files/*.json" --streams ${STREAMS} --interval ${INTERVAL} --output "${ACTUAL_DATA_DIR}/output_data.csv" --service ${SERVICE}
 popd
 
 
