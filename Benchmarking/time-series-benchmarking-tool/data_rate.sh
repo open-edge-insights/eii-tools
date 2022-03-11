@@ -35,7 +35,7 @@ apt-get install -y sysstat
 echo "Fetching network interface data values"
 sar -n DEV 1 60 > ${sar_data_file}
 
-network_interface=`netstat -i | grep "en" | awk '{print $1}'`
+network_interface=`netstat -i | grep "en" | head -1 | awk '{print $1}'`
 
 # Update the values to the csv file
 
