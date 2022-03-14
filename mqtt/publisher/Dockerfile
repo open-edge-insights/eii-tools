@@ -22,7 +22,7 @@ FROM ubuntu:20.04
 
 # Setting python dev env
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends python3-pip && \
+    apt-get install -y --no-install-recommends python3-minimal python3-pip && \
     python3 -m pip install -U pip && \
     ln -sf /usr/bin/pip /usr/bin/pip3
 
@@ -36,6 +36,8 @@ ARG EII_UID
 ARG EII_USER_NAME
 RUN groupadd $EII_USER_NAME -g $EII_UID && \
     useradd -r -u $EII_UID -g $EII_USER_NAME $EII_USER_NAME
+
+RUN apt-get remove --auto-remove --purge -y python3-pip
 
 USER ${EII_USER_NAME}
 
