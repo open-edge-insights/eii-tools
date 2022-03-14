@@ -38,7 +38,7 @@ In order to execute this tool user has to provide a PFS file as a pre-requisite.
 
 Before executing the tool make sure following steps are executed:-
 
-1. Please make sure that provisioning is done.
+1. Refer [GenICam GigE Camera](https://github.com/open-edge-insights/video-ingestion#genicam-gige-or-usb3-camera) and follow the pre-requisities required to work with Basler GenICam GigE cameras and make sure provisioning is done by referring [Configmgr Readme](https://github.com/open-edge-insights/eii-configmgr-agent/blob/master/README.md)
 
 2. Source build/.env to get all the required ENVs
 
