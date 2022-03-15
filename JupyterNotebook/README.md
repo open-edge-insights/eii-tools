@@ -138,7 +138,11 @@ Perform the following steps to use Visual Studio Code (VS Code) to develop a UDF
 8. In the Command Palette, run the `Remote-Containers: Attach to Running Container` command.
 9. Select the `ia_jupyter_notebook` container.
 10. In the `ia_jupyter_notebook` container, install the `Python` and `Jupyter` extensions.
-11. In the Command Palette, run the `Jupyter: Specify local or remote Jupyter server for connections` command.
+11. In the Command Palette, run the `Jupyter: Specify Jupyter server for connections` command.
+
+    >**Note:**
+    > If the `Jupyter: Specify Jupyter server for connections` command is not available, then run the `Jupyter: Specify local or remote Jupyter server for connections` command.
+
 12. Choose `Existing: Specify the URI of an existing server` when prompted to select how to connect to Jupyter Notebook.
 13. Enter the server's URI (hostname) with the authentication token (included with a ?token= URL parameter), when prompted to enter the URI of a Jupyter server. Refer to the sample URL mentioned in the previous procedure.
 14. Open the `/home/eiiuser` folder to update the respective udf_template and the main notebooks and re-run.
