@@ -148,7 +148,7 @@ popd
 notice "Starting containers"
 pushd "${EII_HOME}/build"
 run_logged docker-compose -f docker-compose-build.yml build
-run_logged docker-compose up -d
+run_logged ./eii_start.sh
 run_logged sleep 10
 popd
 
