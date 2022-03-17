@@ -1,12 +1,13 @@
-**Contents**
+# Contents
 
-- [Software Trigger Utility for VideoIngestion Module](#software-trigger-utility-for-videoingestion-module)
-  - [Software Trigger Utilily pre-requisites](#software-trigger-utilily-pre-requisites)
-  - [Configuration file:](#configuration-file)
-  - [Running Software Trigger Utility](#running-software%C2%A0trigger%C2%A0utility)
-  - [Usage of Software Trigger Utility:](#usage%C2%A0of%C2%A0software%C2%A0trigger%C2%A0utility)
+- [Contents](#contents)
+  - [Software Trigger Utility for VideoIngestion Module](#software-trigger-utility-for-videoingestion-module)
+    - [Software Trigger Utilily pre-requisites](#software-trigger-utilily-pre-requisites)
+    - [Configuration file](#configuration-file)
+    - [Running Software Trigger Utility](#running-softwaretriggerutility)
+    - [Usage of Software Trigger Utility](#usageofsoftwaretriggerutility)
 
-# Software Trigger Utility for VideoIngestion Module
+## Software Trigger Utility for VideoIngestion Module
 
 This utility is used for invoking various software trigger features of VideoIngestion. The currently supported triggers to VideoIngestion module are:
 
@@ -14,12 +15,15 @@ This utility is used for invoking various software trigger features of VideoInge
 2. STOP_INGESTION -  to stop the ingestor
 3. SNAPSHOT - to get frame snapshot which feeds one only frame into the video data pipeline.
 
-## Software Trigger Utilily pre-requisites
+>**Note:** In this document, you will find labels of 'Edge Insights for Industrial (EII)' for filenames, paths, code snippets, and so on. Consider the references of EII as Open Edge Insights (OEI). This is due to the product name change of EII as OEI.
+
+### Software Trigger Utilily pre-requisites
 
 SWTriggerUtility expects a set of config, interfaces & public private keys to be present in ETCD as a pre-requisite.
 
-* To achieve this, please ensure an entry for SWTriggerUtility with its relative path from [IEdgeInsights](../../) directory is set in any of the .yml files present in [build/usecases](https://github.com/open-edge-insights/eii-core/tree/master/build/usecases) directory.
-  - An example has been provided below to add the entry in [video-streaming.yml](https://github.com/open-edge-insights/eii-core/blob/master/build/usecases/video-streaming.yml)
+To achieve this, please ensure an entry for SWTriggerUtility with its relative path from [IEdgeInsights](../../) directory is set in any of the .yml files present in [build/usecases](https://github.com/open-edge-insights/eii-core/tree/master/build/usecases) directory.
+
+- An example has been provided below to add the entry in [video-streaming.yml](https://github.com/open-edge-insights/eii-core/blob/master/build/usecases/video-streaming.yml)
 
     ```yml
         AppContexts:
@@ -27,7 +31,7 @@ SWTriggerUtility expects a set of config, interfaces & public private keys to be
         - tools/SWTriggerUtility
     ```
 
-## Configuration file
+### Configuration file
 
 **config.json** is the configuration file used for sw_trigger_utility.
 
@@ -60,9 +64,9 @@ Eg. In order to connect to `ia_video_ingestion` service which is configured with
 
 **This utility works in both dev & prod mode.**  As a pre-requisite make sure to turn ON the flag corresponding to "dev_mode" to true/false in the config.json file.
 
-## Running Software Trigger Utility
+### Running Software Trigger Utility
 
-1. EII services can be running in prod or dev mode by setting `DEV_MODE` value accordingly in [build/.env](https://github.com/open-edge-insights/eii-core/blob/master/build/.env)
+1. OEI services can be running in prod or dev mode by setting `DEV_MODE` value accordingly in [build/.env](https://github.com/open-edge-insights/eii-core/blob/master/build/.env)
 
 2. Execute builder.py script:
 
@@ -73,20 +77,20 @@ Eg. In order to connect to `ia_video_ingestion` service which is configured with
 
    > **NOTE**: The same yml file to which the **SWTriggerUtility** entry was added in [pre-requisites](#software-trigger-utilily-pre-requisites) has to be selected while running [builder](https://github.com/open-edge-insights/eii-core/blob/master/build/builder.py)
 
-## Usage of Software Trigger Utility
+### Usage of Software Trigger Utility
 
 By default the SW Trigger Utility container will not execute anything and one needs to interact with the running container to generate the trigger commands. Make sure VI service is up and ready to process the commands from the utility.
 
 Software trigger utility can be used in following ways:
 
-1: "START INGESTION" -> "Allows ingestion for default time (120 seconds being default)" -> "STOP INGESTION"
+1. "START INGESTION" -> "Allows ingestion for default time (120 seconds being default)" -> "STOP INGESTION"
 
    ```sh
    cd [WORKDIR]/IEdgeInsights/build
    docker exec ia_sw_trigger_utility ./sw_trigger_utility
    ```
 
-2: "START INGESTION" -> "Allows ingestion for user defined time (configurable time in seconds)" -> "STOP INGESTION"
+2. "START INGESTION" -> "Allows ingestion for user defined time (configurable time in seconds)" -> "STOP INGESTION"
 
    ```sh
    cd [WORKDIR]/IEdgeInsights/build
@@ -95,29 +99,28 @@ Software trigger utility can be used in following ways:
 
    > **Note:** In the above example, VideoIngestion starts then does ingestion for 300 seconds then stops ingestion after 300 seconds & cycle repeats for number of cycles configured in the config.json.
 
-3: Selectively send START_INGESTION software trigger:
+3. Selectively send START_INGESTION software trigger:
 
    ```sh
    cd [WORKDIR]/IEdgeInsights/build
    docker exec ia_sw_trigger_utility ./sw_trigger_utility START_INGESTION
    ```
 
-4: Selectively send STOP_INGESTION software trigger:
+4. Selectively send STOP_INGESTION software trigger:
 
    ```sh
    cd [WORKDIR]/IEdgeInsights/build
    docker exec ia_sw_trigger_utility ./sw_trigger_utility STOP_INGESTION
    ```
 
-5: Selectively send SNAPSHOT software trigger:
+5. Selectively send SNAPSHOT software trigger:
 
    ```sh
    cd [WORKDIR]/IEdgeInsights/build
    docker exec ia_sw_trigger_utility ./sw_trigger_utility SNAPSHOT
    ```
 
-> **Note:** 
-
+> **Note:**
+>
 > - If duplicate START_INGESTION or STOP_INGESTION sw_triggers are sent by client by mistake then the VI is capable  of catching these duplicates & responds back to client conveying that duplicate triggers were sent & requets to send proper sw_triggers.
-
 > - In order to send SNAPSHOT trigger, ensure that the ingestion is stopped. In case START_INGESTION trigger is sent previously then stop the ingestion using the STOP_INGESTION trigger.

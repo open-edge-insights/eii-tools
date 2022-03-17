@@ -1,14 +1,16 @@
-**Contents**
+# Contents
 
-- [EII Video Profiler](#eii-video-profiler)
-  - [EII Video Profiler pre-requisites](#eii-video-profiler-pre-requisites)
-  - [EII Video Profiler modes](#eii-video-profiler-modes)
-  - [EII Video Profiler configurations](#eii-video-profiler-configurations)
-  - [Running Video Profiler](#running-video-profiler)
-  - [Optimizing EII Video pipeline by analysing Video Profiler results](#optimizing-eii-video-pipeline-by-analysing-video-profiler-results)
-  - [Benchmarking with multi instance config](#benchmarking-with-multi-instance-config)
+- [Contents](#contents)
+  - [EII Video Profiler](#eii-video-profiler)
+    - [EII Video Profiler pre-requisites](#eii-video-profiler-pre-requisites)
+    - [EII Video Profiler modes](#eii-video-profiler-modes)
+    - [EII Video Profiler configurations](#eii-video-profiler-configurations)
+    - [Running Video Profiler](#running-video-profiler)
+    - [Running VideoProfiler in helm usecase](#running-videoprofiler-in-helm-usecase)
+    - [Optimizing EII Video pipeline by analysing Video Profiler results](#optimizing-eii-video-pipeline-by-analysing-video-profiler-results)
+    - [Benchmarking with multi instance config](#benchmarking-with-multi-instance-config)
 
-# EII Video Profiler
+## EII Video Profiler
 
 This tool can be used to determine the complete metrics involved in the entire Video pipeline by
 measuring the time difference between every component of the pipeline and checking for Queue blockages
@@ -16,7 +18,9 @@ at every component thereby determining the fast or slow components of the whole 
 It can also be used to calculate the FPS of any EII modules based on the stream published by that respective
 module.
 
-## EII Video Profiler pre-requisites
+>**Note:** In this document, you will find labels of 'Edge Insights for Industrial (EII)' for filenames, paths, code snippets, and so on. Consider the references of EII as Open Edge Insights (OEI). This is due to the product name change of EII as OEI.
+
+### EII Video Profiler pre-requisites
 
 1. VideoProfiler expects a set of config, interfaces & public private keys to be present in ETCD as a pre-requisite.
     To achieve this, please ensure an entry for VideoProfiler with its relative path from [IEdgeInsights](../../) directory is set in any of the .yml files present in [build/usecases](https://github.com/open-edge-insights/eii-core/tree/master/build/usecases) directory. An example has been provided below:
@@ -34,7 +38,7 @@ module.
         python3 builder.py -f usecases/video-streaming.yml
     ```
 
-## EII Video Profiler modes
+### EII Video Profiler modes
 
    By default the EII Video Profiler supports two modes, which are 'fps' & 'monitor' mode.
 
@@ -47,9 +51,9 @@ module.
         "mode": "fps"
     ```
 
-> **Note:**
->
-> - For running Video Profiler in FPS mode, it is recommended to keep PROFILING_MODE set to false in [.env](https://github.com/open-edge-insights/eii-core/tree/master/build/.env) for better performance.
+   > **Note:**
+   >
+   > - For running Video Profiler in FPS mode, it is recommended to keep PROFILING_MODE set to false in [.env](https://github.com/open-edge-insights/eii-core/tree/master/build/.env) for better performance.
 
 2. Monitor mode
 
@@ -92,7 +96,7 @@ module.
 > - It is mandatory to have a udf for running in monitor mode. For instance [GVASafetyGearIngestion](https://github.com/open-edge-insights/video-custom-udfs/blob/master/GVASafetyGearIngestion/README.md) does not have any udf(since it uses GVA elements) so it will not be supported in monitor mode. The workaround to use GVASafetyGearIngestion in monitor mode is to add [dummy-udf](https://github.com/open-edge-insights/video-common/blob/master/udfs/README.md
     ) in [GVASafetyGearIngestion-config](https://github.com/open-edge-insights/video-custom-udfs/blob/master/GVASafetyGearIngestion/config.json).
 
-## EII Video Profiler configurations
+### EII Video Profiler configurations
 
 1. dev_mode
 
@@ -111,7 +115,7 @@ module.
    Setting this switch to **true** exports csv files for the results obtained in VideoProfiler. For monitor_mode, runtime stats printed in the csv
    are based on the the following precdence: avg_stats, per_frame_stats, display_metadata.
 
-## Running Video Profiler
+### Running Video Profiler
 
 1. Set environment variables accordingly in [config.json](config.json).
 
@@ -185,7 +189,7 @@ module.
       In case multiple UDFs are used, the FPS UDF is required to be added as the last UDF.
   > - In case running this tool with VI & VA in two different nodes, same time needs to be set in both the nodes.
 
-## Running VideoProfiler in helm usecase
+### Running VideoProfiler in helm usecase
 
 For running VideoProfiler in helm usecase to subscribe to either VideoIngestion/VideoAnalytics or any other EII service, the etcd endpoint, volume mount for helm certs and service endpoints are to be updated.
 
@@ -216,22 +220,22 @@ For connecting to the etcd server running in helm environment, the endpoint and 
 
 For connecting to any service running in helm usecase, the container IP associated with the specific service should be updated in the Endpoint section in VideoProfiler [config](config.json):
 
-    The IP associated with the service container can be obtained by checking the container pod IP using docker inspect. Assuming we are connecting to VideoAnalytics service, the command to be run would be:
+The IP associated with the service container can be obtained by checking the container pod IP using docker inspect. Assuming we are connecting to VideoAnalytics service, the command to be run would be:
 
-      ```sh
-        docker inspect <VIDEOANALYTICS CONTAINER ID> | grep VIDEOANALYTICS
-      ```
+```sh
+ docker inspect <VIDEOANALYTICS CONTAINER ID> | grep VIDEOANALYTICS
+```
 
-      The output of the above command consists the IP of the VideoAnalytics container that can be updated in VideoProfiler config using EtcdUI:
+The output of the above command consists the IP of the VideoAnalytics container that can be updated in VideoProfiler config using EtcdUI:
 
-      ```sh
-        "VIDEOANALYTICS_SERVICE_HOST=10.99.204.80"
-      ```
+```sh
+ "VIDEOANALYTICS_SERVICE_HOST=10.99.204.80"
+```
 
-      The config can be updated with the obtained container IP in the following way:
+The config can be updated with the obtained container IP in the following way:
 
-      ```javascript
-      {
+```javascript
+    {
         "interfaces": {
             "Subscribers": [
                 {
@@ -245,10 +249,10 @@ For connecting to any service running in helm usecase, the container IP associat
                 }
             ]
         }
-      }
-      ```
+    }
+ ```
 
-## Optimizing EII Video pipeline by analysing Video Profiler results
+### Optimizing EII Video pipeline by analysing Video Profiler results
 
 1. VI ingestor/UDF input queue is blocked, consider reducing ingestion rate.
 
@@ -278,7 +282,7 @@ For connecting to any service running in helm usecase, the container IP associat
     2. User can increase ZMQ_RECV_HWM to an optimum value so as to not drop
     the frames when the queue is full or switching to IPC mode of communication.
 
-## Benchmarking with multi instance config
+### Benchmarking with multi instance config
 
 1. EII supports multi instance config generation for benchmarking purposes. This can be acheived by running the [builder.py](https://github.com/open-edge-insights/eii-core/blob/master/build/builder.py) with certain parameters, please refer to the **Multi instance config generation** section of **EII Pre-Requisites** in [README](https://github.com/open-edge-insights/eii-core/blob/master/README.md#eii-prerequisites-installation) for more details.
 
@@ -293,4 +297,3 @@ For connecting to any service running in helm usecase, the container IP associat
 > - For multi instance monitor mode usecase, please ensure only **VideoIngestion** & **VideoAnalytics** are used as **AppName** for Publishers.
 > - Running **VideoProfiler** with **CustomUDFs** for monitor mode is supported for single stream only. If required for multiple streams, please ensure **VideoIngestion** & **VideoAnalytics** are used as **AppName**.
 > -In IPC mode, for accelerators: `MYRIAD`, `GPU` and USB 3.0 Vision cameras, add `user: root` in [VideoProfiler-docker-compose.yml](../../VideoProfiler/docker-compose.yml) as the subscriber needs to run as `root` if the publisher is running as `root`.
-
