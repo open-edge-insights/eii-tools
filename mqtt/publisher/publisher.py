@@ -44,14 +44,14 @@ TOPIC_HUMD = 'humidity/simulated/0'
 # INFLUXDB Credentials
 INFLUXDB_USERNAME = os.getenv("INFLUXDB_USERNAME")
 INFLUXDB_PASSWORD = os.getenv("INFLUXDB_PASSWORD")
-MEASUREMENT_NAME = "tc_data"
+INFLUXDB_PORT = os.getenv("INFLUXDB_PORT")
+MEASUREMENT_NAME = "ts_data"
 
 SERVICE = 'mqtt'
 SAMPLING_RATE = 10  # 500.0 # 2msecdd
 SUBSAMPLE = 1  # 1:every row, 500: every 500 rows (ie. every 1 sec)
 POINTSPERPROCESS = 350
 HOST = 'localhost'
-PORT = 1883
 PROCS = []
 DATA_PUBLISH_WAIT_PERIOD = 10
 
@@ -154,9 +154,9 @@ def send_json_cb(instance_id, host, port, topic, data, qos, service):
     """ Send JSON
     """
     if service == "benchmarking":
-        client = mqtt.Client(str(instance_id))
-    else:
         client = mqtt.Client(str(port))
+    else:
+        client = mqtt.Client(str(instance_id))
     client.on_disconnect = on_disconnect
     client.on_connect = on_connect
     client.connect(host, port, 60)
@@ -165,7 +165,6 @@ def send_json_cb(instance_id, host, port, topic, data, qos, service):
         for i in range(0, POINTSPERPROCESS):
             t_s = time.time()
             for value in data:
-                print(value)
                 msg = {'ts': t_s, 'value': value}
                 client.publish(topic, json.dumps(msg), qos=qos)
                 time.sleep(instance_id)
@@ -192,7 +191,7 @@ def publish_json(mqttc, topic, path, qos, argsinterval, streams, host, port, out
             data.append(fpd.read())
     print("Publishing json files to mqtt in loop")
     if service == "benchmarking":
-        intial_count_value = calculate_data_value(host, port)
+        intial_count_value = calculate_data_value(host)
         print("Path :", path, " files: ", files)
         totalpoints = streams * POINTSPERPROCESS * len(data)
         processes = []
@@ -208,7 +207,7 @@ def publish_json(mqttc, topic, path, qos, argsinterval, streams, host, port, out
             print("Success: ", totalpoints, " points sent!")
             time.sleep(DATA_PUBLISH_WAIT_PERIOD)
             # Calculate the data loss between published data and received data in influxdb
-            final_count_value = calculate_data_value(host, port)
+            final_count_value = calculate_data_value(host)
             count_value = final_count_value - intial_count_value
             if count_value != totalpoints:
                 data_new = pd.read_csv(output_file)
@@ -247,13 +246,14 @@ def update_topic(args_dict, topics, topic_data):
     return updated_topics
 
 
-def calculate_data_value(host, port):
+def calculate_data_value(host):
     """
     Calculate the measurement count value
     """
     try:
         count_value = 0
-        client = InfluxDBClient(host=host, port=port, username=INFLUXDB_USERNAME, password=INFLUXDB_PASSWORD, ssl=True, verify_ssl=False)
+        print("Fetching data count value from InfluxDB")
+        client = InfluxDBClient(host=host, port=INFLUXDB_PORT, username=INFLUXDB_USERNAME, password=INFLUXDB_PASSWORD, ssl=True, verify_ssl=False)
         client.switch_database('datain')
         results = client.query('SELECT count(*) FROM {}'.format(MEASUREMENT_NAME))
         point = results.get_points()
