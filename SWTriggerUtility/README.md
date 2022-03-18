@@ -12,7 +12,7 @@
 This utility is used for invoking various software trigger features of VideoIngestion. The currently supported triggers to VideoIngestion module are:
 
 1. START INGESTION - to start the ingestor
-2. STOP_INGESTION -  to stop the ingestor
+2. STOP_INGESTION - to stop the ingestor
 3. SNAPSHOT - to get frame snapshot which feeds one only frame into the video data pipeline.
 
 >**Note:** In this document, you will find labels of 'Edge Insights for Industrial (EII)' for filenames, paths, code snippets, and so on. Consider the references of EII as Open Edge Insights (OEI). This is due to the product name change of EII as OEI.
