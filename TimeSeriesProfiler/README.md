@@ -1,22 +1,25 @@
-**Contents**
+# Contents
 
-- [EII TimeSeriesProfiler](#eii-timeseriesprofiler)
-  - [EII pre-requisites](#eii-pre-requisites)
-  - [EII TimeSeriesProfiler modes](#eii-timeseriesprofiler-modes)
-  - [EII TimeSeriesProfiler configurations](#eii-timeseriesprofiler-configurations)
-  - [Running TimeSeriesProfiler](#running-timeseriesprofiler)
+- [Contents](#contents)
+  - [OEI TimeSeriesProfiler](#oei-timeseriesprofiler)
+    - [Prerequisites](#prerequisites)
+    - [OEI TimeSeriesProfiler modes](#oei-timeseriesprofiler-modes)
+    - [OEI TimeSeriesProfiler configurations](#oei-timeseriesprofiler-configurations)
+    - [Running TimeSeriesProfiler](#running-timeseriesprofiler)
 
-# EII TimeSeriesProfiler
+## OEI TimeSeriesProfiler
 
-1. This module calculates the SPS(samples per second) of any EII time-series modules based on the stream published by that respective module.
+1. This module calculates the SPS(samples per second) of any OEI time-series modules based on the stream published by that respective module.
 2. This module calculates the average e2e time for every sample data to process and it's breakup. The e2e time end to end time required
    for a metric from mqtt-publisher to TimeSeriesProfiler (mqtt-publisher->telegraf->influx->kapacitor->influx->influxdbconnector->
    TimeSeriesProfiler)
 
-## EII pre-requisites
+   >**Note:** In this document, you will find labels of 'Edge Insights for Industrial (EII)' for filenames, paths, code snippets, and so on. Consider the references of EII as Open Edge Insights (OEI). This is due to the product name change of EII as OEI.
 
-1. TimeSeriesProfiler expects a set of config, interfaces & public private keys to be present in ETCD as a pre-requisite.
-    To achieve this, please ensure an entry for TimeSeriesProfiler with its relative path from [IEdgeInsights](../../) directory is set in the time-series.yml file present in [build/usecases](https://github.com/open-edge-insights/eii-core/tree/master/build/usecases) directory. An example has been provided below:
+### Prerequisites
+
+1. TimeSeriesProfiler expects a set of config, interfaces & public private keys to be present in ETCD as a prerequisite.
+   To achieve this, please ensure an entry for TimeSeriesProfiler with its relative path from [IEdgeInsights](../../) directory is set in the time-series.yml file present in [build/usecases](https://github.com/open-edge-insights/eii-core/tree/master/build/usecases) directory. An example has been provided below:
 
     ```sh
         AppContexts:
@@ -33,14 +36,14 @@
         python3 builder.py -f ./usecases/time-series.yml
     ```
 
-## EII TimeSeriesProfiler modes
+### OEI TimeSeriesProfiler modes
 
-    By default the EII TimeSeriesProfiler supports two modes, which are 'sps' & 'monitor' mode.
+By default the OEI TimeSeriesProfiler supports two modes, which are 'sps' & 'monitor' mode.
 
 1. SPS mode
 
    Enabled by setting the 'mode' key in [config](./config.json) to 'sps', this mode calculates the samples
-   per second of any EII module by subscribing to that module's respective stream.
+   per second of any OEI module by subscribing to that module's respective stream.
 
     ```sh
         "mode": "sps"
@@ -76,10 +79,10 @@
 
 > **Note:**
 >
-> - Pre-requisite for running in profiling or monitor mode: Time series containers should be running with PROFILING_MODE set to **true** in [.env](https://github.com/open-edge-insights/eii-core/blob/master/build/.env)
+> - Prerequisite for running in profiling or monitor mode: Time series containers should be running with PROFILING_MODE set to **true** in [.env](https://github.com/open-edge-insights/eii-core/blob/master/build/.env)
 > - For running TimeSeriesProfiler in SPS mode, it is recommended to keep PROFILING_MODE set to false in [.env](https://github.com/open-edge-insights/eii-core/blob/master/build/.env) for better performance.
 
-## EII TimeSeriesProfiler configurations
+### OEI TimeSeriesProfiler configurations
 
 1. total_number_of_samples
 
@@ -93,9 +96,9 @@
    Setting this switch to **true** exports csv files for the results obtained in TimeSeriesProfiler. For monitor_mode, runtime stats printed in the csv
    are based on the the following precdence: avg_stats, per_sample_stats, display_metadata.
 
-## Running TimeSeriesProfiler
+### Running TimeSeriesProfiler
 
-1. Pre-requisite :
+1. Prerequisite:
 
    Profiling UDF returns "ts_kapacitor_udf_entry" and "ts_kapacitor_udf_exit" timestamp.  
 
@@ -109,7 +112,6 @@
   The TS Profiler needs three timestamps.
 
   1. "ts" timestamp which is to be filled by the ingestor (done by the mqtt-publisher app).
-
   2. The udf to give "ts_kapacitor_udf_entry" and "ts_kapacitor_udf_exit" timestamps to profile the udf execution time.
 
      ts_kapacitor_udf_entry : timestamp in UDF before execution of the of the algorithm
@@ -118,11 +120,11 @@
 
     The sample profiling UDFs can be referred at [profiling_udf.go](https://github.com/open-edge-insights/ts-kapacitor/blob/master/udfs/profiling_udf.go) and [rfc_classifier.py](https://github.com/open-edge-insights/ts-kapacitor/blob/master/udfs/rfc_classifier.py).
 
-- configuration required to run profiling_udf.go as profiling udf
+  - configuration required to run profiling_udf.go as profiling udf
 
   In **[Kapacitor config.json](https://github.com/open-edge-insights/ts-kapacitor/blob/master/config.json)** , update "task" key as below:
 
-   ```
+   ```sh
    "task": [{
        "tick_script": "profiling_udf.tick",
        "task_name": "profiling_udf",
@@ -135,7 +137,7 @@
 
   In **[kapacitor.conf](https://github.com/open-edge-insights/ts-kapacitor/blob/master/config/kapacitor.conf)** under udf section:
 
-   ```
+   ```sh
       [udf.functions]
          [udf.functions.profiling_udf]
            socket = "/tmp/profiling_udf"
@@ -143,10 +145,10 @@
 
    ```
 
-- configuration required to run rfc_classifier.py as profiler udf
+  - configuration required to run rfc_classifier.py as profiler udf
   In **[Kapacitor config.json](https://github.com/open-edge-insights/ts-kapacitor/blob/master/config.json)** , update "task" key as below:
 
-   ```
+   ```sh
    "task": [{
        {
         "tick_script": "rfc_task.tick",
@@ -157,7 +159,7 @@
 
   In **[kapacitor.conf](https://github.com/open-edge-insights/ts-kapacitor/blob/master/config/kapacitor.conf)** under udf section:
 
-   ```
+   ```sh
     [udf.functions.rfc]
        prog = "python3.7"
        args = ["-u", "/EII/udfs/rfc_classifier.py"]
@@ -168,7 +170,7 @@
 
   keep **[config.json](./config.json)** file as following:
 
-   ```
+   ```sh
    {
      "config": {
          "total_number_of_samples": 10,
@@ -191,25 +193,20 @@
    ```
 
   In [.env](https://github.com/open-edge-insights/eii-core/blob/master/build/.env):
-
   Set the profiling mode as true.
+3. Set environment variables accordingly in [config.json](config.json)
+4. Set the required output stream/streams and appropriate stream config in [config.json](config.json) file.
+5. To run this tool in IPC mode, User needs to modify subscribers interface section of **[config.json](./config.json)** as following
 
-2. Set environment variables accordingly in [config.json](config.json)
-
-3. Set the required output stream/streams and appropriate stream config in [config.json](config.json) file.
-
-4. To run this tool in IPC mode, User needs to modify subscribers interface section of **[config.json](./config.json)** as following
-
-```
-    {
+   ```sh
+      {
         "type": "zmq_ipc",
         "EndPoint": "/EII/sockets"
-    }
-```
+      }
+   ```
 
-5. Refer [README.md](https://github.com/open-edge-insights/eii-core/blob/master/README.md) to provision, build and run the tool along with the EII time-series recipe/stack.
-
-6. Run the following command to see the logs:
+6. Refer [README.md](https://github.com/open-edge-insights/eii-core/blob/master/README.md) to provision, build and run the tool along with the OEI time-series recipe/stack.
+7. Run the following command to see the logs:
 
     ```sh
         docker logs -f ia_timeseries_profiler
