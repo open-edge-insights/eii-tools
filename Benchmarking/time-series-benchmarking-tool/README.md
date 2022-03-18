@@ -1,5 +1,7 @@
 # Time Series Benchmarking Tool
 
+>**Note:** In this document, you will find labels of 'Edge Insights for Industrial (EII)' for filenames, paths, code snippets, and so on. Consider the references of EII as Open Edge Insights (OEI). This is due to the product name change of EII as OEI.
+
 These scripts are designed to automate the running of benchmarking tests and the collection of the performance data. This performance data includes the Average Stats of each data stream, and also the CPU%, Memory%, and Memory Read/Write bandwidth.
 
 The Processor Counter Monitor (PCM) is required for measuring memory read/write bandwidth, which can be downloaded and built here: <https://github.com/opcm/pcm>
@@ -24,18 +26,20 @@ Steps for running a benchmarking test case:
 
 3. Run execute test to execute the time series test case.Before running following command, make sure that "export_to_csv" value in **[TimeSeriesProfiler config.json](../../TimeSeriesProfiler/config.json)** is set to "True":
 
-   ```
- USAGE:
+   ```sh
+
+  USAGE:
    ./execute_test.sh TEST_DIR STREAMS INTERVAL PORT SLEEP PCM_HOME [EII_HOME]
 
- WHERE:
-   TEST_DIR  - Directory containing services.yml and config files for influx, telegraf, and kapacitor
-   STREAMS   - The number of streams (1, 2, 4, 8, 16)
-   INTERVAL  - Time interval to publish the data in secs
-   PORT      - MQTT broker port
-   SLEEP     - The number of seconds to wait after the containers come up
-          PCM_HOME  - The absolute path to the PCM repository where pcm.x is built
-          [EII_HOME] - [Optional] Absolut path to EII home directory, if running from a non-default location
+  WHERE:
+    TEST_DIR  - Directory containing services.yml and config files for influx, telegraf, and kapacitor
+    STREAMS   - The number of streams (1, 2, 4, 8, 16)
+    INTERVAL  - Time interval to publish the data in secs
+    PORT      - MQTT broker port
+    SLEEP     - The number of seconds to wait after the containers come up
+    PCM_HOME  - The absolute path to the PCM repository where pcm.x is built
+    [EII_HOME] - [Optional] Absolut path to OEI home directory, if running from a non-default location
+  
    ```
 
    For example:
