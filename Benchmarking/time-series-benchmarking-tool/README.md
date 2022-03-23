@@ -55,3 +55,5 @@ Steps for running a benchmarking test case:
 
 4. The execution log, performance logs, and the output.ppc will be saved in TEST_DIR/output/< timestamp >/ so that the same test case can be ran multiple times without overwriting the output. You can see if the test ocurred any errors in the execution.log, and you can see the results of a successful test in output.ppc
 5. The timeseries profiler output file (named "avg_latency_Results.csv" ) will be stored in TEST_DIR/output/< timestamp >/.
+
+> **Note:** While running benchmarking tool with more than two streams, run  **[MQTT broker](../../mqtt/broker/)* manually with multiple instances and add the mqtt consumers in  **[Telegraf telegraf.conf](../../../Telegraf/config/Telegraf/config.json)* with 'n' number of streams based on the use case.
