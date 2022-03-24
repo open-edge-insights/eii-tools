@@ -2,9 +2,9 @@
 
 - [Contents](#contents)
   - [Develop Python User Defined Functions using Jupyter Notebook](#develop-python-user-defined-functions-using-jupyter-notebook)
-  - [Prerequisites for using Jupyter Notebooks](#prerequisites-for-using-jupyter-notebooks)
-  - [Run Jupyter Notebook from web browsers](#run-jupyter-notebook-from-web-browsers)
-  - [Run Jupyter Notebook using Visual Studio Code](#run-jupyter-notebook-using-visual-studio-code)
+    - [Prerequisites for using Jupyter Notebooks](#prerequisites-for-using-jupyter-notebooks)
+    - [Run Jupyter Notebook from web browsers](#run-jupyter-notebook-from-web-browsers)
+    - [Run Jupyter Notebook using Visual Studio Code](#run-jupyter-notebook-using-visual-studio-code)
 
 ## Develop Python User Defined Functions using Jupyter Notebook
 
@@ -21,10 +21,11 @@ The web-based IDE of Jupyter Notebook allows you to develop User Defined Functio
 For more information on how to write and modify an OpenCV UDF, refer to the [opencv_udf_template.ipynb](opencv_udf_template.ipynb) (sample OpenCV UDF template). This sample UDF uses the OpenCV APIs to write a sample text on the frames, which can be visualized in the **Visualizer** display. While using this UDF, ensure that the encoding is disabled. Enabling the encoding will automatically remove the text that is added to the frames.
 
 > **Note:**
-> Custom UDFs like the `GVASafetyGearIngestion` are specific to certain use cases only. Do not use Jupyter Notebook with these custom UDFs. Instead, modify the `VideoIngestion` pipeline to use the `GVA ingestor` pipeline and modify the config to use the `jupyter_connector UDF`.
-> In this document, you will find labels of 'Edge Insights for Industrial (EII)' for filenames, paths, code snippets, and so on. Consider the references of EII as Open Edge Insights (OEI). This is due to the product name change of EII as OEI.
+>
+> - Custom UDFs like the `GVASafetyGearIngestion` are specific to certain use cases only. Do not use Jupyter Notebook with these custom UDFs. Instead, modify the `VideoIngestion` pipeline to use the `GVA ingestor` pipeline and modify the config to use the `jupyter_connector UDF`.
+> - In this document, you will find labels of 'Edge Insights for Industrial (EII)' for filenames, paths, code snippets, and so on. Consider the references of EII as Open Edge Insights (OEI). This is due to the product name change of EII as OEI.
 
-## Prerequisites for using Jupyter Notebooks
+### Prerequisites for using Jupyter Notebooks
 
 The following are the prerequisites for using Jupyter Notebook to develop UDFs:
 
@@ -68,7 +69,7 @@ The following are the prerequisites for using Jupyter Notebook to develop UDFs:
         }
     ```
 
-## Run Jupyter Notebook from web browsers
+### Run Jupyter Notebook from web browsers
 
 Perform the following steps to develop UDF using the Jupyter Notebook from a web browser:
 
@@ -113,7 +114,7 @@ Perform the following steps to develop UDF using the Jupyter Notebook from a web
   >
   > To use the downloaded UDF, place it in the [../../common/video/udfs/python](https://github.com/open-edge-insights/video-common/blob/master/udfs/python) directory or integrate it with the `Custom UDFs`.
 
-## Run Jupyter Notebook using Visual Studio Code
+### Run Jupyter Notebook using Visual Studio Code
 
 Perform the following steps to use Visual Studio Code (VS Code) to develop a UDF:
 
@@ -132,27 +133,40 @@ Perform the following steps to use Visual Studio Code (VS Code) to develop a UDF
     ```
 
 4. In the consolidated `build/docker-compose.yml` file, for the `ia_jupyter_notebook` service, change `read_only: true` to `read_only: false`.
+
 5. Run the `docker-compose up -d ia_jupyter_notebook` command.
+
 6. In VS Code, install the `Remote - Containers` extension.
+
 7. Using the shortcut key combination `(Ctrl+Shift+P)` access the Command Palette.
+
 8. In the Command Palette, run the `Remote-Containers: Attach to Running Container` command.
+
 9. Select the `ia_jupyter_notebook` container.
+
 10. In the `ia_jupyter_notebook` container, install the `Python` and `Jupyter` extensions.
+
 11. In the Command Palette, run the `Jupyter: Specify Jupyter server for connections` command.
 
     >**Note:**
     > If the `Jupyter: Specify Jupyter server for connections` command is not available, then run the `Jupyter: Specify local or remote Jupyter server for connections` command.
 
 12. Choose `Existing: Specify the URI of an existing server` when prompted to select how to connect to Jupyter Notebook.
+
 13. Enter the server's URI (hostname) with the authentication token (included with a ?token= URL parameter), when prompted to enter the URI of a Jupyter server. Refer to the sample URL mentioned in the previous procedure.
-14. Open the `/home/eiiuser` folder to update the respective udf_template and the main notebooks and re-run.
+
+14. Open the `/home/eiiuser` folder to update the respective udf_template and the main notebooks and rerun.
+
 15. To create a Jupyter notebook, run the `Jupyter: Create New Jupyter Notebook` command in the Command Palette.
+
 16. To save the UDF, go to **More Actions (...)**, and then, select **Export**.
+
 17. When prompted **Export As**, select **Python Script**.
+
 18. From the **File** menu, click **Save As**.
+
 19. Select **Show Local**.
+
 20. Enter the name and save the file.
 
-> **Note:**
->
-> You cannot upload files to the workspace in VS Code due to the limitation with the Jupyter Notebook plugin. To use this functionality, access the Jupyter notebook through a web browser.
+>**Note:** You cannot upload files to the workspace in VS Code due to the limitation with the Jupyter Notebook plugin. To use this functionality, access the Jupyter notebook through a web browser.
