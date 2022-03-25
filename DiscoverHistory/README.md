@@ -77,6 +77,7 @@ After completing the prerequisites, to run the DiscoverHistory tool in the zmq_i
     }
 ```
 
+
 ### Sample select queries
 
 The following table shows the samples for the select queries and its details:
