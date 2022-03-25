@@ -58,32 +58,14 @@ services:
       ETCD_HOST: ${ETCD_HOST}
       ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
       ETCD_PREFIX: ${ETCD_PREFIX}
-
-      # Provisioning related variable
-      CertType: "zmq"
     ports:
       - 8888:8888
     networks:
       - eii
     volumes:
       - "vol_eii_socket:${SOCKET_DIR}"
-      - "vol_jn_workspace:/home/${EII_USER_NAME}"
+      - "$EII_INSTALL_PATH/tools_output:/home/${EII_USER_NAME}"
+      - ./Certificates/JupyterNotebook:/run/secrets/JupyterNotebook:ro
+      - ./Certificates/rootca/cacert.pem:/run/secrets/rootca/cacert.pem:ro
     privileged: true
-    secrets:
-      - ca_etcd
-      - etcd_JupyterNotebook_cert
-      - etcd_JupyterNotebook_key
 
-volumes:
-  vol_jn_workspace:
-    driver: local
-    driver_opts:
-      type: local
-      o: bind
-      device: ${EII_INSTALL_PATH}/tools_output
-
-secrets:
-  etcd_JupyterNotebook_cert:
-    file: provision/Certificates/JupyterNotebook/JupyterNotebook_client_certificate.pem
-  etcd_JupyterNotebook_key:
-    file: provision/Certificates/JupyterNotebook/JupyterNotebook_client_key.pem

@@ -37,22 +37,52 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip3 install --user -r requirements.txt
 
+ARG CMAKE_INSTALL_PREFIX
+
+# Install libzmq
+RUN rm -rf deps && \
+    mkdir -p deps && \
+    cd deps && \
+    wget -q --show-progress https://github.com/zeromq/libzmq/releases/download/v4.3.4/zeromq-4.3.4.tar.gz -O zeromq.tar.gz && \
+    tar xf zeromq.tar.gz && \
+    cd zeromq-4.3.4 && \
+    ./configure --prefix=${CMAKE_INSTALL_PREFIX} && \
+    make install
+
+# Install cjson
+RUN rm -rf deps && \
+    mkdir -p deps && \
+    cd deps && \
+    wget -q --show-progress https://github.com/DaveGamble/cJSON/archive/v1.7.12.tar.gz -O cjson.tar.gz && \
+    tar xf cjson.tar.gz && \
+    cd cJSON-1.7.12 && \
+    mkdir build && cd build && \
+    cmake -DCMAKE_INSTALL_INCLUDEDIR=${CMAKE_INSTALL_PREFIX}/include -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} .. && \
+    make install
+
+COPY --from=common ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib
+COPY --from=common ${CMAKE_INSTALL_PREFIX}/include ${CMAKE_INSTALL_PREFIX}/include
+
+
 COPY . .
 
 FROM ${OPENVINO_IMAGE} AS runtime
+
 USER root
+RUN rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
 ARG EII_UID
 ARG EII_USER_NAME
 RUN groupadd $EII_USER_NAME -g $EII_UID && \
-    useradd -r -u $EII_UID -g $EII_USER_NAME $EII_USER_NAME
+    useradd -r -u $EII_UID -g $EII_USER_NAME -m $EII_USER_NAME
 
 ARG ARTIFACTS
 ARG CMAKE_INSTALL_PREFIX
 ENV PYTHONPATH $PYTHONPATH:/app/.local/lib/python3.8/site-packages:/app
-COPY --from=common ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib
+COPY --from=builder ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib
+COPY --from=builder ${CMAKE_INSTALL_PREFIX}/include ${CMAKE_INSTALL_PREFIX}/include
 COPY --from=common /root/.local/lib .local/lib
 COPY --from=builder /root/.local/lib .local/lib
 COPY --from=builder /root/.local/bin .local/bin
@@ -66,10 +96,11 @@ ENV PATH $PATH:/app/.local/bin
 # This is required since JupyterNotebook expects
 # a /home/$EII_USER_NAME/.local/share/jupyter to be present
 RUN mkdir -p /home/$EII_USER_NAME/.local/share/jupyter && \
-    chown -R $EII_USER_NAME:$EII_USER_NAME /home/$EII_USER_NAME
+    chown -R $EII_USER_NAME:$EII_USER_NAME /home/
 
-USER $EII_USER_NAME
+ENV HOME_DIR "/home/$EII_USER_NAME"
+
+USER ${EII_USER_NAME}
 
 HEALTHCHECK NONE
-ENV HOME_DIR "/home/$EII_USER_NAME"
-ENTRYPOINT ./start_jupyter.sh "$HOME_DIR"
+ENTRYPOINT ["./start_jupyter.sh", "/home/eiiuser"]

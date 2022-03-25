@@ -24,8 +24,8 @@ package main
 
 import (
 	"flag"
-	eiimsgbus "EIIMessageBus/eiimsgbus"
-	eiicfgmgr "ConfigMgr/eiiconfigmgr"
+	eiimsgbus "github.com/open-edge-insights/eii-messagebus-go/eiimsgbus"
+	eiicfgmgr "github.com/open-edge-insights/eii-configmgr-go/eiiconfigmgr"
 	"github.com/golang/glog"
 	"os"
 )
@@ -69,10 +69,13 @@ func (subObj *msgbusSubscriber) receiveFromAllTopics() error {
 }
 
 func processMsg(sub *eiimsgbus.Subscriber) {
+	msgCount := make(map[string]int)
 	for {
 		select {
 		case msg := <-sub.MessageChannel:
 			glog.Infof("-- Received Message from topic %v : %v \n",msg.Name, msg.Data)
+			msgCount[msg.Name]++
+			glog.Infof("number of message recieved %v for topic %v", msgCount[msg.Name], msg.Name)
 		case err := <-sub.ErrorChannel:
 			glog.Errorf("-- Error receiving message: %v\n", err)
 		}
@@ -83,7 +86,7 @@ func processMsg(sub *eiimsgbus.Subscriber) {
 
 // StopAllSubscribers function to close all subscriber objects
 func (subObj *msgbusSubscriber) stopAllSubscribers() {
-	for sub, _ := range subObj.msgBusSubMap {
+	for sub := range subObj.msgBusSubMap {
 		sub.Close()
 	}
 }

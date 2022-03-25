@@ -27,18 +27,9 @@ services:
       ETCD_HOST: ${ETCD_HOST}
       ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
       ETCD_PREFIX: ${ETCD_PREFIX}
-      CertType: "zmq"
     networks:
       - eii
     volumes:
       - "vol_eii_socket:${SOCKET_DIR}"
-    secrets:
-      - ca_etcd
-      - etcd_EmbPublisher_cert
-      - etcd_EmbPublisher_key
-
-secrets:
-  etcd_EmbPublisher_cert:
-    file: provision/Certificates/EmbPublisher/EmbPublisher_client_certificate.pem
-  etcd_EmbPublisher_key:
-    file: provision/Certificates/EmbPublisher/EmbPublisher_client_key.pem
+      - ./Certificates/EmbPublisher:/run/secrets/EmbPublisher:ro
+      - ./Certificates/rootca/cacert.pem:/run/secrets/rootca/cacert.pem:ro

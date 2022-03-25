@@ -1,5 +1,6 @@
 {
     "config": {
+	    "cert_type": ["zmq"],
             "query" : "select * from camera1_stream_results where time>=now()-1m limit 10"
     },
     "interfaces": {

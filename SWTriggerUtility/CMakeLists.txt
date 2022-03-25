@@ -28,7 +28,7 @@ set(EII_COMMON_CMAKE "${CMAKE_CURRENT_SOURCE_DIR}/../common/cmake")
 set(CMAKE_CXX_STANDARD 14)
 
 # Set CFLAGS for C/C++
-set(CMAKE_C_FLAGS "-fPIE -fPIC -O2 -Wall -pedantic -fstack-protector-strong -D_FORTIFY_SOURCE=2")
+set(CMAKE_C_FLAGS "-fPIE -fPIC -O2 -Wall -pedantic -fstack-protector-strong -fno-strict-overflow -fno-delete-null-pointer-checks -fwrapv -D_FORTIFY_SOURCE=2")
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
 
 # Set LDFLAGS
@@ -52,7 +52,6 @@ find_package(EIIConfigMgr REQUIRED)
 find_package(EIIMessageBus REQUIRED)
 find_package(PkgConfig REQUIRED)
 find_package(IntelSafeString REQUIRED)
-find_package(WJE REQUIRED)
 
 # Include header directories
 include_directories(
@@ -61,8 +60,7 @@ include_directories(
     ${EIIUtils_INCLUDE}
     ${EIIConfigMgr_INCLUDE}
     ${EIIMessageBus_INCLUDE}
-    ${IntelSafeString_INCLUDE}
-    ${WJE_INCLUDE_DIRS})
+    ${IntelSafeString_INCLUDE})
 
 set(SOURCES src/sw_trigger_vi.cpp)
 link_directories(${CMAKE_INSTALL_PREFIX}/lib)
@@ -76,6 +74,4 @@ target_link_libraries(sw_trigger_utility
         ${EIIMessageBus_LIBRARIES}
         ${ZMQ_LIBRARIES}
         ${CJSON_LIBRARIEES}
-        ${IntelSafeString_LIBRARIES}
-        ${WJE_LIBRARIES})
-
+        ${IntelSafeString_LIBRARIES})

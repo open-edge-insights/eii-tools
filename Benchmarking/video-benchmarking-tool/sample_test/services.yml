@@ -1,4 +1,5 @@
 AppContexts:
+- ConfigMgrAgent
 - VideoIngestion
 - EtcdUI
 - tools/VideoProfiler

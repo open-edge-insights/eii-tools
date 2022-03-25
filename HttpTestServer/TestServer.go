@@ -53,7 +53,6 @@ const (
 	testServerCaPath   = "./certificates/ca_cert.pem"
 	testServerCertPath = "./certificates/server_cert.pem"
 	testServerKeyPath  = "./certificates/server_key.pem"
-	clientCaPath       = "../../build/provision/Certificates/ca/ca_certificate.pem"
 )
 
 // init is used to initialize and fetch required config
@@ -64,12 +63,13 @@ func (t *testServer) init() {
 	var host string
 	var restExportHost string
 	var restExportPort string
+	var clientCaPath string
 	flag.StringVar(&devmode, "dev_mode", "false", "devMode of external server")
 	flag.StringVar(&port, "port", "8082", "port of external server")
 	flag.StringVar(&host, "host", "localhost", "host of external server")
 	flag.StringVar(&restExportPort, "rdeport", "8087", "port of Rest Data Export server")
 	flag.StringVar(&restExportHost, "rdehost", "localhost", "host of Rest Data Export server")
-
+	flag.StringVar(&clientCaPath, "client_ca_path", "../../build/Certificates/rootca/cacert.pem", "clientCaPath, default: ../../build/Certificates/rootca/cacert.pem")
 	flag.Parse()
 	flag.Set("logtostderr", "true")
 
@@ -131,15 +131,6 @@ func (t *testServer) startTestServer() {
 			os.Exit(-1)
 		}
 	} else {
-
-		// Create the TLS Config with the CA pool and enable Client certificate validation
-		tlsConfig := &tls.Config{
-			RootCAs:    t.tsCaCertPool,
-			ClientCAs:  t.extCaCertPool,
-			ClientAuth: tls.RequireAndVerifyClientCert,
-		}
-		tlsConfig.BuildNameToCertificate()
-
 		// Create a Server instance to listen on port with the TLS config
 		server := &http.Server{
 			Addr:              t.host + ":" + t.port,
@@ -148,7 +139,6 @@ func (t *testServer) startTestServer() {
 			WriteTimeout:      60 * time.Second,
 			IdleTimeout:       60 * time.Second,
 			MaxHeaderBytes:    1 << 20,
-			TLSConfig:         tlsConfig,
 		}
 
 		// Listen to HTTPS connections with the server certificate and wait
@@ -174,7 +164,7 @@ func (t *testServer) requestImage(imgHandle string) {
 
 		restExportDest := "http://" + t.restExportHost + ":" + t.restExportPort
 		// Making a get request to rest server
-		r, err := client.Get(restExportDest + "/image?imgHandle=" + imgHandle)
+		r, err := client.Get(restExportDest + "/image?img_handle=" + imgHandle)
 		if err != nil {
 			glog.Errorf("Remote HTTP server is not responding : %s", err)
 		}
@@ -203,7 +193,7 @@ func (t *testServer) requestImage(imgHandle string) {
 
 		restExportDest := "https://" + t.restExportHost + ":" + t.restExportPort
 		// Making a get request to rest server
-		r, err := client.Get(restExportDest + "/image?imgHandle=" + imgHandle)
+		r, err := client.Get(restExportDest + "/image?img_handle=" + imgHandle)
 		if err != nil {
 			glog.Errorf("Remote HTTP server is not responding : %s", err)
 		}

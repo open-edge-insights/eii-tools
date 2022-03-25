@@ -1,6 +1,6 @@
-#!/bin/bash -e
+#!/bin/bash
 
-# Copyright (c) 2020 Intel Corporation.
+# Copyright (c) 2021 Intel Corporation.
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,21 +20,31 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-#Set permission
-sudo chmod -R 777 /opt/intel/eii/sockets
-CertificatesDir="../../build/provision/Certificates"
+# --------------------------------------------------------------
+# Fetch SAR data values and convert to csv format
+# --------------------------------------------------------------
 
-if [ -d "$CertificatesDir" ]; then
-  sudo chmod -R 755 $CertificatesDir
-fi
+ACTUAL_DATA_DIR=$1
+sar_data_file="${ACTUAL_DATA_DIR}/sar_cmd_data.txt"
+output_file="${ACTUAL_DATA_DIR}/output_data.csv"
 
-#set the required env
-source ${PWD}/env.sh
+# Install dependency
+apt-get install -y sysstat
 
-#set paths
-export PYTHONPATH="../../:../../common/libs/EIIMessageBus:../../common"
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+# Executing data command
+echo "Fetching network interface data values"
+sar -n DEV 1 60 > ${sar_data_file}
+
+network_interface=`netstat -i | grep "en" | head -1 | awk '{print $1}'`
+
+# Update the values to the csv file
+
+title=`head -n 3 ${sar_data_file} | tail -n 1 | cut -d' ' -f3-`
+title_data=`echo ${title} | sed 's/ /,/g'`
+echo "${title_data}" >> ${output_file}
+
+network_value=`grep ${network_interface} ${sar_data_file} | tail -n 1`
+network_value_data=`echo ${network_value} | sed 's/ /,/g'`
+echo "${network_value_data}" >> ${output_file}
 
 
-#run VideoProfiler tool
-python3 video_profiler.py

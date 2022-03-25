@@ -1,6 +1,4 @@
-#!/bin/bash -e
-
-# Copyright (c) 2020 Intel Corporation.
+# Copyright (c) 2021 Intel Corporation.
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,5 +18,28 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-docker run --rm -d -p $1:$1 --name ia_mqtt_broker --net eii trafex/alpine-mosquitto:1.6.0
+version: '3.6'
+
+services:
+
+  ## Define mqtt broker service
+  ia_mqtt_broker:
+    container_name: ia_mqtt_broker
+    hostname: ia_mqtt_broker
+    read_only: true
+    image: trafex/alpine-mosquitto:1.9.0
+    restart: unless-stopped
+    security_opt:
+    - no-new-privileges
+    healthcheck:
+      test: ["CMD-SHELL", "exit", "0"]
+      interval: 5m
+    ipc: "none"
+    environment:
+      AppName: "mqtt-broker"
+
+    networks:
+      - eii
+    ports:
+      - "1883:1883"
 

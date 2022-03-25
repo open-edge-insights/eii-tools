@@ -31,6 +31,8 @@ function usage(){
 	echo "WHERE:" 1>&2
 	echo "  TEST_DIR  - Directory containing services.yml and config files for influx, telegraf, and kapacitor" 1>&2
 	echo "  STREAMS   - The number of streams (1, 2, 4, 8, 16)" 1>&2
+	echo "  INTERVAL  - Time interval to publish the data" 1>&2
+	echo "  PORT      - MQTT broker port" 1>&2
 	echo "  SLEEP     - The number of seconds to wait after the containers come up " 1>&2
 	echo "	PCM_HOME  - The absolute path to the PCM repository where pcm.x is built" 1>&2
 	echo "	[EII_HOME] - [Optional] Absolut path to EII home directory, if running from a non-default location" 1>&2
@@ -43,20 +45,23 @@ if [ -z "$1" ]; then usage; fi
 if [ -z "$2" ]; then usage; fi
 if [ -z "$3" ]; then usage; fi
 if [ -z "$4" ]; then usage; fi
-
+if [ -z "$5" ]; then usage; fi
+if [ -z "$6" ]; then usage; fi
 
 # --------------------------------------------------------------
 # Get command line arguments
 # --------------------------------------------------------------
 TEST_DIR=$1
 STREAMS=$2
-SLEEP=$3
-PCM_HOME=$4
+INTERVAL=$3
+PORT=$4
+SLEEP=$5
+PCM_HOME=$6
 EII_HOME="../../.."
 
-if [ $# -eq 5 ]
+if [ $# -eq 7 ]
 then
-    EII_HOME=$5
+    EII_HOME=$7
 fi
 
 DATETIME=`date -u +"%Y%b%d_%H%M"`
@@ -64,7 +69,8 @@ DATA_DIR="${TEST_DIR}/output"
 ACTUAL_DATA_DIR="${DATA_DIR}/${DATETIME}"
 LOG_FILE="${ACTUAL_DATA_DIR}/execute.log"
 CFG_DIR=${TEST_DIR}
-
+HOST_IP=$(ip route get 1 | awk '{print $7}'|head -1)
+SERVICE="benchmarking"
 
 # --------------------------------------------------------------
 # Create data directories
@@ -116,13 +122,13 @@ popd
 # --------------------------------------------------------------
 notice "Cleaning files from prior tests"
 #run_logged rm -v "${EII_HOME}/build/docker-compose.yml"
-#run_logged rm -v "${EII_HOME}/build/provision/config/eii_config.json"
+#run_logged rm -v "${EII_HOME}/build/eii_config.json"
 #run_logged rm -v "${EII_HOME}/build/config/telegraf"*".conf"
 #run_logged rm -v "${EII_HOME}/build/config/influxdb.conf"
 
 notice "Copying in test configuration files"
 #run_logged cp -v "${CFG_DIR}/docker-compose.yml" "${EII_HOME}/build/docker-compose.yml"
-#run_logged cp -v "${CFG_DIR}/eii_config.json" "${EII_HOME}/build/provision/config/eii_config.json"
+#run_logged cp -v "${CFG_DIR}/eii_config.json" "${EII_HOME}/build/eii_config.json"
 #run_logged cp -v "${CFG_DIR}/telegraf"*".conf" "${EII_HOME}/build/config/"
 #run_logged cp -v "${CFG_DIR}/influxdb.conf" "${EII_HOME}/build/config/"
 
@@ -130,30 +136,11 @@ notice "Copying in test configuration files"
 notice "Generating test configuration files"
 run_logged cp -v ${TEST_DIR}/services.yml ${EII_HOME}/build/usecases/services.yml
 
+
 pushd "${EII_HOME}/build"
 run_logged python3 builder.py -f usecases/services.yml
 popd
 
-# --------------------------------------------------------------
-# Provision containers
-# --------------------------------------------------------------
-notice "Provisioning cluster"
-pushd "${EII_HOME}/build/provision/"
-run_logged ./provision.sh ../docker-compose.yml
-popd
-
-notice "Running mqtt broker on 1883 port"
-pushd "${EII_HOME}/tools/mqtt"
-run_logged ./broker.sh 1883
-popd
-
-notice "Starting mqtt publisher"
-pushd "${EII_HOME}/tools/mqtt/publisher"
-set -a
-source ../../../build/.env
-set +a
-run_logged docker-compose up --build -d
-popd
 
 # --------------------------------------------------------------
 # Launch
@@ -161,9 +148,21 @@ popd
 notice "Starting containers"
 pushd "${EII_HOME}/build"
 run_logged docker-compose -f docker-compose-build.yml build
-run_logged docker-compose up -d
+run_logged ./eii_start.sh
 run_logged sleep 10
 popd
+
+
+./data_rate.sh ${ACTUAL_DATA_DIR} &
+
+set -a
+source "${EII_HOME}/build/.env"
+pushd "${EII_HOME}/tools/mqtt/publisher"
+pip3 install -r requirements.txt
+python3 publisher.py --host ${HOST_IP} --port ${PORT} --topic "test/rfc_data" --json "./json_files/*.json" --streams ${STREAMS} --interval ${INTERVAL} --output "${ACTUAL_DATA_DIR}/output_data.csv" --service ${SERVICE}
+set +a
+popd
+
 
 ./ts-start-stats.sh ${ACTUAL_DATA_DIR} ${SLEEP} ${PCM_HOME} ${EII_HOME}
 
