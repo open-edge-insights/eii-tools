@@ -22,7 +22,7 @@ FROM ubuntu:20.04
 
 # Setting python dev env
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends python3-pip && \
+    apt-get install -y --no-install-recommends python3-minimal python3-pip && \
     python3 -m pip install -U pip && \
     ln -sf /usr/bin/pip /usr/bin/pip3
 
@@ -31,6 +31,7 @@ RUN pip3 install -r requirements.txt
 COPY publisher.py /
 COPY demo_datafile.csv /
 COPY json_files /json_files
+RUN apt-get remove --auto-remove --purge -y python3-pip
 
 ENTRYPOINT ["python3", "-u", "publisher.py"]
 
