@@ -47,10 +47,7 @@ FROM ubuntu:$UBUNTU_IMAGE_VERSION as runtime
 
 # Setting python dev env
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends software-properties-common && \
-    add-apt-repository ppa:deadsnakes/ppa && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends python3-distutils  && \
+    apt-get install -y --no-install-recommends python3-distutils python3-minimal && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
